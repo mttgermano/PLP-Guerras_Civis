@@ -1,8 +1,8 @@
 [System Table]
     - Rooms 
-    [room_uuid      room_password]
-    54              arco
-    22              teste
+    [room_name      room_uuid       room_password]
+    jogo1           54asdasd1       arco
+    jogo2           22uito104       teste
 
     - User 
     [user_name  user_uuid       user_password]
