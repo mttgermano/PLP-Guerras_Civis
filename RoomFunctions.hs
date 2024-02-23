@@ -31,6 +31,7 @@ createRoom room = do
     execute conn "INSERT INTO rooms (room_id, room_name, room_password) VALUES (?, ?, ?)" room
     ----------------------------------------------
     close conn
+    putStrLn $ "Room created: " ++ show room
 
 
 -- Parse a POST request

@@ -5,6 +5,8 @@ import Data.UUID.V4 (nextRandom)
 import Data.UUID (toString)
 import Data.Aeson
 import qualified Data.ByteString.Lazy.Char8 as BS
+
+import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.ToField
 
@@ -30,6 +32,25 @@ createUser user = do
     execute conn "INSERT INTO users (user_id, user_name, password) VALUES (?, ?, ?)" user
     ----------------------------------------------
     close conn
+
+    putStrLn $ "User created: " ++ show user
+
+
+-- Log in a user
+login :: String -> String -> IO ()
+login userName password = do
+    conn <- getDbConnection
+
+    -- DB Query ----------------------------------
+    result <- query conn "SELECT user_id FROM users WHERE user_name = ? AND password = ?" (userName, password) :: IO [Only String]
+    ----------------------------------------------
+    close conn
+
+    -- Check if the query returned any rows
+    if null result
+        then putStrLn "Invalid username or password."
+        else putStrLn "Login successful."
+
 
 -- Establish a database connection
 getDbConnection :: IO Connection
