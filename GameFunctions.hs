@@ -15,3 +15,7 @@ incrementVote userName = do
     ----------------------------------------------
 
     close conn
+
+-- Establish a database connection
+getDbConnection :: IO Connection
+getDbConnection = connectPostgreSQL "host=localhost dbname=mydatabase user=myuser password=mypassword"

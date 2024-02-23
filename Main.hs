@@ -4,6 +4,13 @@ import qualified Data.ByteString.Lazy.Char8 as BS
 import Data.Aeson
 import UserFunctions
 
+-- Parse a POST request
+parsePostRequest :: BS.ByteString -> Maybe User
+parsePostRequest = decode
+
+-- Parse a JSON PUT request
+parsePutRequest :: BS.ByteString -> Maybe String
+parsePutRequest = decode
 
 main :: IO ()
 main = do

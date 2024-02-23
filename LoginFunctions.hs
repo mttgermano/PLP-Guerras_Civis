@@ -31,15 +31,6 @@ createUser user = do
     ----------------------------------------------
     close conn
 
-
--- Parse a POST request
-parsePostRequest :: BS.ByteString -> Maybe User
-parsePostRequest = decode
-
--- Parse a JSON PUT request
-parsePutRequest :: BS.ByteString -> Maybe String
-parsePutRequest = decode
-
 -- Establish a database connection
 getDbConnection :: IO Connection
 getDbConnection = connectPostgreSQL "host=localhost dbname=mydatabase user=myuser password=mypassword"
