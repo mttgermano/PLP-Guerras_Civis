@@ -6,6 +6,19 @@ import System.IO
 import Control.Exception
 
 
+-- TODO: Ajeitar a Logica
+-- == Logica Atual ==
+-- Pela logica atual, todas as salas estao utilizando o mesmo TCP server
+--
+-- == Logica Correta ==
+-- 1. Recebo a request da msg
+--      {"user": "pedro"; "message": "teste"}
+-- 2. Checo em qual sala esse user esta
+-- 3. Adiciono a sala ao request
+--      {"user": "pedro"; "message": "teste"; "room_name":"sala404"}
+-- 4. O user so recebe o broadcast de mensagens que estao na sua respectiva sala
+
+
 withChatServer :: [Handle] -> IO ()
 withChatServer handles = withSocketsDo $ do
     -- Create a TCP socket
