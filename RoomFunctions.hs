@@ -4,10 +4,11 @@ import Control.Exception (bracket)
 import Data.UUID.V4 (nextRandom)
 import Data.UUID (toString)
 import Data.Aeson
-
 import qualified Data.ByteString.Lazy.Char8 as BS
+
 import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.ToField
+
 
 -- Room data type 
 data Room = Room

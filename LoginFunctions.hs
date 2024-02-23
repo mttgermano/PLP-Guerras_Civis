@@ -7,8 +7,8 @@ import Data.Aeson
 import qualified Data.ByteString.Lazy.Char8 as BS
 
 import Database.PostgreSQL.Simple
-import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.ToField
+
 
 -- User Data Type
 data User = User
