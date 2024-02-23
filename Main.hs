@@ -25,3 +25,8 @@ main = do
     case parsePutRequest (BS.pack putRequest) of
         Just userName -> incrementVote userName
         Nothing -> putStrLn "Invalid PUT request format"
+
+    -- todo
+    -- test the login user function
+    -- test the create room function
+    -- teste the login room function
