@@ -34,6 +34,22 @@ createRoom room = do
     putStrLn $ "Room created: " ++ show room
 
 
+-- Log in a room
+login :: String -> String -> IO ()
+login roomName roomPassword = do
+    conn <- getDbConnection
+
+    -- DB Query ----------------------------------
+    result <- query conn "SELECT room_id FROM rooms WHERE room_name = ? AND room_password = ?" (roomName, roomPassword) :: IO [Only String]
+    ----------------------------------------------
+    close conn
+
+    -- Check if the query returned any rows
+    if null result
+        then putStrLn "Invalid room name or password."
+        else putStrLn "Login successful."
+
+
 -- Parse a POST request
 parseRoomRequest :: BS.ByteString -> Maybe Room
 parseRoom

@@ -38,11 +38,11 @@ createUser user = do
 
 -- Log in a user
 login :: String -> String -> IO ()
-login userName password = do
+login userName userPassword = do
     conn <- getDbConnection
 
     -- DB Query ----------------------------------
-    result <- query conn "SELECT user_id FROM users WHERE user_name = ? AND password = ?" (userName, password) :: IO [Only String]
+    result <- query conn "SELECT user_id FROM users WHERE user_name = ? AND password = ?" (userName, userPassword) :: IO [Only String]
     ----------------------------------------------
     close conn
 
