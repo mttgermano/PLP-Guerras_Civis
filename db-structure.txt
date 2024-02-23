@@ -1,0 +1,31 @@
+[System Table]
+    - Rooms 
+    [room_uuid      room_password]
+    54              arco
+    22              teste
+
+    - User 
+    [user_name  user_uuid       user_password]
+    pedro       asd234asd       pass1
+    carlos      67sf3oo         kasco
+    joao        2342340sd       teste
+    val         fffffaaaa       iiiii
+    dir         234jdasd0       vetor
+
+
+[Rooms Table]       
+    - Room 
+    [character  user_name   isAlive]
+    asd1        pedro       1
+    asd2        carlos      1
+    asd3        joao        0 
+    asd4        val         0 
+    asd5        dir         1
+
+    - Votes 
+    [user_name  votes]
+    pedro       2
+    carlos      0
+    joao        3
+    val         0
+    dir         0
