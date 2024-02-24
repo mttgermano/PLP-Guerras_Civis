@@ -1,4 +1,5 @@
 [service        port]
 postgress       5432
+db pannel       8080
 Haskell TCP     3000
 web-app         5858
