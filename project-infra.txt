@@ -1,0 +1,4 @@
+[service        port]
+postgress       5432
+Haskell TCP     3000
+web-app         5858
