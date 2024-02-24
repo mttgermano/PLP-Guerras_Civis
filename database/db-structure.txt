@@ -15,12 +15,12 @@
 
 [Rooms Table]       
     - Room 
-    [character  user_name   isAlive]
-    asd1        pedro       1
-    asd2        carlos      1
-    asd3        joao        0 
-    asd4        val         0 
-    asd5        dir         1
+    [character_name     user_name   isAlive]
+    asd1                pedro       1
+    asd2                carlos      1
+    asd3                joao        0 
+    asd4                val         0 
+    asd5                dir         1
 
     - Votes 
     [user_name  votes]
