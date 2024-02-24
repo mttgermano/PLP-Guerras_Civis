@@ -9,8 +9,8 @@ homepage:
 
 -- A URL where users can report bugs.
 -- bug-reports:
-license:            MIT
-license-file:       LICENSE
+license:
+license-file:
 author:             mttgermano
 maintainer:         mttgermano@proton.me
 
