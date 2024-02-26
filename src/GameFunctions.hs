@@ -1,6 +1,6 @@
 module GameFunctions where
 
-import UserFunctions
+import LoginFunctions
 import Database.PostgreSQL.Simple
 
 

@@ -1,4 +1,4 @@
-module UserFunctions where
+module LoginFunctions where
 
 import Control.Exception (bracket)
 import Data.UUID.V4 (nextRandom)

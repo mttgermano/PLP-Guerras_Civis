@@ -53,4 +53,4 @@ login roomName roomPassword = do
 
 -- Parse a POST request
 parseRoomRequest :: BS.ByteString -> Maybe Room
-parseRoom
+parseRoom = decode

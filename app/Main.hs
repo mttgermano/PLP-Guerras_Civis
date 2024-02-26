@@ -2,7 +2,7 @@ module Main where
 
 import qualified Data.ByteString.Lazy.Char8 as BS
 import Data.Aeson
-import UserFunctions
+import LoginFunctions
 
 
 main :: IO ()

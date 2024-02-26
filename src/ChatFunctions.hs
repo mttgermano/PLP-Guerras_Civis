@@ -4,6 +4,7 @@ import Control.Concurrent (forkIO)
 import Network.Socket
 import System.IO
 import Control.Exception
+import Control.Monad
 
 
 -- TODO: Ajeitar a Logica

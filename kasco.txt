@@ -1,0 +1,13 @@
+#!/bin/sh
+exedir="/usr/lib/ghc-9.0.2/bin"
+exeprog="ghc-pkg"
+executablename="$exedir/$exeprog"
+datadir="/usr/share"
+bindir="/usr/bin"
+topdir="/usr/lib/ghc-9.0.2"
+
+#!/bin/sh
+
+PKGCONF="$topdir/package.conf.d"
+echo "$executablename" --global-package-db "$PKGCONF" ${1+"$@"}
+echo "$executablename" --global-package-db "$PKGCONF"
