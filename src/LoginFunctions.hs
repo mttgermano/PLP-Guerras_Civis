@@ -4,10 +4,14 @@ import Control.Exception (bracket)
 import Data.UUID.V4 (nextRandom)
 import Data.UUID (toString)
 import Data.Aeson
-import qualified Data.ByteString.Lazy.Char8 as BS
+
+import qualified Data.ByteString.Lazy.Char8 as BS1
+import qualified Data.ByteString.Char8 as BS2
 
 import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.ToField
+import Database.PostgreSQL.Simple.ToRow
+import Database.PostgreSQL.Simple.Types (Query)
 
 
 -- User Data Type
@@ -42,7 +46,8 @@ login userName userPassword = do
     conn <- getDbConnection
 
     -- DB Query ----------------------------------
-    result <- query conn "SELECT user_id FROM users WHERE user_name = ? AND password = ?" (userName, userPassword) :: IO [Only String]
+    let sqlQuery = "SELECT user_id FROM users WHERE user_name = ? AND password = ?" :: Query
+    result <- query conn sqlQuery (userName, userPassword) :: IO [Only String]
     ----------------------------------------------
     close conn
 
@@ -54,4 +59,4 @@ login userName userPassword = do
 
 -- Establish a database connection
 getDbConnection :: IO Connection
-getDbConnection = connectPostgreSQL "host=localhost dbname=mydatabase user=myuser password=mypassword"
+getDbConnection = connectPostgreSQL $ BS2.pack "host=localhost dbname=mydatabase user=myuser password=mypassword"
