@@ -1,10 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Main where
+import LoginFunctions
 
 import Web.Scotty
 import Data.Aeson (FromJSON(..), ToJSON(..), withObject, (.:), (.=), decode, object)
 import Data.Text.Lazy (Text)
+
 
 -- User --------------------
 data User = User 
@@ -40,7 +42,7 @@ main = do
     putStrLn "--> Server on port 3000..."
     scotty 3000 $ do
         get "/" $ do
-            text "Hello, Scotty!"
+            text "Server it's up on port 3000"
 
         get "/hello/:name" $ do
             name <- param "name"
@@ -52,6 +54,8 @@ main = do
             case decode requestBody of
                 Just (userObj :: User) -> do
                     liftIO $ putStrLn $ "Received user: " ++ show userObj
+                    -- Call createUser from LoginFunctions
+                    liftIO $ createUser requestBody
                     text $ "User created: " <> uName userObj <> ", Password: " <> uPassword userObj
                 Nothing -> text "Invalid JSON"
         
@@ -79,3 +83,5 @@ main = do
                     liftIO $ putStrLn $ "Received room: " ++ show roomObj
                     text $ "Room logged: " <> rName roomObj <> ", Password: " <> rPassword roomObj
                 Nothing -> text "Invalid JSON"
+
+        -- Game PAGE --------------------------------------
