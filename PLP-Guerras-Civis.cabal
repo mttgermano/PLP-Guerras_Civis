@@ -36,7 +36,13 @@ library
     import:           warnings
 
     -- Modules exported by the library.
-    exposed-modules:  CharacterFunctions, ChatFunctions, GameFunctions, LoginFunctions, RoomFunctions, DbFunctions
+    exposed-modules:  
+        CharacterFunctions,
+        ChatFunctions,
+        GameFunctions,
+        LoginFunctions,
+        RoomFunctions,
+        DbFunctions
 
     -- Modules included in this library but not exported.
     -- other-modules:
