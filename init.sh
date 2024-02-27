@@ -4,4 +4,4 @@
 docker-compose -f ./database/docker-compose.yml up
 
 # Init the Poject
-cabal run
+cabal build && cabal run
