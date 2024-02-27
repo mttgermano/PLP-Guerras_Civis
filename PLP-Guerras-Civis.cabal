@@ -75,7 +75,9 @@ library
         async,
         uuid,
         bytestring,
-        aeson
+        aeson,
+        scotty,
+        text
 
     -- Directories containing source files.
     hs-source-dirs:   src
@@ -104,7 +106,9 @@ executable PLP-Guerras-Civis
         async,
         uuid,
         bytestring,
-        aeson
+        aeson,
+        scotty,
+        text
 
     -- Directories containing source files.
     hs-source-dirs:   app

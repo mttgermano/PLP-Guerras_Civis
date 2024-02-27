@@ -1,0 +1,11 @@
+# Create User
+curl -X POST -H "Content-Type: application/json" -d '{"uName":"john_doe", "uPassword":"password123"}' http://localhost:3000/login/create_user/
+
+# Login User
+curl -X POST -H "Content-Type: application/json" -d '{"uName":"john_doe", "uPassword":"password123"}' http://localhost:3000/login/login_user/
+
+# Create Room
+curl -X POST -H "Content-Type: application/json" -d '{"rName":"room1", "rPassword":"roompassword"}' http://localhost:3000/room/create_room/
+
+# Login Room
+curl -X POST -H "Content-Type: application/json" -d '{"rName":"room1", "rPassword":"roompassword"}' http://localhost:3000/room/login_room/

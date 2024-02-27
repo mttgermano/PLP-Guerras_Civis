@@ -1,8 +1,6 @@
 module DbFunctions where
 
-
 import qualified Data.ByteString.Char8 as BS2
-
 import Database.PostgreSQL.Simple
 
 -- Establish a database connection
