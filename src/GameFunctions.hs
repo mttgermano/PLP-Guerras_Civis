@@ -1,7 +1,12 @@
 module GameFunctions where
 
-import LoginFunctions
+import qualified Data.ByteString.Lazy.Char8 as BS1
+import qualified Data.ByteString.Char8 as BS2
+
 import Database.PostgreSQL.Simple
+import Database.PostgreSQL.Simple.ToField
+import Database.PostgreSQL.Simple.ToRow
+import Database.PostgreSQL.Simple.Types (Query(Query))
 
 
 -- Increment the vote for a user in the db
@@ -18,4 +23,4 @@ incrementVote userName = do
 
 -- Establish a database connection
 getDbConnection :: IO Connection
-getDbConnection = connectPostgreSQL "host=localhost dbname=mydatabase user=myuser password=mypassword"
+getDbConnection = connectPostgreSQL $ BS2.pack "host=localhost dbname=mydatabase user=myuser password=mypassword"

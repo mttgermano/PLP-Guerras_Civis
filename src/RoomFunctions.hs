@@ -1,6 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
-
 module RoomFunctions where
+import DbFunctions
 
 import GHC.Generics
 import Data.UUID.V4 (nextRandom)
@@ -16,7 +16,7 @@ import Database.PostgreSQL.Simple.ToRow
 import Database.PostgreSQL.Simple.Types (Query(Query))
 
 
--- Room data type 
+-- Room Data Type 
 data Room = Room
     { rId :: String,
       rName :: String,
@@ -46,7 +46,7 @@ createRoom jsonRequest = do
 
             -- DB Query ----------------------------------
             let sqlQuery = Query $ BS2.pack "INSERT INTO rooms (room_id, room_name, room_password) VALUES (?, ?, ?)"
-            _ <- execute conn sqlQuery newRoom 
+            result <- execute conn sqlQuery newRoom 
             ----------------------------------------------
             close conn
             putStrLn $ "Room created: " ++ show newRoom 
@@ -66,7 +66,7 @@ login jsonRequest = do
 
             -- DB Query ----------------------------------
             let sqlQuery = Query $ BS2.pack "SELECT room_id FROM rooms WHERE room_name = ? AND room_password = ?"
-            result <- query conn sqlQuery (roomName, roomPassword) :: IO [Only String]
+            result <- query conn sqlQuery (rName room, rPassword room) :: IO [Only String]
             ----------------------------------------------
             close conn
 
@@ -82,7 +82,3 @@ login jsonRequest = do
 -- Parse a POST request
 parseRoomRequest :: BS1.ByteString -> Maybe Room
 parseRoomRequest = decode
-
--- Establish a database connection
-getDbConnection :: IO Connection
-getDbConnection = connectPostgreSQL $ BS2.pack "host=localhost dbname=mydatabase user=myuser password=mypassword"
