@@ -2,6 +2,7 @@
 
 module Main where
 import LoginFunctions
+import RoomFunctions
 
 import Web.Scotty
 import Data.Aeson (FromJSON(..), ToJSON(..), withObject, (.:), (.=), decode, object, encode)
@@ -55,20 +56,20 @@ main = do
             case decode requestBody of
                 Just (userObj :: User) -> do
                     liftIO $ putStrLn $ "Received user: " ++ show userObj
+
                     -- Call createUser from LoginFunctions
                     liftIO $ createUser (unpack $ uName userObj) (unpack $ uPassword userObj)   -- cast Text to String
                     text $ "User created: " <> uName userObj <> ", Password: " <> uPassword userObj
-                Nothing -> text "User not Created: Invalid JSON"
         
         post "/login/login_user/" $ do
             requestBody <- body
             case decode requestBody of
                 Just (userObj :: User) -> do
                     liftIO $ putStrLn $ "Received user: " ++ show userObj
+
                     -- Call loginUser from LoginFunctions
                     liftIO $ loginUser (unpack $ uName userObj) (unpack $ uPassword userObj)   -- cast Text to String
                     text $ "User logged: " <> uName userObj <> ", Password: " <> uPassword userObj
-                Nothing -> text "User not Login: Invalid JSON"
         
         -- ROOM PAGE ------------------------------------
         post "/room/create_room/" $ do
@@ -76,15 +77,19 @@ main = do
             case decode requestBody of
                 Just (roomObj :: Room) -> do
                     liftIO $ putStrLn $ "Received room: " ++ show roomObj
+
+                    -- Call createRoom from LoginFunctions
+                    liftIO $ createRoom  (unpack $ rName roomObj) (unpack $ rPassword roomObj)   -- cast Text to String
                     text $ "Room created: " <> rName roomObj <> ", Password: " <> rPassword roomObj
-                Nothing -> text "Invalid JSON"
         
         post "/room/login_room/" $ do
             requestBody <- body
             case decode requestBody of
                 Just (roomObj :: Room) -> do
                     liftIO $ putStrLn $ "Received room: " ++ show roomObj
+
+                    -- Call createRoom from LoginFunctions
+                    liftIO $ loginRoom  (unpack $ rName roomObj) (unpack $ rPassword roomObj)   -- cast Text to String
                     text $ "Room logged: " <> rName roomObj <> ", Password: " <> rPassword roomObj
-                Nothing -> text "Invalid JSON"
 
         -- Game PAGE --------------------------------------

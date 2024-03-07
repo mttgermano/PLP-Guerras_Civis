@@ -1,5 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
-module LoginFunctions (createUser, loginUser) where
+--module LoginFunctions (createUser, loginUser) where
+module LoginFunctions where
 import DbFunctions
 
 import GHC.Generics
