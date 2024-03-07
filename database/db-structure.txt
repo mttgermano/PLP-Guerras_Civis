@@ -1,10 +1,4 @@
-[System Table]
-    - Rooms 
-    [room_name      room_uuid       room_password]
-    jogo1           54asdasd1       arco
-    jogo2           22uito104       teste
-
-    - User 
+[User Table]
     [user_name  user_uuid       user_password]
     pedro       asd234asd       pass1
     carlos      67sf3oo         kasco
@@ -12,20 +6,16 @@
     val         fffffaaaa       iiiii
     dir         234jdasd0       vetor
 
-
 [Rooms Table]       
-    - Room 
-    [character_name     user_name   isAlive]
-    asd1                pedro       1
-    asd2                carlos      1
-    asd3                joao        0 
-    asd4                val         0 
-    asd5                dir         1
+    [room_name      room_uuid       room_password]
+    jogo1           54asdasd1       arco
+    jogo2           22uito104       teste
 
-    - Votes 
-    [user_name  votes]
-    pedro       2
-    carlos      0
-    joao        3
-    val         0
-    dir         0
+
+[User Game Data]
+    [character_name     user_uuid       isAlive     votes]
+    asd1                asd234asd       1           2
+    asd2                67sf3oo         1           0
+    asd3                2342340sd       0           3
+    asd4                fffffaaaa       0           0
+    asd5                234jdasd0       1           0
