@@ -1,5 +1,5 @@
 {-# LANGUAGE DeriveGeneric #-}
---module LoginFunctions (createUser, loginUser) where
+--module LoginFunctions (createPlayer, loginPlayer) where
 module LoginFunctions where
 import DbFunctions
 
@@ -16,47 +16,48 @@ import Database.PostgreSQL.Simple.Types (Query(Query))
 
 
 
--- User Data Type
-data User = User
-    { uId :: String,
-      uName :: String,
-      uPassword :: String
+-- Player Data Type
+data Player = Player
+    { pId :: String,
+      pName :: String,
+      pPassword :: String,
+      cRoom :: Maybe String     -- Represents the presence of the user in a room
     }
     deriving (Show, Generic)
 
--- Convert User into a tuple for SQL insert
-instance ToRow User where
-    toRow user = [toField (uId user), toField (uName user), toField (uPassword user)]
+-- Convert Player into a tuple for SQL insert
+instance ToRow Player where
+    toRow player = [toField (pId player), toField (pName player), toField (pPassword player), toField (cRoom player)]
 
--- Create a user in the db
-createUser :: String -> String -> IO ()
-createUser user_name user_password = do
+-- Create a player in the db
+createPlayer :: String -> String -> IO ()
+createPlayer player_name player_password = do
     uuid <- fmap toString nextRandom    -- Generate random UUID
     conn <- getDbConnection
 
-    let newUser = User { uId = uuid, uName = user_name, uPassword = user_password}
+    let newPlayer = Player { pId = uuid, pName = player_name, pPassword = player_password, cRoom = Nothing}
 
     -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "INSERT INTO users (user_id, user_name, password) VALUES (?, ?, ?)"
-    result <- execute conn sqlQuery newUser
+    let sqlQuery = Query $ BS2.pack "INSERT INTO Player (player_uuid, player_name, player_password, current_room) VALUES (?, ?, ?)"
+    result <- execute conn sqlQuery newPlayer
     print result
     ----------------------------------------------
     close conn
-    putStrLn $ "User created: " ++ show newUser
+    putStrLn $ "Player created: " ++ show newPlayer
 
 
--- Log in a user
-loginUser :: String -> String -> IO ()
-loginUser user_name user_password = do
+-- Log in a player
+loginPlayer :: String -> String -> IO ()
+loginPlayer player_name player_password = do
     conn <- getDbConnection
 
     -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "SELECT user_id FROM users WHERE user_name = ? AND user_password = ?"
-    result <- query conn sqlQuery (user_name, user_password) :: IO [Only String]
+    let sqlQuery = Query $ BS2.pack "SELECT player_uuid FROM Player WHERE player_name = ? AND player_password = ?"
+    result <- query conn sqlQuery (player_name, player_password) :: IO [Only String]
     ----------------------------------------------
     close conn
 
     -- Check if the query returned any rows
     if null result
-        then putStrLn "Invalid username or password."
+        then putStrLn "Invalid playername or password."
         else putStrLn "Login successful."

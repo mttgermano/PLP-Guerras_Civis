@@ -37,7 +37,7 @@ createRoom room_name room_password = do
     let newRoom = Room { rId = uuid, rName = room_name, rPassword = room_password}
 
     -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "INSERT INTO rooms (room_id, room_name, room_password) VALUES (?, ?, ?)"
+    let sqlQuery = Query $ BS2.pack "INSERT INTO Room (room_id, room_name, room_password) VALUES (?, ?, ?)"
     result <- execute conn sqlQuery newRoom 
     print result
     ----------------------------------------------
@@ -51,7 +51,7 @@ loginRoom room_name room_password = do
     conn <- getDbConnection
 
     -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "SELECT room_id FROM rooms WHERE room_name = ? AND room_password = ?"
+    let sqlQuery = Query $ BS2.pack "SELECT room_uuid FROM Room WHERE room_name = ? AND room_password = ?"
     result <- query conn sqlQuery (room_name, room_password) :: IO [Only String]
     ----------------------------------------------
     close conn
