@@ -5,4 +5,4 @@ import Database.PostgreSQL.Simple
 
 -- Establish a database connection
 getDbConnection :: IO Connection
-getDbConnection = connectPostgreSQL $ BS2.pack "host=localhost dbname=mydatabase user=myuser password=mypassword"
+getDbConnection = connectPostgreSQL $ BS2.pack "host=localhost dbname=plp_db user=root password=plp123"
