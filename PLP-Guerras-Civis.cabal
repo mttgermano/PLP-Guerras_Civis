@@ -69,8 +69,8 @@ library
     default-language: GHC2021
 
 executable PLP-Guerras-Civis
-    import:           warnings
-    main-is:          Main.hs
+    import:     warnings
+    main-is:    main.hs
 
     -- Other library packages from which modules are imported.
     build-depends:
@@ -85,7 +85,7 @@ executable PLP-Guerras-Civis
         text
 
     -- Directories containing source files.
-    hs-source-dirs:   app
+    hs-source-dirs:  src 
 
     -- Base language which the package is written in.
     default-language: GHC2021
