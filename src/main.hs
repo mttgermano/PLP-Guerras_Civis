@@ -4,8 +4,9 @@ module Main where
 import LoginFunctions
 
 import Web.Scotty
-import Data.Aeson (FromJSON(..), ToJSON(..), withObject, (.:), (.=), decode, object)
-import Data.Text.Lazy (Text)
+import Data.Aeson (FromJSON(..), ToJSON(..), withObject, (.:), (.=), decode, object, encode)
+import qualified Data.ByteString.Lazy.Char8 as BS1
+import Data.Text.Lazy (Text, unpack)
 
 
 -- User --------------------
@@ -55,17 +56,19 @@ main = do
                 Just (userObj :: User) -> do
                     liftIO $ putStrLn $ "Received user: " ++ show userObj
                     -- Call createUser from LoginFunctions
-                    liftIO $ createUser requestBody
+                    liftIO $ createUser (unpack $ uName userObj) (unpack $ uPassword userObj)   -- cast Text to String
                     text $ "User created: " <> uName userObj <> ", Password: " <> uPassword userObj
-                Nothing -> text "Invalid JSON"
+                Nothing -> text "User not Created: Invalid JSON"
         
         post "/login/login_user/" $ do
             requestBody <- body
             case decode requestBody of
                 Just (userObj :: User) -> do
                     liftIO $ putStrLn $ "Received user: " ++ show userObj
+                    -- Call loginUser from LoginFunctions
+                    liftIO $ loginUser (unpack $ uName userObj) (unpack $ uPassword userObj)   -- cast Text to String
                     text $ "User logged: " <> uName userObj <> ", Password: " <> uPassword userObj
-                Nothing -> text "Invalid JSON"
+                Nothing -> text "User not Login: Invalid JSON"
         
         -- ROOM PAGE ------------------------------------
         post "/room/create_room/" $ do
