@@ -21,13 +21,13 @@ data Player = Player
     { pId :: String,
       pName :: String,
       pPassword :: String,
-      cRoom :: Maybe String     -- Represents the presence of the user in a room
+      currentRoom :: Maybe String     -- Represents the presence of the user in a room
     }
     deriving (Show, Generic)
 
 -- Convert Player into a tuple for SQL insert
 instance ToRow Player where
-    toRow player = [toField (pId player), toField (pName player), toField (pPassword player), toField (cRoom player)]
+    toRow player = [toField (pId player), toField (pName player), toField (pPassword player), toField (currentRoom player)]
 
 -- Create a player in the db
 createPlayer :: String -> String -> IO ()
@@ -35,7 +35,7 @@ createPlayer player_name player_password = do
     uuid <- fmap toString nextRandom    -- Generate random UUID
     conn <- getDbConnection
 
-    let newPlayer = Player { pId = uuid, pName = player_name, pPassword = player_password, cRoom = Nothing}
+    let newPlayer = Player { pId = uuid, pName = player_name, pPassword = player_password, currentRoom = Nothing}
 
     -- DB Query ----------------------------------
     let sqlQuery = Query $ BS2.pack "INSERT INTO Player (player_uuid, player_name, player_password, current_room) VALUES (?, ?, ?)"

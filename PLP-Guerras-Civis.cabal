@@ -84,6 +84,14 @@ executable PLP-Guerras-Civis
         scotty,
         text
 
+    other-modules:
+        CharacterFunctions,
+        ChatFunctions,
+        GameFunctions,
+        LoginFunctions,
+        RoomFunctions,
+        DbFunctions
+
     -- Directories containing source files.
     hs-source-dirs:  src 
 
