@@ -54,7 +54,7 @@ main = do
 
             case decode requestBody of
                 Just (playerObj :: PlayerJson) -> do
-                    liftIO $ putStrLn $ "Received player: " ++ show playerObj
+                    liftIO $ putStrLn $ "Player JSON: " ++ show playerObj
 
                     -- Call createplayer from LoginFunctions
                     liftIO $ createPlayer (pjName playerObj) (pjPassword playerObj)   -- cast Text to String
@@ -66,7 +66,7 @@ main = do
 
             case decode requestBody of
                 Just (playerObj :: PlayerJson) -> do
-                    liftIO $ putStrLn $ "Received player: " ++ show playerObj
+                    liftIO $ putStrLn $ "Player JSON: " ++ show playerObj
 
                     -- Call loginplayer from LoginFunctions
                     liftIO $ loginPlayer (pjName playerObj) (pjPassword playerObj)   -- cast Text to String
@@ -79,7 +79,7 @@ main = do
 
             case decode requestBody of
                 Just (roomObj :: RoomJson) -> do
-                    liftIO $ putStrLn $ "Received room: " ++ show roomObj
+                    liftIO $ putStrLn $ "Room JSON: " ++ show roomObj
 
                     -- Call createRoom from LoginFunctions
                     liftIO $ createRoom  (rjName roomObj) (rjPassword roomObj)   -- cast Text to String
@@ -91,7 +91,7 @@ main = do
 
             case decode requestBody of
                 Just (roomObj :: RoomJson) -> do
-                    liftIO $ putStrLn $ "Received room: " ++ show roomObj
+                    liftIO $ putStrLn $ "Room JSON: " ++ show roomObj
 
                     -- Call createRoom from LoginFunctions
                     liftIO $ loginRoom  (rjName roomObj) (rjPassword roomObj)   -- cast Text to String

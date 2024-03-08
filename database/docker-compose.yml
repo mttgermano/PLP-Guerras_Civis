@@ -14,8 +14,8 @@ services:
       - ./data/postgres:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # Mount the SQL initialization script
 
-  # adminer:
-  #   image: adminer
-  #   restart: always
-  #   ports:
-  #     - 8080:8080
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
