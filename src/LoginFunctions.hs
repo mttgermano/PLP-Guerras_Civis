@@ -17,13 +17,12 @@ import Database.PostgreSQL.Simple.Types (Query(Query))
 
 
 -- Player Data Type
-data Player = Player
-    { pId :: String,
-      pName :: String,
-      pPassword :: String,
-      currentRoom :: Maybe String     -- Represents the presence of the user in a room
-    }
-    deriving (Show, Generic)
+data Player = Player{ 
+    pId :: String,
+    pName :: String,
+    pPassword :: String,
+    currentRoom :: Maybe String     -- Represents the presence of the user in a room
+} deriving (Show, Generic)
 
 -- Convert Player into a tuple for SQL insert
 instance ToRow Player where
@@ -38,9 +37,8 @@ createPlayer player_name player_password = do
     let newPlayer = Player { pId = uuid, pName = player_name, pPassword = player_password, currentRoom = Nothing}
 
     -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "INSERT INTO Player (player_uuid, player_name, player_password, current_room) VALUES (?, ?, ?)"
-    result <- execute conn sqlQuery newPlayer
-    print result
+    let sqlQuery = Query $ BS2.pack "INSERT INTO Player (player_uuid, player_name, player_password, current_room) VALUES (?, ?, ?, ?)"
+    _ <- execute conn sqlQuery newPlayer
     ----------------------------------------------
     close conn
     putStrLn $ "Player created: " ++ show newPlayer

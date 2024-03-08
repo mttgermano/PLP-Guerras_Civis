@@ -1,24 +1,24 @@
 -- Create Rooms Table
 CREATE TABLE Room (
+    room_uuid VARCHAR(36) PRIMARY KEY,
     room_name VARCHAR(50),
-    room_uuid VARCHAR(20) PRIMARY KEY,
     room_password VARCHAR(50)
 );
 
 -- Create User Table
-CREATE TABLE User (
-    user_name VARCHAR(50),
-    user_uuid VARCHAR(20) PRIMARY KEY,
-    user_password VARCHAR(50),
+CREATE TABLE Player (
+    player_uuid VARCHAR(36) PRIMARY KEY,
+    player_name VARCHAR(50),
+    player_password VARCHAR(50),
     current_room VARCHAR(20),
     FOREIGN KEY (current_room) REFERENCES Room(room_uuid)
 );
 
 -- Create User Game Data Table
 CREATE TABLE UserGameData (
+    player_uuid VARCHAR(36),
     character_name VARCHAR(50),
-    user_uuid VARCHAR(20),
     isAlive BOOLEAN,
     votes INT,
-    FOREIGN KEY (user_uuid) REFERENCES User(user_uuid)
+    FOREIGN KEY (player_uuid) REFERENCES Player(player_uuid)
 );

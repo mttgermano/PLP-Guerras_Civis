@@ -17,12 +17,11 @@ import Database.PostgreSQL.Simple.Types (Query(Query))
 
 
 -- Room Data Type 
-data Room = Room
-    { rId :: String,
-      rName :: String,
-      rPassword :: String
-    }
-    deriving (Show, Generic)
+data Room = Room{ 
+    rId :: String,
+    rName :: String,
+    rPassword :: String
+}deriving (Show, Generic)
 
 -- Convert Room into a tuple for SQL insert
 instance ToRow Room where
@@ -37,12 +36,11 @@ createRoom room_name room_password = do
     let newRoom = Room { rId = uuid, rName = room_name, rPassword = room_password}
 
     -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "INSERT INTO Room (room_id, room_name, room_password) VALUES (?, ?, ?)"
-    result <- execute conn sqlQuery newRoom 
-    print result
+    let sqlQuery = Query $ BS2.pack "INSERT INTO Room (room_uuid, room_name, room_password) VALUES (?, ?, ?)"
+    _ <- execute conn sqlQuery newRoom 
     ----------------------------------------------
     close conn
-    putStrLn $ "Room created: " ++ show newRoom 
+    putStrLn $ "Room created: " ++ show newRoom
 
 
 -- Log in a room
