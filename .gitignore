@@ -1,40 +1,40 @@
 # Cabal ---------------------------------------------------------
-dist
-dist-*
-cabal-dev
-*.o
-*.hi
-*.hie
-*.chi
-*.chs.h
-*.dyn_o
-*.dyn_hi
-.hpc
-.hsenv
-.cabal-sandbox/
-cabal.sandbox.config
-*.prof
-*.aux
-*.hp
-*.eventlog
-.stack-work/
-cabal.project.local
-cabal.project.local~
-.HTF/
-.ghc.environment.*
-database/data/
+cabal/dist
+cabal/dist-*
+cabal.cabal-dev
+cabal/*.o
+cabal/*.hi
+cabal/*.hie
+cabal/*.chi
+cabal/*.chs.h
+cabal/*.dyn_o
+cabal/*.dyn_hi
+cabal/.hpc
+cabal/.hsenv
+cabal/.cabal-sandbox/
+cabal/cabal.sandbox.config
+cabal/*.prof
+cabal/*.aux
+cabal/*.hp
+cabal/*.eventlog
+cabal/.stack-work/
+cabal/cabal.project.local
+cabal/cabal.project.local~
+cabal/.HTF/
+cabal/.ghc.environment.*
+cabal/database/data/*
 
 # React ---------------------------------------------------------
 # dependencies
-/node_modules
-/.pnp
+web-app/node_modules
+web-app/.pnp
 .pnp.js
 
 # testing
-/coverage
+web-app/coverage
 
 # production
-/build
+web-app/build
 
 # misc
 .DS_Store
