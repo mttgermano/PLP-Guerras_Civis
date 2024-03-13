@@ -7,8 +7,7 @@ import GameController
 
 import Web.Scotty
 import Data.Aeson (FromJSON(..), ToJSON(..), withObject, (.:), (.=), decode, object)
-
-
+import Network.Wai.Middleware.Cors (cors, simpleHeaders, CorsResourcePolicy(..))
 
 -- Player -------------------------------------------------------
 data PlayerJson = PlayerJson { 
@@ -60,6 +59,16 @@ main = do
     putStrLn "--> Server on port 3000..."
     liftIO $ putStrLn $ replicate 50 '-'
     scotty 3000 $ do
+        middleware $ cors $ const $ Just $ CorsResourcePolicy {
+            corsMethods = ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            corsRequestHeaders = ["Content-Type"],
+            corsExposedHeaders = Nothing,
+            corsOrigins = Nothing,
+            corsMaxAge = Nothing,
+            corsVaryOrigin = True,
+            corsRequireOrigin = False,
+            corsIgnoreFailures = False
+        }
 
         get "/" $ do
             text "Server it's up on port 3000"
@@ -75,7 +84,8 @@ main = do
 
                     -- Call createplayer from LoginFunctions
                     liftIO $ createPlayer (pjName playerObj) (pjPassword playerObj)   -- cast Text to String
-                _ -> text "Invalid player data"
+                --_ -> text "Invalid player data"
+                _ -> json $ object ["error" .= ("Invalid player data" :: String)]
         
         post "/login/login_player/" $ do
             liftIO $ putStrLn $ replicate 50 '-'
