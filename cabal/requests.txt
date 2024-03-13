@@ -1,11 +1,11 @@
 -- create a player
-curl -X POST http://localhost:3000/login/create_player/ -H 'Content-Type: application/json' -d '{"pName": "player_name", "pPassword": "player_password"}'
+curl -X POST http://localhost:3000/login/create_player/ -H 'Content-Type: application/json' -d '{"pName": "john", "pPassword": "pass123"}'
 
 -- login a player
-curl -X POST http://localhost:3000/login/login_player/ -H 'Content-Type: application/json' -d '{"pName": "player_name", "pPassword": "player_password"}'
+curl -X POST http://localhost:3000/login/login_player/ -H 'Content-Type: application/json' -d '{"pName": "john", "pPassword": "pass123"}'
 
 -- create a room
-curl -X POST http://localhost:3000/room/create_room/ -H 'Content-Type: application/json' -d '{"rName": "room_name", "rPassword": "room_password"}'
+curl -X POST http://localhost:3000/room/create_room/ -H 'Content-Type: application/json' -d '{"pName":"john", "rName": "room1", "rPassword": "room123"}'
 
 -- login a room
-curl -X POST http://localhost:3000/room/login_room/ -H 'Content-Type: application/json' -d '{"rName": "room_name", "rPassword": "room_password"}'
+curl -X POST http://localhost:3000/room/login_room/ -H 'Content-Type: application/json' -d '{"rName": "room1", "rPassword": "room123"}'
