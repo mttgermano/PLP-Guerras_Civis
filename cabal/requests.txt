@@ -8,4 +8,5 @@ curl -X POST http://localhost:3000/login/login_player/ -H 'Content-Type: applica
 curl -X POST http://localhost:3000/room/create_room/ -H 'Content-Type: application/json' -d '{"pName":"john", "rName": "room1", "rPassword": "room123"}'
 
 -- login a room
-curl -X POST http://localhost:3000/room/login_room/ -H 'Content-Type: application/json' -d '{"rName": "room1", "rPassword": "room123"}'
+curl -X POST http://localhost:3000/room/login_room/ -H 'Content-Type: application/json' -d '{"pName":"john", "rName": "room1", "rPassword": "room123"}'
+

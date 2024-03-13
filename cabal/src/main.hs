@@ -99,7 +99,7 @@ main = do
                     liftIO $ putStrLn $ "Room JSON: " ++ show roomObj
 
                     -- Call createRoom from LoginFunctions
-                    liftIO $ createRoom (rpjName roomObj)(rjName roomObj) (rjPassword roomObj)   -- cast Text to String
+                    liftIO $ createRoom (rpjName roomObj) (rjName roomObj) (rjPassword roomObj)   -- cast Text to String
                 _ -> text "Invalid room data"
         
         post "/room/login_room/" $ do
@@ -111,7 +111,7 @@ main = do
                     liftIO $ putStrLn $ "Room JSON: " ++ show roomObj
 
                     -- Call createRoom from LoginFunctions
-                    liftIO $ loginRoom (rjName roomObj) (rjPassword roomObj)   -- cast Text to String
+                    liftIO $ loginRoom (rpjName roomObj) (rjName roomObj) (rjPassword roomObj)   -- cast Text to String
                 _ -> text "Invalid room data"
 
         -- Game PAGE --------------------------------------

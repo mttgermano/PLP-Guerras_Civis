@@ -52,7 +52,7 @@ createRoom player_name room_name room_password = do
     }
 
     -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "INSERT INTO Room (room_uuid, room_name, room_password) VALUES (?, ?, ?, ?, ?, ?)"
+    let sqlQuery = Query $ BS2.pack "INSERT INTO Room (room_uuid, room_name, room_password, room_master, is_up, cursed_word  ) VALUES (?, ?, ?, ?, ?, ?)"
     _ <- execute conn sqlQuery newRoom 
     ----------------------------------------------
     close conn
@@ -60,8 +60,8 @@ createRoom player_name room_name room_password = do
 
 
 -- Log in a room
-loginRoom :: String -> String -> IO ()
-loginRoom room_name room_password = do
+loginRoom :: String -> String -> String -> IO ()
+loginRoom player_name room_name room_password = do
     conn <- getDbConnection
 
     -- DB Query ----------------------------------
