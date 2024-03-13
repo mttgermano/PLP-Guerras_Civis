@@ -5,8 +5,7 @@ CREATE TABLE Room (
     room_password   VARCHAR(50),
     room_master     VARCHAR(36),
     is_up           BOOLEAN,
-    cursed_word     VARCHAR(50),
-    FOREIGN KEY (room_master) REFERENCES Player(player_uuid)
+    cursed_word     VARCHAR(50)
 );
 
 -- Create User Table
@@ -24,7 +23,7 @@ CREATE TABLE UserGameData (
     role_idx        INT,
     is_alive        BOOLEAN,
     votes           INT,
-    FOREIGN KEY (player_uuid) REFERENCES Player(player_uuid),
+    FOREIGN KEY (player_uuid) REFERENCES Player(player_uuid)
 );
 
 CREATE TABLE Roles (
@@ -34,29 +33,23 @@ CREATE TABLE Roles (
 );
 
 INSERT INTO Roles (role_idx, role, isGood) VALUES 
-    (1,     "assassin",             0)
-    (2,     "aprendiz",             0)
-    (3,     "paparazzi",            0)
-    (4,     "paralisador",          0)
-    (5,     "silenciador",          0)
-    (6,     "bruxo",                0)
-    (7,     "detetive",             1)
-    (8,     "juiz",                 1)
-    (9,     "policial",             1)
-    (10,    "médico",               1)
-    (11,    "aldeão",               1)
-    (12,    "Espírito Vingativo",   1)
-);
+    (1,     'assassin',             false),
+    (2,     'aprendiz',             false),
+    (3,     'paparazzi',            false),
+    (4,     'paralisador',          false),
+    (5,     'silenciador',          false),
+    (6,     'bruxo',                false),
+    (7,     'detetive',             true),
+    (8,     'juiz',                 true),
+    (9,     'policial',             true),
+    (10,    'médico',               true),
+    (11,    'aldeão',               true),
+    (12,    'Espírito Vingativo',   true);
 
 CREATE TABLE RoleKnowledge (
-    who_knows       VARCHAR(36) PRIMARY KEY,
-    who_is_known    VARCHAR(36) PRIMARY KEY,
+    who_knows       VARCHAR(36),
+    who_is_known    VARCHAR(36),
     FOREIGN KEY (who_knows)     REFERENCES Player(player_uuid),
-    FOREIGN KEY (who_is_known)  REFERENCES Player(player_uuid)
+    FOREIGN KEY (who_is_known)  REFERENCES Player(player_uuid),
+    PRIMARY KEY (who_knows, who_is_known)
 );
-
-
-
-pedro       matheus
-pedro       victor
-pedro
