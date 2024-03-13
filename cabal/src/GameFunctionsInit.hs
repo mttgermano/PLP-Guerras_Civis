@@ -11,13 +11,6 @@ import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.Types (Query(Query))
 
 
--- data Room = Room{ 
---     roomName :: String,
---     roomMaster :: String
--- }
--- 
--- instance FromRow Room where
---     fromRow = Room <$> field <*> field
 
 -- Set the Role of a Player
 setRole :: String -> String -> IO ()
@@ -70,6 +63,7 @@ distributeRoles rName = do
     zipWithM_ (\player roleIndex -> setRole player (show roleIndex)) room_players roles_index
 
     putStrLn $ replicate (length action) '-'
+
 
 -- Check if the player is the room master
 isRoomMaster :: String -> String -> IO Bool

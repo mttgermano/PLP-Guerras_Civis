@@ -7,7 +7,7 @@ import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.Types (Query(Query))
 
 
-
+-- Get the list of all evil players in a room
 getRoomPlayersEvil :: String -> IO [String]
 getRoomPlayersEvil rName = do
     conn <- getDbConnection
@@ -24,6 +24,7 @@ getRoomPlayersEvil rName = do
     return $ map (\(Only player_uuid) -> player_uuid) result
 
 
+-- Get the list of all good players in a room
 getRoomPlayersGood :: String -> IO [String]
 getRoomPlayersGood rName = do
     conn <- getDbConnection
@@ -40,6 +41,7 @@ getRoomPlayersGood rName = do
     return $ map (\(Only player_uuid) -> player_uuid) result
 
 
+-- Run the evil guys round
 actionEvilRound :: String -> IO ()
 actionEvilRound rName = do
     putStrLn $ "Começando Round Mafiosos no " ++ (rName)
@@ -51,6 +53,7 @@ actionEvilRound rName = do
     putStrLn $ "Terminou Round Mafiosos no " ++ (rName)
 
 
+-- Run the good guys round
 actionGoodRound :: String -> IO ()
 actionGoodRound rName = do
     putStrLn $ "Começando Round Civis no " ++ (rName)
