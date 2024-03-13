@@ -61,7 +61,10 @@ library
         aeson,
         scotty,
         text,
-        random
+        random,
+        wai-extra,
+        http-types,
+        wai-cors
 
     -- Directories containing source files.
     hs-source-dirs:   src
@@ -84,7 +87,10 @@ executable PLP-Guerras-Civis
         aeson,
         scotty,
         text,
-        random
+        random,
+        wai-extra,
+        http-types,
+        wai-cors
 
     other-modules:
         CharacterFunctions,
