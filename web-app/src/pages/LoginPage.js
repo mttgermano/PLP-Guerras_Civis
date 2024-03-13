@@ -15,25 +15,30 @@ const LoginPage = () => {
   const loginPlayer = () => {
     // Create a JSON object with username and password
     const userData = {
-      username: username,
-      password: password
+      pName: username,
+      pPassword: password
     };
 
     // Send JSON request to endpoint
-    fetch('http://localhost:3000/login/login_player', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(userData)
+    fetch('http://localhost:3000/login/create_player', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(userData)
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
     .then(data => {
-      // Handle response from server
-      console.log(data);
+        // Handle response from server
+        console.log(data);
     })
     .catch(error => {
-      console.error('Error:', error);
+        console.error('Error:', error);
     });
   };
 
