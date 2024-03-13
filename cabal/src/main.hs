@@ -3,6 +3,7 @@ module Main where
 
 import LoginFunctions
 import RoomFunctions
+import GameController
 
 import Web.Scotty
 import Data.Aeson (FromJSON(..), ToJSON(..), withObject, (.:), (.=), decode, object)
@@ -25,19 +26,35 @@ instance ToJSON PlayerJson where
 
 -- Room ---------------------------------------------------------
 data RoomJson = RoomJson{ 
+    rpjName :: String,
     rjName :: String,
     rjPassword :: String
 } deriving (Show)
 
 instance FromJSON RoomJson where
     parseJSON = withObject "room" $ \v ->
-        RoomJson <$> v .: "rName" <*> v .: "rPassword"
+        RoomJson <$> v .: "pName" <*> v .: "rName" <*> v .: "rPassword"
 
 instance ToJSON RoomJson where
-    toJSON (RoomJson name password) =
-        object ["rName" .= name, "rPassword" .= password]
+    toJSON (RoomJson player_name room_name room_password) =
+        object ["pName" .= player_name, "rName" .= room_name, "rPassword" .= room_password]
+
+-- Game ---------------------------------------------------------
+data GameJson = GameJson{
+    grjName :: String,
+    gpjName :: String
+} deriving (Show)
+
+instance FromJSON GameJson where
+    parseJSON = withObject "game" $ \v ->
+        GameJson <$> v .: "rName" <*> v .:"pName"
+
+instance ToJSON GameJson where
+    toJSON (GameJson rname pname) =
+        object ["rName" .= rname, "pName" .= pname]
 
 
+-- Main ---------------------------------------------------------
 main :: IO ()
 main = do
     putStrLn "--> Server on port 3000..."
@@ -82,7 +99,7 @@ main = do
                     liftIO $ putStrLn $ "Room JSON: " ++ show roomObj
 
                     -- Call createRoom from LoginFunctions
-                    liftIO $ createRoom  (rjName roomObj) (rjPassword roomObj)   -- cast Text to String
+                    liftIO $ createRoom (rpjName roomObj)(rjName roomObj) (rjPassword roomObj)   -- cast Text to String
                 _ -> text "Invalid room data"
         
         post "/room/login_room/" $ do
@@ -94,7 +111,20 @@ main = do
                     liftIO $ putStrLn $ "Room JSON: " ++ show roomObj
 
                     -- Call createRoom from LoginFunctions
-                    liftIO $ loginRoom  (rjName roomObj) (rjPassword roomObj)   -- cast Text to String
+                    liftIO $ loginRoom (rjName roomObj) (rjPassword roomObj)   -- cast Text to String
                 _ -> text "Invalid room data"
 
         -- Game PAGE --------------------------------------
+        post "/game/start/" $ do
+            liftIO $ putStrLn $ replicate 50 '-'
+            requestBody <- body
+
+            case decode requestBody of
+                Just (gameObj :: GameJson) -> do
+                    liftIO $ putStrLn $ "Game JSON: " ++ show gameObj
+
+                    -- Call createRoom from LoginFunctions
+                    liftIO $ startGame (grjName gameObj) (gpjName gameObj)   -- cast Text to String
+                _ -> text "Invalid game data"
+
+        -- TODO rota post para acabar o game

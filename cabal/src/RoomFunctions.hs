@@ -20,23 +20,39 @@ import Database.PostgreSQL.Simple.Types (Query(Query))
 data Room = Room{ 
     rId :: String,
     rName :: String,
-    rPassword :: String
+    rPassword :: String,
+    rMaster :: String,
+    isUp :: Bool,
+    cursedWord :: Maybe String
 }deriving (Show, Generic)
 
 -- Convert Room into a tuple for SQL insert
 instance ToRow Room where
-    toRow room = [toField (rId room), toField (rName room), toField (rPassword room)]
+    toRow room = [ 
+        toField (rId room), 
+        toField (rName room), 
+        toField (rPassword room), 
+        toField (rMaster room), 
+        toField (isUp room), 
+        toField (cursedWord room)]
 
 -- Create a room in the database
-createRoom :: String -> String -> IO ()
-createRoom room_name room_password = do
+createRoom :: String -> String -> String -> IO ()
+createRoom player_name room_name room_password = do
     uuid <- fmap toString nextRandom    -- Generate random UUID
     conn <- getDbConnection
 
-    let newRoom = Room { rId = uuid, rName = room_name, rPassword = room_password}
+    let newRoom = Room { 
+        rId = uuid, 
+        rName = room_name,
+        rPassword = room_password, 
+        rMaster = player_name,
+        isUp = False,
+        cursedWord = Nothing
+    }
 
     -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "INSERT INTO Room (room_uuid, room_name, room_password) VALUES (?, ?, ?)"
+    let sqlQuery = Query $ BS2.pack "INSERT INTO Room (room_uuid, room_name, room_password) VALUES (?, ?, ?, ?, ?, ?)"
     _ <- execute conn sqlQuery newRoom 
     ----------------------------------------------
     close conn
