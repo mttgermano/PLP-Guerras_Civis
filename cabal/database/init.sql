@@ -19,10 +19,14 @@ CREATE TABLE Player (
 
 -- Create User Game Data Table
 CREATE TABLE UserGameData (
-    player_uuid     VARCHAR(36),
-    role_idx        INT,
-    is_alive        BOOLEAN,
-    votes           INT,
+    player_uuid             VARCHAR(36),
+    role_idx                INT,
+    is_alive                BOOLEAN,
+    votes                   INT,
+    kill_vote               INT,
+    is_paralized            BOOLEAN,
+    is_silenced             BOOLEAN,
+    is_dead_by_cursed_word  BOOLEAN,
     FOREIGN KEY (player_uuid) REFERENCES Player(player_uuid)
 );
 
@@ -33,7 +37,7 @@ CREATE TABLE Roles (
 );
 
 INSERT INTO Roles (role_idx, role, isGood) VALUES 
-    (1,     'assassin',             false),
+    (1,     'assassino',            false),
     (2,     'aprendiz',             false),
     (3,     'paparazzi',            false),
     (4,     'paralisador',          false),
@@ -42,9 +46,9 @@ INSERT INTO Roles (role_idx, role, isGood) VALUES
     (7,     'detetive',             true),
     (8,     'juiz',                 true),
     (9,     'policial',             true),
-    (10,    'médico',               true),
-    (11,    'aldeão',               true),
-    (12,    'Espírito Vingativo',   true);
+    (10,    'medico',               true),
+    (11,    'aldeao',               true),
+    (12,    'espirito_vingativo',   true);
 
 CREATE TABLE RoleKnowledge (
     who_knows       VARCHAR(36),

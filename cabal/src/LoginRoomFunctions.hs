@@ -1,6 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
 -- module RoomFunctions (createRoom, loginRoom) where
-module RoomFunctions where
+module LoginRoomFunctions where
 import DbFunctions
 
 import GHC.Generics
@@ -56,7 +56,7 @@ createRoom player_name room_name room_password = do
     _ <- execute conn sqlQuery newRoom 
     ----------------------------------------------
     close conn
-    putStrLn $ "Room created: " ++ show newRoom
+    putStrLn $ ("> Room created: " ++ show newRoom)
 
 
 -- Log in a room
@@ -72,5 +72,5 @@ loginRoom player_name room_name room_password = do
 
     -- Check if the query returned any rows
     if null result
-        then putStrLn "Invalid room name or password."
-        else putStrLn "Room login successful."
+        then putStrLn "> Invalid room name or password."
+        else putStrLn ("> Room [" ++ room_name ++ "] login successful.")

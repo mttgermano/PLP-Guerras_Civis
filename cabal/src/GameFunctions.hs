@@ -2,10 +2,7 @@ module GameFunctions where
 import DbFunctions
 
 import GHC.Generics
-import Data.Aeson
-import Data.List (permutations)
 
-import qualified Data.ByteString.Lazy.Char8 as BS1
 import qualified Data.ByteString.Char8 as BS2
 
 import Database.PostgreSQL.Simple
@@ -52,5 +49,5 @@ incrementVote pName pName_voted = do
     let sqlQuery = Query $ BS2.pack "UPDATE UserGameData SET votes = votes + 1 WHERE user_id = ?"
     result <- execute conn sqlQuery (Only pName_voted)
     ----------------------------------------------
-    putStrLn $ "> Vote incremented for user [" ++ (pName_voted) ++ "]"
+    putStrLn $ ("> Voto incrementado para user [" ++ (pName_voted) ++ "]")
     close conn

@@ -21,7 +21,7 @@ setRole pName role = do
     let sqlQuery = Query $ BS2.pack "UPDATE UserGameData SET role = ? WHERE user_id = ?"
     result <- execute conn sqlQuery (role, pName)
     ----------------------------------------------
-    putStrLn $ "> User [" ++ (pName) ++ "] was setted to [" ++ (role) ++ "]"
+    putStrLn $ ("> User [" ++ (pName) ++ "] foi settado para [" ++ (role) ++ "]")
     close conn
 
 

@@ -1,8 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
 
-import LoginFunctions
-import RoomFunctions
+import LoginPlayerFunctions
+import LoginRoomFunctions
 import GameController
 
 import Web.Scotty
@@ -52,6 +52,21 @@ instance ToJSON GameJson where
     toJSON (GameJson rname pname) =
         object ["rName" .= rname, "pName" .= pname]
 
+-- Game Action --------------------------------------------------
+data ActionJson = ActionJson{
+    paName      :: String,
+    action      :: String,
+    aReciever   :: String
+} deriving (Show)
+
+instance FromJSON ActionJson where
+    parseJSON = withObject "action" $ \v ->
+        ActionJson <$> v .: "paName" <*> v .:"action" <*> v .:"aReciever"
+
+instance ToJSON ActionJson where
+    toJSON (ActionJson pName action aReciever) =
+        object ["pName" .= pName, "action" .= action, "aReciever" .= aReciever]
+
 
 -- Main ---------------------------------------------------------
 main :: IO ()
@@ -71,7 +86,7 @@ main = do
         }
 
         get "/" $ do
-            text "Server it's up on port 3000"
+            text "> Server it's up on port 3000"
 
         -- LOGIN PAGE ------------------------------------
         post "/login/create_player/" $ do
@@ -80,7 +95,7 @@ main = do
 
             case decode requestBody of
                 Just (playerObj :: PlayerJson) -> do
-                    liftIO $ putStrLn $ "Player JSON: " ++ show playerObj
+                    liftIO $ putStrLn $ "JSON [player]: " ++ show playerObj
 
                     -- Call createplayer from LoginFunctions
                     liftIO $ createPlayer (pjName playerObj) (pjPassword playerObj)   -- cast Text to String
@@ -93,7 +108,7 @@ main = do
 
             case decode requestBody of
                 Just (playerObj :: PlayerJson) -> do
-                    liftIO $ putStrLn $ "Player JSON: " ++ show playerObj
+                    liftIO $ putStrLn $ "JSON [player]: " ++ show playerObj
 
                     -- Call loginplayer from LoginFunctions
                     liftIO $ loginPlayer (pjName playerObj) (pjPassword playerObj)   -- cast Text to String
@@ -106,7 +121,7 @@ main = do
 
             case decode requestBody of
                 Just (roomObj :: RoomJson) -> do
-                    liftIO $ putStrLn $ "Room JSON: " ++ show roomObj
+                    liftIO $ putStrLn $ "JSON [room]: " ++ show roomObj
 
                     -- Call createRoom from LoginFunctions
                     liftIO $ createRoom (rpjName roomObj) (rjName roomObj) (rjPassword roomObj)   -- cast Text to String
@@ -118,7 +133,7 @@ main = do
 
             case decode requestBody of
                 Just (roomObj :: RoomJson) -> do
-                    liftIO $ putStrLn $ "Room JSON: " ++ show roomObj
+                    liftIO $ putStrLn $ "JSON [room]: " ++ show roomObj
 
                     -- Call createRoom from LoginFunctions
                     liftIO $ loginRoom (rpjName roomObj) (rjName roomObj) (rjPassword roomObj)   -- cast Text to String
@@ -131,10 +146,23 @@ main = do
 
             case decode requestBody of
                 Just (gameObj :: GameJson) -> do
-                    liftIO $ putStrLn $ "Game JSON: " ++ show gameObj
+                    liftIO $ putStrLn $ "JSON [game]: " ++ show gameObj
 
                     -- Call createRoom from LoginFunctions
                     liftIO $ startGame (grjName gameObj) (gpjName gameObj)   -- cast Text to String
+                _ -> text "Invalid game data"
+
+
+        post "/game/running/action/" $ do
+            liftIO $ putStrLn $ replicate 50 '-'
+            requestBody <- body
+
+            case decode requestBody of
+                Just (actionObj :: ActionJson) -> do
+                    liftIO $ putStrLn $ "JSON [game]: " ++ show actionObj
+
+                    -- Call createRoom from LoginFunctions
+                    liftIO $ makeAction (paName actionObj) (action actionObj) (aReciever actionObj)  -- cast Text to String
                 _ -> text "Invalid game data"
 
         -- TODO rota post para acabar o game

@@ -3,6 +3,7 @@ module GameController where
 import GameFunctions
 import GameFunctionsInit
 import GameRoundController
+import GameRoleFunctions
 
 
 
@@ -28,19 +29,35 @@ startGame rName pName = do
 
     if roomMaster
         then do
-            putStrLn $ "The " ++ rName ++ " game started!"
+            putStrLn $ ("> The [" ++ rName ++ "] game started!")
             distributeRoles rName
             game rName 0 6 6
-        else putStrLn "You are not the room master."
+        else putStrLn "Você não é o room master."
 
 
 -- Finish the game
 -- TODO
 endGame :: String -> String -> IO ()
 endGame rName reason = do
-    putStrLn $ "The " ++ (rName) ++ " game finished!"
+    putStrLn $ ("> O jogo [" ++ (rName) ++ "] acabou!")
     -- make post request to the front end, saying that it need to go to the endGame page
 
 -- Make the Game Rounds
 makeRound :: String -> IO ()
 makeRound rName = runRound rName
+
+-- Vote for a player
+vote :: String -> String -> IO ()
+vote pName pName_voted = incrementVote pName pName_voted
+
+makeAction :: String -> String -> String -> IO ()
+makeAction agent action action_reciever 
+    | action == "vote"          = vote      agent action_reciever 
+    | action == "kill"          = kill      agent action_reciever
+    | action == "save"          = save      agent action_reciever 
+    | action == "search"        = search    agent action_reciever 
+    | action == "reveal"        = reveal    agent action_reciever 
+    | action == "silence"       = silence   agent action_reciever 
+    | action == "paralize"      = paralize      agent action_reciever 
+    | action == "curse_word"    = setCursedWord agent action_reciever 
+    | otherwise                 = putStrLn $ "Invalid Action"

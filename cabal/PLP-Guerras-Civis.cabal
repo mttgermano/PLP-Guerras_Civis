@@ -37,12 +37,15 @@ library
 
     -- Modules exported by the library.
     exposed-modules:  
-        CharacterFunctions,
-        ChatFunctions,
+        DbFunctions,
+        GameController,
         GameFunctions,
-        LoginFunctions,
-        RoomFunctions,
-        DbFunctions
+        GameFunctionsInit,
+        GameRoleFunctions,
+        GameRoundController,
+        GameRoundFunctions,
+        LoginPlayerFunctions,
+        LoginRoomFunctions
 
     -- Modules included in this library but not exported.
     -- other-modules:
@@ -93,12 +96,15 @@ executable PLP-Guerras-Civis
         wai-cors
 
     other-modules:
-        CharacterFunctions,
-        ChatFunctions,
+        DbFunctions,
+        GameController,
         GameFunctions,
-        LoginFunctions,
-        RoomFunctions,
-        DbFunctions
+        GameFunctionsInit,
+        GameRoleFunctions,
+        GameRoundController,
+        GameRoundFunctions,
+        LoginPlayerFunctions,
+        LoginRoomFunctions
 
     -- Directories containing source files.
     hs-source-dirs:  src 

@@ -11,9 +11,9 @@ actionRound rName = do
 -- Run the Round which the users can vote
 voteRound :: String -> IO ()
 voteRound rName = do
-    putStrLn $ "Começando Round da Votação no " ++ (rName)
+    putStrLn $ ("> Começando Round da Votação  [" ++ (rName) ++ "]")
     -- todo 
-    putStrLn $ "Término Round da Votação no " ++ (rName)
+    putStrLn $ ("> Término Round da Votação  [" ++ (rName) ++ "]")
 
 -- Run all the sequence of rounds
 runRound :: String -> IO ()
