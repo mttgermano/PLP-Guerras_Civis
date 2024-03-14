@@ -1,4 +1,5 @@
 module GameFunctions where
+import GameRoundFunctions
 import DbFunctions
 
 import GHC.Generics
