@@ -42,10 +42,12 @@ library
         GameFunctions,
         GameFunctionsInit,
         GameRoleFunctions,
+        GameChatFunctions,
         GameRoundController,
         GameRoundFunctions,
         LoginPlayerFunctions,
-        LoginRoomFunctions
+        LoginRoomFunctions,
+        BackendServer
 
     -- Modules included in this library but not exported.
     -- other-modules:
@@ -101,10 +103,12 @@ executable PLP-Guerras-Civis
         GameFunctions,
         GameFunctionsInit,
         GameRoleFunctions,
+        GameChatFunctions,
         GameRoundController,
         GameRoundFunctions,
         LoginPlayerFunctions,
-        LoginRoomFunctions
+        LoginRoomFunctions,
+        BackendServer
 
     -- Directories containing source files.
     hs-source-dirs:  src 

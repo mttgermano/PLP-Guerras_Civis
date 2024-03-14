@@ -5,7 +5,8 @@ CREATE TABLE Room (
     room_password   VARCHAR(50),
     room_master     VARCHAR(36),
     is_up           BOOLEAN,
-    cursed_word     VARCHAR(50)
+    cursed_word     VARCHAR(50),
+    round_messages  VARCHAR()
 );
 
 -- Create User Table

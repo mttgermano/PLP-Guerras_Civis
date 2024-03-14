@@ -4,6 +4,7 @@ import GameFunctions
 import GameFunctionsInit
 import GameRoundController
 import GameRoleFunctions
+import GameChatFunctions
 
 
 
@@ -50,6 +51,7 @@ makeRound rName = runRound rName
 vote :: String -> String -> IO ()
 vote pName pName_voted = incrementVote pName pName_voted
 
+-- Make an Round Action
 makeAction :: String -> String -> String -> IO ()
 makeAction agent action action_reciever 
     | action == "vote"          = vote      agent action_reciever 
@@ -61,3 +63,7 @@ makeAction agent action action_reciever
     | action == "paralize"      = paralize      agent action_reciever 
     | action == "curse_word"    = setCursedWord agent action_reciever 
     | otherwise                 = putStrLn $ "Invalid Action"
+
+-- Sebnd a message to a chat
+makeMessage :: String -> String -> String -> IO ()
+makeMessage chaType player msg = sendMessage chaType player msg
