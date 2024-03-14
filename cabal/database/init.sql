@@ -11,6 +11,7 @@ CREATE TABLE Room (
 
 -- Create User Table
 CREATE TABLE Player (
+    is_bot BOOLEAN,
     player_uuid     VARCHAR(36) PRIMARY KEY,
     player_name     VARCHAR(50),
     player_password VARCHAR(50),
