@@ -53,18 +53,11 @@ incrementVote pName pName_voted = do
     close conn
 
 
--- Get player name from id
-getPlayerFromID :: String -> IO (Maybe String)
-getPlayerFromID playerId = do
-    conn <- getDbConnection
+-- Return a list with the players names
+getPlayersNames :: [Int] -> IO [Maybe String]
+getPlayersNames [] = return []
+getPlayersNames (id:ids) = do
+    maybeName <- getPlayerFromID (show id)
+    rest <- getPlayersNames ids
+    return (maybeName : rest)
 
-    -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "\
-               \SELECT p.player_name \
-               \FROM Player p \
-               \WHERE p.player_uuid = ?;"
-    result <- query conn sqlQuery (Only playerId)
-    ----------------------------------------------
-    case result of
-        [Only playerName] -> return (Just playerName)
-        _ -> return Nothing
