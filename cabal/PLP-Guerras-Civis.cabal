@@ -37,12 +37,17 @@ library
 
     -- Modules exported by the library.
     exposed-modules:  
-        CharacterFunctions,
-        ChatFunctions,
+        DbFunctions,
+        GameController,
         GameFunctions,
-        LoginFunctions,
-        RoomFunctions,
-        DbFunctions
+        GameFunctionsInit,
+        GameRoleFunctions,
+        GameChatFunctions,
+        GameRoundController,
+        GameRoundFunctions,
+        LoginPlayerFunctions,
+        LoginRoomFunctions,
+        BackendServer
 
     -- Modules included in this library but not exported.
     -- other-modules:
@@ -60,7 +65,11 @@ library
         bytestring,
         aeson,
         scotty,
-        text
+        text,
+        random,
+        wai-extra,
+        http-types,
+        wai-cors
 
     -- Directories containing source files.
     hs-source-dirs:   src
@@ -82,15 +91,24 @@ executable PLP-Guerras-Civis
         bytestring,
         aeson,
         scotty,
-        text
+        text,
+        random,
+        wai-extra,
+        http-types,
+        wai-cors
 
     other-modules:
-        CharacterFunctions,
-        ChatFunctions,
+        DbFunctions,
+        GameController,
         GameFunctions,
-        LoginFunctions,
-        RoomFunctions,
-        DbFunctions
+        GameFunctionsInit,
+        GameRoleFunctions,
+        GameChatFunctions,
+        GameRoundController,
+        GameRoundFunctions,
+        LoginPlayerFunctions,
+        LoginRoomFunctions,
+        BackendServer
 
     -- Directories containing source files.
     hs-source-dirs:  src 

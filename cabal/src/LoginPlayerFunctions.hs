@@ -1,6 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
 --module LoginFunctions (createPlayer, loginPlayer) where
-module LoginFunctions where
+module LoginPlayerFunctions where
 import DbFunctions
 
 import GHC.Generics
@@ -41,7 +41,7 @@ createPlayer player_name player_password = do
     _ <- execute conn sqlQuery newPlayer
     ----------------------------------------------
     close conn
-    putStrLn $ "Player created: " ++ show newPlayer
+    putStrLn $ ("> Player created [" ++ show newPlayer ++ "]")
 
 
 -- Log in a player
@@ -57,5 +57,5 @@ loginPlayer player_name player_password = do
 
     -- Check if the query returned any rows
     if null result
-        then putStrLn "Invalid playername or password."
-        else putStrLn "Login successful."
+        then putStrLn "> Invalid playername or password."
+        else putStrLn ("> Login [" ++ player_name ++"] successful.")
