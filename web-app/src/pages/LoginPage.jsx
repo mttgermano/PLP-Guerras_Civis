@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useRouter } from "react-router-dom";
 
 import { UserContext } from '../contexts/userContext';
@@ -10,7 +10,7 @@ const LoginPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const { setCurrentUser } = UserContext(UserContext);
+  const { setCurrentUser } = useContext(UserContext);
 
   const router = useRouter();
 

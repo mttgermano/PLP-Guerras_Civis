@@ -1,11 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { useLocation } from "react-router-dom";
-import '../css/room.css';
+
+import { UserContext } from '../contexts/userContext';
+
 import { api } from '../services/api';
+
+import '../css/room.css';
 
 const RoomPage = () => {
     const [players, setPlayers] = useState([]);
-    const [currentPlayer, setCurrentPlayer] = useState({});
+    const { currentUser } = useContext(UserContext);
 
     useEffect(() => {
         const fetchPlayers = async () => {
