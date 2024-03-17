@@ -1,13 +1,22 @@
 import React, { useState } from 'react';
+import { useRouter } from "react-router-dom";
+
+import { UserContext } from '../contexts/userContext';
+
 import { api } from '../services/api';
+
 import '../css/user-auth.css';
 
 const RegisterPage = () => {
-  const [username, setUsername] = useState('');
+  const [pName, setPName] = useState('');
   const [password, setPassword] = useState('');
 
+  const { setCurrentUser } = UserContext(UserContext);
+
+  const router = useRouter();
+
   const handleUsernameChange = (event) => {
-    setUsername(event.target.value);
+    setPName(event.target.value);
   };
 
   const handlePasswordChange = (event) => {
@@ -17,7 +26,7 @@ const RegisterPage = () => {
   const registerPlayer = async () => {
     // Create a JSON object with username and password
     const userData = {
-      username: username,
+      pName: pName,
       password: password
     };
 
@@ -27,7 +36,13 @@ const RegisterPage = () => {
         'Content-Type': 'application/json'
       }
     })
-      .then(response => response.data)
+      .then(response => {
+        console.log(response.data)
+        setCurrentUser(response.data);
+
+        // redirects the user to room
+        router.push("/room/home")
+      })
       .catch(error => {
         console.error('Error:', error);
       });
@@ -59,10 +74,10 @@ const RegisterPage = () => {
             <div className="underline-title"></div>
           </div>
           <form method="post" className="form">
-            <label for="username" style={{ paddingTop: "13px" }}>Username</label>
-            <input id="username" type="text" className="form-input" value={username} onChange={handleUsernameChange} />
+            <label htmlFor="username" style={{ paddingTop: "13px" }}>Username</label>
+            <input id="username" type="text" className="form-input" value={pName} onChange={handleUsernameChange} />
 
-            <label for="password" style={{ paddingTop: "22px" }} type="password">Password</label>
+            <label htmlFor="password" style={{ paddingTop: "22px" }} type="password">Password</label>
             <input id="password" type="password" className="form-input" value={password} onChange={handlePasswordChange} />
 
             <button className="form-button" onClick={registerPlayer}>REGISTER</button>
