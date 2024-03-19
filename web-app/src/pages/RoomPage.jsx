@@ -40,10 +40,27 @@ const RoomPage = () => {
 
     return (
         <div className='container'>
-            <div className="chat-container">
-                <h1 className='chat-title'>Global chat</h1>
-                <input className="chat-input" type="text" placeholder='Message' />
+            <div className="left-container">
+                <div className='infos'>
+                    <div className='infos-data'>
+                        <span className='infos-data-subtitle'>Round:</span>
+                        <strong className='infos-data-title'>1</strong>
+                    </div>
+                    <div className='infos-data'>
+                        <span className='infos-data-subtitle'>Period:</span>
+                        <strong className='infos-data-title'>Day</strong>
+                    </div>
+                    <div className='infos-data'>
+                        <span className='infos-data-subtitle'>Players alive:</span>
+                        <strong className='infos-data-title'>12</strong>
+                    </div>
+                </div>
+                <div className="chat-container">
+                    <h1 className='chat-title'>Global chat</h1>
+                    <input className="chat-input" type="text" placeholder='Message' />
+                </div>
             </div>
+
             <div className="players-container">
                 <div className='player-card'>
                     <span className="player-name">Username</span>
