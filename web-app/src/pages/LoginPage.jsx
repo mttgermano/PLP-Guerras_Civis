@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { useRouter } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { UserContext } from '../contexts/userContext';
 import { api } from '../services/api';
@@ -12,7 +12,7 @@ const LoginPage = () => {
 
   const { setCurrentUser } = useContext(UserContext);
 
-  const router = useRouter();
+  const navigate = useNavigate();
 
   const handleUsernameChange = (event) => {
     setUsername(event.target.value);
@@ -42,7 +42,7 @@ const LoginPage = () => {
         setCurrentUser(response.data)
 
         // redirects user to room
-        router.push("/room/home")
+        navigate("/room/home");
       })
       .catch(error => {
         console.error('Error:', error);
@@ -83,7 +83,7 @@ const LoginPage = () => {
             <label htmlFor="password" style={{ paddingTop: "22px" }} type="password">Password</label>
             <input id="password" type="password" className="form-input" value={password} onChange={handlePasswordChange} />
 
-            <button className="form-button" onClick={loginPlayer}>Login</button>
+            <button className="form-button" onClick={loginPlayer}>LOGIN</button>
           </form>
           <a className="change-auth" href="/login/create_player">Don't you have an account yet?</a>
         </div>

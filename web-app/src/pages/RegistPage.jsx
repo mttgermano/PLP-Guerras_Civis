@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useRouter } from "react-router-dom";
+import React, { useState, useContext } from 'react';
+import { useNavigate } from "react-router-dom";
 
 import { UserContext } from '../contexts/userContext';
 
@@ -11,9 +11,9 @@ const RegisterPage = () => {
   const [pName, setPName] = useState('');
   const [password, setPassword] = useState('');
 
-  const { setCurrentUser } = UserContext(UserContext);
+  const { setCurrentUser } = useContext(UserContext);
 
-  const router = useRouter();
+  const navigate = useNavigate();
 
   const handleUsernameChange = (event) => {
     setPName(event.target.value);
@@ -41,7 +41,7 @@ const RegisterPage = () => {
         setCurrentUser(response.data);
 
         // redirects the user to room
-        router.push("/room/home")
+        navigate("/room/home")
       })
       .catch(error => {
         console.error('Error:', error);
