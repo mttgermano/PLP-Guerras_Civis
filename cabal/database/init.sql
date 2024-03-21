@@ -1,4 +1,5 @@
 -- Create Rooms Table
+
 CREATE TABLE Room (
     room_uuid       VARCHAR(36) PRIMARY KEY,
     room_name       VARCHAR(50),
@@ -6,9 +7,8 @@ CREATE TABLE Room (
     room_master     VARCHAR(36),
     is_up           BOOLEAN,
     cursed_word     VARCHAR(50),
-    round_messages  VARCHAR()
+    round_messages  VARCHAR(255)  -- Specify a length for the round_messages column
 );
-
 -- Create User Table
 CREATE TABLE Player (
     is_bot BOOLEAN,
