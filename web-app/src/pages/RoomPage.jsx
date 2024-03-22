@@ -39,7 +39,7 @@ const RoomPage = () => {
     // )
 
     return (
-        <div className='container'>
+        <div className='room-container'>
             <div className="left-container">
                 <div className='infos'>
                     <div className='infos-data'>

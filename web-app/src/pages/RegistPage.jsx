@@ -66,9 +66,9 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className='container'>
+    <div className='auth-container'>
       <div className="card">
-        <div className="card-content">
+        <div className="auth-card-content">
           <div className="card-title">
             <h2>REGISTER</h2>
             <div className="underline-title"></div>
