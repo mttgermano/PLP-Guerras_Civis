@@ -50,3 +50,8 @@ botBrain rName = do
 
 
     vote botName usuario
+
+nameCountReferences :: String -> [String] -> Int
+nameCountReferences player playersNames
+    | null playersNames = 0 -- logica para votação randonica --------
+    | otherwise = length (filter(== player)playersNames)
