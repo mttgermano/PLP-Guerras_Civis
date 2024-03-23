@@ -1,4 +1,5 @@
 module GameFunctions where
+import GameRoundFunctions
 import DbFunctions
 
 import GHC.Generics
@@ -51,3 +52,13 @@ incrementVote pName pName_voted = do
     ----------------------------------------------
     putStrLn $ ("> Voto incrementado para user [" ++ (pName_voted) ++ "]")
     close conn
+
+
+-- Return a list with the players names
+getPlayersNames :: [Int] -> IO [Maybe String]
+getPlayersNames [] = return []
+getPlayersNames (id:ids) = do
+    maybeName <- getPlayerFromID (show id)
+    rest <- getPlayersNames ids
+    return (maybeName : rest)
+

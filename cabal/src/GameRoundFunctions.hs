@@ -63,3 +63,21 @@ actionGoodRound rName = do
     -- deixa rodar por 2 min
     -- desfaz a acao
     putStrLn $ ("> Terminou Round Civis [" ++ (rName) ++ "]")
+
+
+-- Get player name from id
+getPlayerFromID :: String -> IO (Maybe String)
+getPlayerFromID playerId = do
+    conn <- getDbConnection
+
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "\
+               \SELECT p.player_name \
+               \FROM Player p \
+               \WHERE p.player_uuid = ?;"
+    result <- query conn sqlQuery (Only playerId)
+    ----------------------------------------------
+    case result of
+        [Only playerName] -> return (Just playerName)
+        _ -> return Nothing
+
