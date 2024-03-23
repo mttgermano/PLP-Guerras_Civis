@@ -38,14 +38,17 @@ createBots quant rName = do
         ----------------------------------------------
         close conn
         putStrLn $ "Bot created: " ++ show newBot
+        createBots quant-1 rName
 
 
-botBrain :: String -> IO ()
-botBrain rName = do
+botBrain :: String -> String -> IO ()
+botBrain rName messages = do
     players <- getRoomPlayers rName
 
     playersNames <- getPlayersNames players
 
+    let allWords = words  messages
+    let references = countReferencesForAll allWords playersNames
     conn <- getDbConnection
 
     -- DB Query ----------------------------------
@@ -58,7 +61,13 @@ botBrain rName = do
 
     vote botName usuario
 
-nameCountReferences :: String -> [String] -> Int
+
+countReferencesForAll :: String -> [String] -> [Int]
+countReferencesForAll _ [] = []
+countReferencesForAll names (x:xs) = nameCountReferences x names : countReferencesForAll names xs
+
+
+nameCountReferences :: String -> [String]-> Int
 nameCountReferences player playersNames
-    | null playersNames = 0 -- logica para votação randonica --------
+    | null playersNames = 0
     | otherwise = length (filter(== player)playersNames)
