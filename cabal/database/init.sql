@@ -14,7 +14,7 @@ CREATE TABLE Player (
     player_uuid     VARCHAR(36) PRIMARY KEY,
     player_name     VARCHAR(50),
     player_password VARCHAR(50),
-    current_room    VARCHAR(20),
+    current_room    VARCHAR(36),
     FOREIGN KEY (current_room) REFERENCES Room(room_uuid)
 );
 

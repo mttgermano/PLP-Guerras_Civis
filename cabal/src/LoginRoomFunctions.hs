@@ -89,9 +89,18 @@ loginRoom player_name room_name room_password = do
     let sqlQuery = Query $ BS2.pack "SELECT room_uuid FROM Room WHERE room_name = ? AND room_password = ?"
     result <- query conn sqlQuery (room_name, room_password) :: IO [Only String]
     ----------------------------------------------
-    close conn
 
     -- Check if the query returned any rows
     if null result
-        then putStrLn "> Invalid room name or password."
-        else putStrLn ("> Room [" ++ room_name ++ "] login successful.")
+        then 
+            putStrLn "> Invalid room name or password."
+        else do
+            let room_uuid = fromOnly (head result)
+
+            -- DB Query ----------------------------------
+            let sqlQuery = Query $ BS2.pack "UPDATE Player SET current_room = ? WHERE player_name = ?"
+            _ <- execute conn sqlQuery (room_uuid, player_name)
+            ----------------------------------------------
+            close conn
+
+            putStrLn ("> Player [" ++ player_name ++ "] login successful in [" ++ room_name ++ "]")
