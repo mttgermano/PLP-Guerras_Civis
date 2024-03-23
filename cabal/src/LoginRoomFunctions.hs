@@ -41,26 +41,44 @@ instance ToRow Room where
 -- Create a room in the database
 createRoom :: String -> String -> String -> IO ()
 createRoom player_name room_name room_password = do
-    uuid <- fmap toString nextRandom    -- Generate random UUID
     conn <- getDbConnection
 
-    let newRoom = Room { 
-        rId = uuid, 
-        rName = room_name,
-        rPassword = room_password, 
-        rMaster = player_name,
-        isUp = False,
-        cursedWord = Nothing,
-        roundMessages = Nothing
-    }
+    alreadyExist  <- checkRoomExist room_name 
+
+    if alreadyExist
+        then 
+            putStrLn $ "> Room name already exists"
+        else do
+            uuid <- fmap toString nextRandom    -- Generate random UUID
+
+            let newRoom = Room { 
+                rId = uuid, 
+                rName = room_name,
+                rPassword = room_password, 
+                rMaster = player_name,
+                isUp = False,
+                cursedWord = Nothing,
+                roundMessages = Nothing
+            }
+
+            -- DB Query ----------------------------------
+            let sqlQuery = Query $ BS2.pack "INSERT INTO Room (room_uuid, room_name, room_password, room_master, is_up, cursed_word, round_messages) VALUES (?, ?, ?, ?, ?, ?, ?)"
+            _ <- execute conn sqlQuery newRoom 
+            ----------------------------------------------
+            close conn
+            putStrLn $ ("> Room created: " ++ show newRoom)
+
+-- Chek if a room already exist in the database
+checkRoomExist :: String -> IO Bool
+checkRoomExist room_name = do
+    conn <- getDbConnection
 
     -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "INSERT INTO Room (room_uuid, room_name, room_password, room_master, is_up, cursed_word, round_messages) VALUES (?, ?, ?, ?, ?, ?, ?)"
-    _ <- execute conn sqlQuery newRoom 
+    let sqlQuery = Query $ BS2.pack "SELECT EXISTS (SELECT 1 FROM Room WHERE room_name = ?)"
+    [Only result] <- query conn sqlQuery (Only room_name)
     ----------------------------------------------
     close conn
-    putStrLn $ ("> Room created: " ++ show newRoom)
-
+    return result
 
 -- Log in a room
 loginRoom :: String -> String -> String -> IO ()

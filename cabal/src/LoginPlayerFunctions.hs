@@ -32,18 +32,35 @@ instance ToRow Player where
 -- Create a player in the db
 createPlayer :: String -> String -> IO ()
 createPlayer player_name player_password = do
-    uuid <- fmap toString nextRandom    -- Generate random UUID
+    conn <- getDbConnection
+    alreadyExist  <- checkPlayerExist player_name
+
+    if alreadyExist
+        then 
+            putStrLn $ "> Player name already exists"
+        else do
+            uuid <- fmap toString nextRandom    -- Generate random UUID
+
+            let newPlayer = Player { isBot = False, pId = uuid, pName = player_name, pPassword = player_password, currentRoom = Nothing}
+
+            -- DB Query ----------------------------------
+            let sqlQuery = Query $ BS2.pack "INSERT INTO Player (is_bot ,player_uuid, player_name, player_password, current_room) VALUES (?, ?, ?, ?, ?)"
+            _ <- execute conn sqlQuery newPlayer
+            ----------------------------------------------
+            close conn
+            putStrLn $ ("> Player created [" ++ show newPlayer ++ "]")
+
+-- Chek if a player already exist in the database
+checkPlayerExist :: String -> IO Bool
+checkPlayerExist player_name = do
     conn <- getDbConnection
 
-    let newPlayer = Player { isBot = False, pId = uuid, pName = player_name, pPassword = player_password, currentRoom = Nothing}
-
     -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "INSERT INTO Player (is_bot ,player_uuid, player_name, player_password, current_room) VALUES (?, ?, ?, ?, ?)"
-    _ <- execute conn sqlQuery newPlayer
+    let sqlQuery = Query $ BS2.pack "SELECT EXISTS (SELECT 1 FROM Player WHERE player_name = ?)"
+    [Only result] <- query conn sqlQuery (Only player_name)
     ----------------------------------------------
     close conn
-    putStrLn $ ("> Player created [" ++ show newPlayer ++ "]")
-
+    return result
 
 -- Log in a player
 loginPlayer :: String -> String -> IO ()
