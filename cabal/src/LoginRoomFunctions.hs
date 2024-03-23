@@ -23,7 +23,8 @@ data Room = Room{
     rPassword :: String,
     rMaster :: String,
     isUp :: Bool,
-    cursedWord :: Maybe String
+    cursedWord :: Maybe String,
+    roundMessages :: Maybe String
 }deriving (Show, Generic)
 
 -- Convert Room into a tuple for SQL insert
@@ -34,7 +35,8 @@ instance ToRow Room where
         toField (rPassword room), 
         toField (rMaster room), 
         toField (isUp room), 
-        toField (cursedWord room)]
+        toField (cursedWord room),
+        toField (roundMessages room)]
 
 -- Create a room in the database
 createRoom :: String -> String -> String -> IO ()
@@ -48,11 +50,12 @@ createRoom player_name room_name room_password = do
         rPassword = room_password, 
         rMaster = player_name,
         isUp = False,
-        cursedWord = Nothing
+        cursedWord = Nothing,
+        roundMessages = Nothing
     }
 
     -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "INSERT INTO Room (room_uuid, room_name, room_password, room_master, is_up, cursed_word  ) VALUES (?, ?, ?, ?, ?, ?)"
+    let sqlQuery = Query $ BS2.pack "INSERT INTO Room (room_uuid, room_name, room_password, room_master, is_up, cursed_word, round_messages) VALUES (?, ?, ?, ?, ?, ?, ?)"
     _ <- execute conn sqlQuery newRoom 
     ----------------------------------------------
     close conn
