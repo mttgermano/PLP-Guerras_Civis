@@ -62,3 +62,14 @@ getPlayersNames (id:ids) = do
     rest <- getPlayersNames ids
     return (maybeName : rest)
 
+
+isPlayerAlive ::  String -> Bool
+isPlayerAlive playerUuid = do
+    conn <- getDbConnection
+
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "SELECT is_alive FROM UserGameData WHERE player_uuid = ?"    
+    result <- query conn sqlQuery (Only playerUuid)
+    ----------------------------------------------
+    close conn
+    return result

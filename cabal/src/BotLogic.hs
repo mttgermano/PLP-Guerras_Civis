@@ -8,6 +8,18 @@ import Database.PostgreSQL.Simple.ToField
 import Database.PostgreSQL.Simple.ToRow
 import Database.PostgreSQL.Simple.Types (Query(Query))
 
+import System.Random
+
+
+gerarNumeroValido :: String -> IO String
+gerarNumeroValido rName = do
+    players <- getRoomPlayers rName
+
+    posicao <- randomRIO (0, length players - 1)
+    let player_uuid = players !! posicao
+    if isPlayerAlive player_uuid
+        then return (player_uuid)
+        else gerarNumeroValido rName
 
 
 createBots :: Int -> String -> IO ()
@@ -38,12 +50,11 @@ botBrain rName = do
 
     playersNames <- getPlayersNames players
 
-
     conn <- getDbConnection
 
     -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "SELECT role_idx FROM UserGameData WHERE user_id = ?"
-    result <- Query conn sqlQuery (Only pName_voted)
+    let sqlQuery = Query $ BS2.pack "SELECT role_idx FROM UserGameData WHERE user_id IN ?"
+    roles <- Query conn sqlQuery (Only $ In playerIds)
     ----------------------------------------------
     putStrLn $ "> Vote incremented for user [" ++ (pName_voted) ++ "]"
     close conn
