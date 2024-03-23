@@ -11,8 +11,8 @@ import Database.PostgreSQL.Simple.Types (Query(Query))
 import System.Random
 
 
-gerarNumeroValido :: String -> IO String
-gerarNumeroValido rName = do
+botActionChoice :: String -> IO String
+botActionChoice rName = do
     players <- getRoomPlayers rName
 
     posicao <- randomRIO (0, length players - 1)
@@ -39,10 +39,6 @@ createBots quant rName = do
         close conn
         putStrLn $ "Bot created: " ++ show newBot
 
-
-
-nameCount :: String -> INT -> INT -> IO ()
-nameCount nomes tam at = do
 
 botBrain :: String -> IO ()
 botBrain rName = do

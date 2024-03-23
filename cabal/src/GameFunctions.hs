@@ -63,7 +63,7 @@ getPlayersNames (id:ids) = do
     return (maybeName : rest)
 
 
-isPlayerAlive ::  String -> Bool
+isPlayerAlive ::  String -> IO Bool
 isPlayerAlive playerUuid = do
     conn <- getDbConnection
 
@@ -72,4 +72,6 @@ isPlayerAlive playerUuid = do
     result <- query conn sqlQuery (Only playerUuid)
     ----------------------------------------------
     close conn
-    return result
+    case result of
+        [Only alive] -> return alive
+        _            -> return False -- or whatever default value you prefer if no result is found
