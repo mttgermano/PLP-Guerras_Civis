@@ -81,7 +81,7 @@ instance FromJSON MessageJson where
 
 instance ToJSON MessageJson where
     toJSON (MessageJson gcType pmName message) =
-        object ["gcTYpe" .= gcType, "pmName" .= pmName, "message" .= message]
+        object ["gcType" .= gcType, "pmName" .= pmName, "message" .= message]
 
 
 
