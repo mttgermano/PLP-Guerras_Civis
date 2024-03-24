@@ -18,6 +18,7 @@ import Database.PostgreSQL.Simple.Types (Query(Query))
 
 -- Player Data Type
 data Player = Player{ 
+    isBot :: Bool,
     pId :: String,
     pName :: String,
     pPassword :: String,
@@ -26,7 +27,7 @@ data Player = Player{
 
 -- Convert Player into a tuple for SQL insert
 instance ToRow Player where
-    toRow player = [toField (pId player), toField (pName player), toField (pPassword player), toField (currentRoom player)]
+    toRow player = [toField (isBot player),toField (pId player), toField (pName player), toField (pPassword player), toField (currentRoom player)]
 
 -- Create a player in the db
 createPlayer :: String -> String -> IO ()
@@ -34,10 +35,10 @@ createPlayer player_name player_password = do
     uuid <- fmap toString nextRandom    -- Generate random UUID
     conn <- getDbConnection
 
-    let newPlayer = Player { pId = uuid, pName = player_name, pPassword = player_password, currentRoom = Nothing}
+    let newPlayer = Player { isBot = False, pId = uuid, pName = player_name, pPassword = player_password, currentRoom = Nothing}
 
     -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "INSERT INTO Player (player_uuid, player_name, player_password, current_room) VALUES (?, ?, ?, ?)"
+    let sqlQuery = Query $ BS2.pack "INSERT INTO Player (is_bot ,player_uuid, player_name, player_password, current_room) VALUES (?, ?, ?, ?, ?)"
     _ <- execute conn sqlQuery newPlayer
     ----------------------------------------------
     close conn

@@ -35,7 +35,7 @@ getRoomPlayers rName = do
                \SELECT u.player_uuid \
                \FROM Player p \
                \JOIN UserGameData u ON p.player_uuid = u.player_uuid \
-               \WHERE p.current_room = ?;"    
+               \WHERE p.current_room = ? AND p.is_bot = false;"    
     result <- query conn sqlQuery (Only rName)
     ----------------------------------------------
     close conn
@@ -75,3 +75,19 @@ isRoomMaster rName pName = do
     ----------------------------------------------
     close conn
     return (result == [pName])
+
+
+getRoomBots :: String -> IO [String]
+getRoomBots rName = do
+    conn <- getDbConnection
+
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "\
+               \SELECT u.player_uuid \
+               \FROM Player p \
+               \JOIN UserGameData u ON p.player_uuid = u.player_uuid \
+               \WHERE p.current_room = ? AND p.is_bot = true;"    
+    result <- query conn sqlQuery (Only rName)
+    ----------------------------------------------
+    close conn
+    return $ map (\(Only player_uuid) -> player_uuid) result
