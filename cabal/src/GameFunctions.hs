@@ -74,4 +74,17 @@ isPlayerAlive playerUuid = do
     close conn
     case result of
         [Only alive] -> return alive
-        _            -> return False -- or whatever default value you prefer if no result is found
+        _            -> return False
+
+
+getIsGood :: String -> IO Bool
+getIsGood uuid = do
+    conn <- getDbConnection
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "SELECT r.isGood FROM UserGameData u INNER JOIN Roles r ON u.role_idx = r.role_idx WHERE u.player_uuid = ?"
+    result <- query conn sqlQuery (Only uuid)
+    ----------------------------------------------
+    close conn
+    case result of
+        [Only alive] -> return alive
+        _            -> return False
