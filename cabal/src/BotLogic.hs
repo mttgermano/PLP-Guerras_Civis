@@ -38,27 +38,74 @@ createBots quant rName = do
         ----------------------------------------------
         close conn
         putStrLn $ "Bot created: " ++ show newBot
+        createBots quant-1 rName
 
 
-botBrain :: String -> IO ()
-botBrain rName = do
+isInRoles :: [UUID] -> Role -> UUID -> Bool
+isInRoles roles role uuid = any (\roleUuid -> uuid == roleUuid && role uuid) roles
+
+
+botBrain :: String -> String -> String -> IO ()
+botBrain rName messages botUuid = do
     players <- getRoomPlayers rName
 
     playersNames <- getPlayersNames players
 
-    conn <- getDbConnection
+    let isGood = getIsGood playerUUID
+    let allWords = words  messages
+    let references = countReferencesForAll allWords playersNames
+    
 
+    conn <- getDbConnection
     -- DB Query ----------------------------------
     let sqlQuery = Query $ BS2.pack "SELECT role_idx FROM UserGameData WHERE user_id IN ?"
     roles <- Query conn sqlQuery (Only $ In playerIds)
     ----------------------------------------------
+    let comparation = compareIsGoodList botUuid players roles
+
+    let resultado = listSom comparation references
+    let ind = biggestVote resultado
+
     putStrLn $ "> Vote incremented for user [" ++ (pName_voted) ++ "]"
     close conn
 
 
-    vote botName usuario
+    vote botName players[ind]
 
-nameCountReferences :: String -> [String] -> Int
+
+compareIsGood :: String -> [String] -> String -> Int
+compareIsGood botId roles playerId
+    | getIsGood botId /= getIsGood playerId && playerId `elem` roles = 1000000
+    | otherwise = 0
+
+compareIsGoodList :: String -> [String] -> [String] -> [Int]
+compareIsGoodList botId playerIds roles = map (compareIsGood botId roles) playerIds
+
+
+biggestVote :: Ord a => [a] -> Maybe Int
+biggestVote [] = Nothing
+biggestVote lista = Just (maiorIndiceAux lista 0 0)
+  where
+    maiorIndiceAux [] _ _ = 0
+    maiorIndiceAux (x:xs) indice maiorIndiceAtual
+      | x > (lista !! maiorIndiceAtual) = maiorIndiceAux xs (indice + 1) indice
+      | otherwise = maiorIndiceAux xs (indice + 1) maiorIndiceAtual
+
+
+
+countReferencesForAll :: String -> [String] -> [Int]
+countReferencesForAll _ [] = []
+countReferencesForAll names (x:xs) = nameCountReferences x names : countReferencesForAll names xs
+
+listSom :: [Int] -> [Int] -> [Int]
+listSom [] [] = []
+listSom [] ys = ys
+listSom xs [] = xs
+listSom (x:xs) (y:ys) = (x + y) : listSom xs ys
+
+
+
+nameCountReferences :: String -> [String]-> Int
 nameCountReferences player playersNames
-    | null playersNames = 0 -- logica para votação randonica --------
+    | null playersNames = 0
     | otherwise = length (filter(== player)playersNames)
