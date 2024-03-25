@@ -8,6 +8,7 @@ import GameController
 import Web.Scotty
 import Data.Aeson (FromJSON(..), ToJSON(..), withObject, (.:), (.=), decode, object)
 import Network.Wai.Middleware.Cors (cors, CorsResourcePolicy(..))
+import Network.HTTP.Types (status400)
 
 -- Player -------------------------------------------------------
 data PlayerJson = PlayerJson { 
@@ -81,7 +82,7 @@ instance FromJSON MessageJson where
 
 instance ToJSON MessageJson where
     toJSON (MessageJson gcType pmName message) =
-        object ["gcTYpe" .= gcType, "pmName" .= pmName, "message" .= message]
+        object ["gcType" .= gcType, "pmName" .= pmName, "message" .= message]
 
 
 
@@ -114,9 +115,16 @@ main = do
                     liftIO $ putStrLn $ "JSON [player]: " ++ show playerObj
 
                     -- Call createplayer from LoginFunctions
-                    liftIO $ createPlayer (pjName playerObj) (pjPassword playerObj)   -- cast Text to String
-                --_ -> text "Invalid player data"
-                _ -> json $ object ["error" .= ("Invalid player data" :: String)]
+                    result <- liftIO $ createPlayer (pjName playerObj) (pjPassword playerObj)   -- cast Text to String
+                    case result of
+                        PlayerCreated               -> return ()
+                        PlayerAlreadyExist  errMsg  -> do
+                            status status400
+                            json $ object ["error" .= (errMsg :: String)]
+
+                _ -> do
+                    status status400 -- Set HTTP status code to 400 (Bad Request)
+                    json $ object ["error" .= ("Invalid player JSON" :: String)]
         
         post "/login/login_player/" $ do
             liftIO $ putStrLn $ replicate 50 '-'
@@ -127,8 +135,16 @@ main = do
                     liftIO $ putStrLn $ "JSON [player]: " ++ show playerObj
 
                     -- Call loginplayer from LoginFunctions
-                    liftIO $ loginPlayer (pjName playerObj) (pjPassword playerObj)
-                _ -> text "Invalid player data"
+                    result <- liftIO $ loginPlayer (pjName playerObj) (pjPassword playerObj)
+                    case result of
+                        PlayerLoggedIn          -> return ()
+                        IncorrectPlayerData errMsg    -> do
+                            status status400
+                            json $ object ["error" .= (errMsg :: String)]
+
+                _ -> do
+                    status status400 -- Set HTTP status code to 400 (Bad Request)
+                    json $ object ["error" .= ("Invalid player JSON" :: String)]
                 
         -- ROOM PAGE ------------------------------------
         post "/room/create_room/" $ do
@@ -140,8 +156,16 @@ main = do
                     liftIO $ putStrLn $ "JSON [room]: " ++ show roomObj
 
                     -- Call createRoom from LoginFunctions
-                    liftIO $ createRoom (rpjName roomObj) (rjName roomObj) (rjPassword roomObj)
-                _ -> text "Invalid room data"
+                    result <- liftIO $ createRoom (rpjName roomObj) (rjName roomObj) (rjPassword roomObj)
+                    case result of
+                        RoomCreated               -> return ()
+                        RoomAlreadyExist  errMsg  -> do
+                            status status400
+                            json $ object ["error" .= (errMsg :: String)]
+
+                _ -> do
+                    status status400 -- Set HTTP status code to 400 (Bad Request)
+                    json $ object ["error" .= ("Invalid room JSON" :: String)]
         
         post "/room/login_room/" $ do
             liftIO $ putStrLn $ replicate 50 '-'
@@ -152,8 +176,16 @@ main = do
                     liftIO $ putStrLn $ "JSON [room]: " ++ show roomObj
 
                     -- Call createRoom from LoginFunctions
-                    liftIO $ loginRoom (rpjName roomObj) (rjName roomObj) (rjPassword roomObj)
-                _ -> text "Invalid room data"
+                    result <- liftIO $ loginRoom (rpjName roomObj) (rjName roomObj) (rjPassword roomObj)
+                    case result of
+                        RoomLoggedIn            -> return ()
+                        IncorrectRoomData errMsg    -> do
+                            status status400
+                            json $ object ["error" .= (errMsg :: String)]
+
+                _ -> do
+                    status status400 -- Set HTTP status code to 400 (Bad Request)
+                    json $ object ["error" .= ("Invalid room JSON" :: String)]
 
         -- Game PAGE --------------------------------------
         post "/game/start/" $ do
@@ -165,8 +197,16 @@ main = do
                     liftIO $ putStrLn $ "JSON [game]: " ++ show gameObj
 
                     -- Call createRoom from LoginFunctions
-                    liftIO $ startGame (grjName gameObj) (gpjName gameObj)
-                _ -> text "Invalid game data"
+                    result <- liftIO $ startGame (grjName gameObj) (gpjName gameObj)
+                    case result of
+                        GameStarted             -> return ()
+                        NotRoomMaster errMsg    -> do  
+                            status status400
+                            json $ object ["error" .= (errMsg :: String)]
+                        
+                _ -> do
+                    status status400 -- Set HTTP status code to 400 (Bad Request)
+                    json $ object ["error" .= ("Invalid game JSON" :: String)]
 
 
         post "/game/running/action/" $ do
@@ -179,7 +219,9 @@ main = do
 
                     -- Call createRoom from LoginFunctions
                     liftIO $ makeAction (paName actionObj) (action actionObj) (aReciever actionObj)
-                _ -> text "Invalid game data"
+                _ -> do
+                    status status400 -- Set HTTP status code to 400 (Bad Request)
+                    json $ object ["error" .= ("Invalid game action JSON" :: String)]
 
 
         post "/game/running/send_message/" $ do
@@ -192,4 +234,6 @@ main = do
 
                     -- Call createRoom from LoginFunctions
                     liftIO $ makeMessage (gcType messageObj) (pmName messageObj) (message messageObj)
-                _ -> text "Invalid game data"
+                _ -> do
+                    status status400 -- Set HTTP status code to 400 (Bad Request)
+                    json $ object ["error" .= ("Invalid game message JSON" :: String)]

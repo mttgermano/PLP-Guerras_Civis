@@ -71,10 +71,13 @@ isRoomMaster rName pName = do
     conn <- getDbConnection
     -- DB Query ----------------------------------
     let sqlQuery = Query $ BS2.pack "SELECT room_master FROM Room WHERE room_name = ?"
-    result <- query conn sqlQuery (Only pName)
+    result <- query conn sqlQuery (Only rName)
     ----------------------------------------------
     close conn
-    return (result == [pName])
+    print result
+    return $ case result of
+        [Only roomMasterName] -> roomMasterName == pName
+        _                     -> False
 
 
 getRoomBots :: String -> IO [String]

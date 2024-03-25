@@ -1,0 +1,89 @@
+.room-container {
+    height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: #282a36;
+}
+
+.room-card {
+    width: 55%;
+    height: 60vh;
+    background: #f8f8f2;
+    border: none;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.room-button-container,
+.room-list-container {
+    max-height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+}
+
+.create-button {
+    height: 78.54px;
+    width: 275.4px;
+    margin: 0 auto;
+    margin-top: 50px;
+
+    background: #6272a4;
+    border: none;
+    border-radius: 21px;
+    box-shadow: 0px 1px 8px #6272a4;
+    color: #FFF;
+    font-size: 1.2rem;
+
+    transition: all 0.3s ease-in-out;
+    cursor: pointer;
+
+    &:hover {
+        transform: scale(1.1);
+    }
+}
+
+.room-list {
+    margin: 1rem 0;
+    width: 80%;
+    border: 3px solid gray;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.room-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    border-bottom: 2px solid gray;
+}
+
+.enter-button {
+    width: 80px;
+    height: 35px;
+    background: #ff4949;
+    border: none;
+    color: #FFF;
+    border-radius: 12px;
+
+    transition: all 0.3s ease-in-out;
+    cursor: pointer;
+
+    &:hover {
+        transform: scale(1.1);
+    }
+
+}
+
+.room-list-item span {
+    flex: 1;
+}

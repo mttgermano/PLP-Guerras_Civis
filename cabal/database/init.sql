@@ -6,16 +6,15 @@ CREATE TABLE Room (
     room_master     VARCHAR(36),
     is_up           BOOLEAN,
     cursed_word     VARCHAR(50),
-    round_messages  VARCHAR()
+    round_messages  VARCHAR
 );
-
 -- Create User Table
 CREATE TABLE Player (
     is_bot BOOLEAN,
     player_uuid     VARCHAR(36) PRIMARY KEY,
     player_name     VARCHAR(50),
     player_password VARCHAR(50),
-    current_room    VARCHAR(20),
+    current_room    VARCHAR(36),
     FOREIGN KEY (current_room) REFERENCES Room(room_uuid)
 );
 

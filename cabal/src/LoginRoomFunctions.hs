@@ -23,7 +23,8 @@ data Room = Room{
     rPassword :: String,
     rMaster :: String,
     isUp :: Bool,
-    cursedWord :: Maybe String
+    cursedWord :: Maybe String,
+    roundMessages :: Maybe String
 }deriving (Show, Generic)
 
 -- Convert Room into a tuple for SQL insert
@@ -34,33 +35,59 @@ instance ToRow Room where
         toField (rPassword room), 
         toField (rMaster room), 
         toField (isUp room), 
-        toField (cursedWord room)]
+        toField (cursedWord room),
+        toField (roundMessages room)]
 
 -- Create a room in the database
-createRoom :: String -> String -> String -> IO ()
+data CreateRoomResult = RoomCreated | RoomAlreadyExist String
+createRoom :: String -> String -> String -> IO CreateRoomResult
 createRoom player_name room_name room_password = do
-    uuid <- fmap toString nextRandom    -- Generate random UUID
     conn <- getDbConnection
 
-    let newRoom = Room { 
-        rId = uuid, 
-        rName = room_name,
-        rPassword = room_password, 
-        rMaster = player_name,
-        isUp = False,
-        cursedWord = Nothing
-    }
+    alreadyExist  <- checkRoomExist room_name 
+
+    if alreadyExist
+        then do
+            let errMsg = "> Room name already exists"
+            putStrLn errMsg
+            return (RoomAlreadyExist errMsg)
+
+        else do
+            uuid <- fmap toString nextRandom    -- Generate random UUID
+
+            let newRoom = Room { 
+                rId = uuid, 
+                rName = room_name,
+                rPassword = room_password, 
+                rMaster = player_name,
+                isUp = False,
+                cursedWord = Nothing,
+                roundMessages = Nothing
+            }
+
+            -- DB Query ----------------------------------
+            let sqlQuery = Query $ BS2.pack "INSERT INTO Room (room_uuid, room_name, room_password, room_master, is_up, cursed_word, round_messages) VALUES (?, ?, ?, ?, ?, ?, ?)"
+            _ <- execute conn sqlQuery newRoom 
+            ----------------------------------------------
+            close conn
+            putStrLn $ ("> Room created: " ++ show newRoom)
+            return RoomCreated
+
+-- Chek if a room already exist in the database
+checkRoomExist :: String -> IO Bool
+checkRoomExist room_name = do
+    conn <- getDbConnection
 
     -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "INSERT INTO Room (room_uuid, room_name, room_password, room_master, is_up, cursed_word  ) VALUES (?, ?, ?, ?, ?, ?)"
-    _ <- execute conn sqlQuery newRoom 
+    let sqlQuery = Query $ BS2.pack "SELECT EXISTS (SELECT 1 FROM Room WHERE room_name = ?)"
+    [Only result] <- query conn sqlQuery (Only room_name)
     ----------------------------------------------
     close conn
-    putStrLn $ ("> Room created: " ++ show newRoom)
-
+    return result
 
 -- Log in a room
-loginRoom :: String -> String -> String -> IO ()
+data LoginRoomResult = RoomLoggedIn | IncorrectRoomData String
+loginRoom :: String -> String -> String -> IO LoginRoomResult
 loginRoom player_name room_name room_password = do
     conn <- getDbConnection
 
@@ -68,9 +95,22 @@ loginRoom player_name room_name room_password = do
     let sqlQuery = Query $ BS2.pack "SELECT room_uuid FROM Room WHERE room_name = ? AND room_password = ?"
     result <- query conn sqlQuery (room_name, room_password) :: IO [Only String]
     ----------------------------------------------
-    close conn
 
     -- Check if the query returned any rows
     if null result
-        then putStrLn "> Invalid room name or password."
-        else putStrLn ("> Room [" ++ room_name ++ "] login successful.")
+        then do
+            let errMsg = "> Invalid room name or password."
+            putStrLn errMsg
+            return (IncorrectRoomData errMsg)
+
+        else do
+            let room_uuid = fromOnly (head result)
+
+            -- DB Query ----------------------------------
+            let sqlQuery = Query $ BS2.pack "UPDATE Player SET current_room = ? WHERE player_name = ?"
+            _ <- execute conn sqlQuery (room_uuid, player_name)
+            ----------------------------------------------
+            close conn
+
+            putStrLn ("> Player [" ++ player_name ++ "] login successful in [" ++ room_name ++ "]")
+            return RoomLoggedIn
