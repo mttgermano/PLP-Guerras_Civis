@@ -39,15 +39,19 @@ instance ToRow Room where
         toField (roundMessages room)]
 
 -- Create a room in the database
-createRoom :: String -> String -> String -> IO ()
+data CreateRoomResult = RoomCreated | RoomAlreadyExist String
+createRoom :: String -> String -> String -> IO CreateRoomResult
 createRoom player_name room_name room_password = do
     conn <- getDbConnection
 
     alreadyExist  <- checkRoomExist room_name 
 
     if alreadyExist
-        then 
-            putStrLn $ "> Room name already exists"
+        then do
+            let errMsg = "> Room name already exists"
+            putStrLn errMsg
+            return (RoomAlreadyExist errMsg)
+
         else do
             uuid <- fmap toString nextRandom    -- Generate random UUID
 
@@ -67,6 +71,7 @@ createRoom player_name room_name room_password = do
             ----------------------------------------------
             close conn
             putStrLn $ ("> Room created: " ++ show newRoom)
+            return RoomCreated
 
 -- Chek if a room already exist in the database
 checkRoomExist :: String -> IO Bool
@@ -81,7 +86,8 @@ checkRoomExist room_name = do
     return result
 
 -- Log in a room
-loginRoom :: String -> String -> String -> IO ()
+data LoginRoomResult = RoomLoggedIn | IncorrectRoomData String
+loginRoom :: String -> String -> String -> IO LoginRoomResult
 loginRoom player_name room_name room_password = do
     conn <- getDbConnection
 
@@ -92,8 +98,11 @@ loginRoom player_name room_name room_password = do
 
     -- Check if the query returned any rows
     if null result
-        then 
-            putStrLn "> Invalid room name or password."
+        then do
+            let errMsg = "> Invalid room name or password."
+            putStrLn errMsg
+            return (IncorrectRoomData errMsg)
+
         else do
             let room_uuid = fromOnly (head result)
 
@@ -104,3 +113,4 @@ loginRoom player_name room_name room_password = do
             close conn
 
             putStrLn ("> Player [" ++ player_name ++ "] login successful in [" ++ room_name ++ "]")
+            return RoomLoggedIn

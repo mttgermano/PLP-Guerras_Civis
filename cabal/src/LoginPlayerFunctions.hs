@@ -30,14 +30,18 @@ instance ToRow Player where
     toRow player = [toField (isBot player),toField (pId player), toField (pName player), toField (pPassword player), toField (currentRoom player)]
 
 -- Create a player in the db
-createPlayer :: String -> String -> IO ()
+data CreatePlayerResult = PlayerCreated | PlayerAlreadyExist String
+createPlayer :: String -> String -> IO CreatePlayerResult
 createPlayer player_name player_password = do
     conn <- getDbConnection
     alreadyExist  <- checkPlayerExist player_name
 
     if alreadyExist
-        then 
-            putStrLn $ "> Player name already exists"
+        then do
+            let errMsg = "> Player name already exists"
+            putStrLn errMsg
+            return (PlayerAlreadyExist errMsg)
+
         else do
             uuid <- fmap toString nextRandom    -- Generate random UUID
 
@@ -49,6 +53,7 @@ createPlayer player_name player_password = do
             ----------------------------------------------
             close conn
             putStrLn $ ("> Player created [" ++ show newPlayer ++ "]")
+            return PlayerCreated
 
 -- Chek if a player already exist in the database
 checkPlayerExist :: String -> IO Bool
@@ -63,7 +68,8 @@ checkPlayerExist player_name = do
     return result
 
 -- Log in a player
-loginPlayer :: String -> String -> IO ()
+data LoginPlayerResult = PlayerLoggedIn | IncorrectPlayerData String
+loginPlayer :: String -> String -> IO LoginPlayerResult
 loginPlayer player_name player_password = do
     conn <- getDbConnection
 
@@ -75,5 +81,10 @@ loginPlayer player_name player_password = do
 
     -- Check if the query returned any rows
     if null result
-        then putStrLn "> Invalid playername or password."
-        else putStrLn ("> Login [" ++ player_name ++"] successful.")
+        then do
+            let errMsg = "> Invalid playername or password."
+            putStrLn errMsg
+            return (IncorrectPlayerData errMsg)
+        else do 
+            putStrLn ("> Login [" ++ player_name ++"] successful.")
+            return PlayerLoggedIn
