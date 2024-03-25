@@ -1,5 +1,6 @@
 module GameFunctions where
 import GameRoundFunctions
+import GameFunctionsInit
 import DbFunctions
 
 import GHC.Generics
@@ -26,16 +27,15 @@ instance ToRow UserGame where
 -- Count the number of live players of a role
 getPlayerRolesCount :: String -> Bool -> IO Int
 getPlayerRolesCount rName isGood = do
-    conn <- getDbConnection
-    let rPlayers = 
+    rPlayers    <- getRoomPlayers rName
+
     -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "SELECT COUNT(ugd.player_uuid) FROM UserGameData ugd \
-                   \JOIN Roles r ON ugd.role_idx = r.role_idx \
-                   \WHERE ugd.current_room = ? AND r.isGood = ?"
-    [Only answer] <- query conn sqlQuery (rName, isGood)
+    total       <- mapM getIsGood rPlayers
+    let count   = length $ filter id total 
     ----------------------------------------------
-    close conn
-    return answer
+    if isGood
+        then return count
+        else return (12 - count)
 
 -- Increment the vote for a user in the db
 incrementVote :: String -> String -> IO ()   
@@ -81,12 +81,11 @@ getIsGood uuid = do
     conn <- getDbConnection
     -- DB Query ----------------------------------
     let sqlQuery = Query $ BS2.pack "SELECT r.isGood FROM UserGameData u INNER JOIN Roles r ON u.role_idx = r.role_idx WHERE u.player_uuid = ?"
-    result <- query conn sqlQuery (Only uuid)
+    result <- query conn sqlQuery (Only uuid) :: IO [Only Bool]
     ----------------------------------------------
     close conn
-    case result of
-        [Only alive] -> return alive
-        _            -> return False
+
+    return (fromOnly (head result))
 
 
 getRole :: String -> IO Int
