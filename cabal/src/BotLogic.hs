@@ -1,7 +1,16 @@
 module BotLogic where
 
 import DbFunctions
-import RoomFunctions
+import GameFunctions
+import GameRoleFunctions
+import GameFunctionsInit
+import GameRoundFunctions
+import LoginPlayerFunctions
+
+import qualified Data.ByteString.Char8 as BS2
+
+import Data.UUID.V4 (nextRandom)
+import Data.UUID (toString)
 
 import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.ToField
@@ -19,18 +28,18 @@ botActionChoice rName = do
     let player_uuid = players !! posicao
     if isPlayerAlive player_uuid
         then return (player_uuid)
-        else gerarNumeroValido rName
+        else botActionChoice rName
 
 
 createBots :: Int -> String -> IO ()
-createBots quant rName = do
-    | quant == 0 = return
-    | otherwise = do
-        loginRoom 
+createBots quant rName
+    | quant == 0    = return
+    | otherwise     = do
         uuid <- fmap toString nextRandom    -- Generate random UUID
         conn <- getDbConnection
-        let bot_Name = "bot" + uuid[0] + uuid[1] + uuid[2] + uuid[3] 
-        let newBot = Player { isBot = True, pId = uuid, pName = bot_Name, pPassword = Nothing, currentRoom = rName}
+
+        let bot_Name = "bot" ++ take 4 uuid
+        let newBot = Player { isBot = True, pId = uuid, pName = bot_Name, pPassword = "evertonquero10", currentRoom = Just rName}
 
         -- DB Query ----------------------------------
         let sqlQuery = Query $ BS2.pack "INSERT INTO Player (is_bot ,player_uuid, player_name, player_password, current_room) VALUES (?, ?, ?, ?, ?)"
@@ -39,10 +48,6 @@ createBots quant rName = do
         close conn
         putStrLn $ "Bot created: " ++ show newBot
         createBots quant-1 rName
-
-
-isInRoles :: [UUID] -> Role -> UUID -> Bool
-isInRoles roles role uuid = any (\roleUuid -> uuid == roleUuid && role uuid) roles
 
 
 botBrain :: String -> String -> String -> IO ()
@@ -70,7 +75,7 @@ botBrain rName messages botUuid = do
     close conn
 
 
-    vote botName players[ind]
+    incrementVote botName players[ind]
 
 
 compareIsGood :: String -> [String] -> String -> Int

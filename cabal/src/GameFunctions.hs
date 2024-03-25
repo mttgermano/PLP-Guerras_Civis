@@ -15,12 +15,12 @@ import Database.PostgreSQL.Simple.Types (Query(Query))
 
 -- User Data Type
 data UserGame = UserGame { 
-    pId :: String
+    pId_ :: String
 } deriving (Show, Generic)
 
 -- Convert User into a tuple for SQL insert
 instance ToRow UserGame where
-    toRow userGame = [toField (pId userGame)]
+    toRow userGame = [toField (pId_ userGame)]
 
 
 -- Count the number of live players of a role
