@@ -2,7 +2,6 @@ module BotLogic where
 
 import DbFunctions
 import GameFunctions
-import GameRoleFunctions
 import GameFunctionsInit
 import GameRoundFunctions
 import LoginPlayerFunctions
@@ -14,8 +13,6 @@ import Data.UUID (toString)
 import Control.Monad (forM)
 
 import Database.PostgreSQL.Simple
-import Database.PostgreSQL.Simple.ToField
-import Database.PostgreSQL.Simple.ToRow
 import Database.PostgreSQL.Simple.Types (Query(Query))
 
 import System.Random
@@ -37,21 +34,22 @@ botActionChoice rName = do
 
 createBots :: Int -> String -> IO ()
 createBots quant rName
-    | quant == 0    = return ()
+    | quant <= 0    = putStrLn $ ("> All Bots created in [" ++ rName ++ "]")
     | otherwise     = do
         uuid <- fmap toString nextRandom    -- Generate random UUID
         conn <- getDbConnection
 
-        let bot_Name = "bot" ++ take 4 uuid
+        let bot_Name = "bot-" ++ take 4 uuid
         rUuid <- getRoomUuid rName
-        let newBot = Player { isBot = True, pId = uuid, pName = bot_Name, pPassword = "evertonquero10", currentRoom = rUuid}
+
+        let newBot  = Player { isBot = True, pId = uuid, pName = bot_Name, pPassword = "botpasswd", currentRoom = Just rUuid}
 
         -- DB Query ----------------------------------
         let sqlQuery = Query $ BS2.pack "INSERT INTO Player (is_bot ,player_uuid, player_name, player_password, current_room) VALUES (?, ?, ?, ?, ?)"
         _ <- execute conn sqlQuery newBot
         ----------------------------------------------
         close conn
-        putStrLn $ "Bot created: " ++ show newBot
+        putStrLn $ "> Bot created: " ++ show newBot
         createBots (quant-1) rName
 
 

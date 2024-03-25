@@ -106,7 +106,12 @@ loginRoom player_name room_name room_password = do
         else do
             let room_uuid = fromOnly (head result)
 
-            -- DB Query ----------------------------------
+            -- DB Query change current room --------------
+            let sqlQuery = Query $ BS2.pack "UPDATE Player SET current_room = ? WHERE player_name = ?"
+            _ <- execute conn sqlQuery (room_uuid, player_name)
+            ----------------------------------------------
+            --
+            -- DB  Query update GameRoomData -------------
             let sqlQuery = Query $ BS2.pack "UPDATE Player SET current_room = ? WHERE player_name = ?"
             _ <- execute conn sqlQuery (room_uuid, player_name)
             ----------------------------------------------

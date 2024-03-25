@@ -24,22 +24,18 @@ instance ToRow UserGame where
 
 
 -- Count the number of live players of a role
-getPlayerRolesCount :: Bool -> String -> IO Int
-getPlayerRolesCount isGood rName = do
+getPlayerRolesCount :: String -> Bool -> IO Int
+getPlayerRolesCount rName isGood = do
     conn <- getDbConnection
-    -- TODO concertar a logica --
+    let rPlayers = 
     -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "SELECT Player.player_uuid, COUNT(*) \
-        \FROM UserGameData \
-        \JOIN Player ON UserGameData.player_uuid = Player.player_uuid \
-        \JOIN Roles ON UserGameData.role_idx = Roles.role_idx \
-        \WHERE current_room = ? AND Roles.isGood = ? AND Roles.role_idx = 0 \
-        \GROUP BY Player.player_uuid"
-    answer <- execute conn sqlQuery (isGood, rName)
+    let sqlQuery = Query $ BS2.pack "SELECT COUNT(ugd.player_uuid) FROM UserGameData ugd \
+                   \JOIN Roles r ON ugd.role_idx = r.role_idx \
+                   \WHERE ugd.current_room = ? AND r.isGood = ?"
+    [Only answer] <- query conn sqlQuery (rName, isGood)
     ----------------------------------------------
     close conn
-    return $ fromIntegral answer
-
+    return answer
 
 -- Increment the vote for a user in the db
 incrementVote :: String -> String -> IO ()   
@@ -102,5 +98,5 @@ getRole uuid = do
     ----------------------------------------------
     close conn
     case result of
-        [Only role] -> return role
-        _            -> return (-1)
+        [Only role]     -> return role
+        _               -> return (-1)

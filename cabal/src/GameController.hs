@@ -6,7 +6,6 @@ import GameRoundController
 import GameRoleFunctions
 import GameChatFunctions
 import BotLogic
-import Control.Monad (unless)
 
 
 
@@ -19,8 +18,8 @@ game rName roundNum teamEvil teamGood
     | otherwise = do
         makeRound rName
         -- DB Query ----------------------------------
-        cTeamEvil <- getPlayerRolesCount False rName
-        cTeamGood <- getPlayerRolesCount True rName
+        cTeamEvil <- getPlayerRolesCount rName False
+        cTeamGood <- getPlayerRolesCount rName True
         ----------------------------------------------
         -- make request to the front, saying that need to fresh the data
         game rName (roundNum + 1) cTeamEvil cTeamGood
@@ -33,11 +32,13 @@ startGame rName pName = do
 
     if roomMaster
         then do
-            players <- getRoomPlayers rName
-            let nPlayers = length players
-            createBots (12 - nPlayers) rName 
+            roomPlayers     <- getRoomPlayers rName
+            let nPlayers    = 12 - length roomPlayers
 
+            addPlayersToGame rName
+            createBots nPlayers rName 
             distributeRoles rName
+
             putStrLn $ "> The [" ++ rName ++ "] game started!"
             game rName 0 6 6
             return GameStarted
