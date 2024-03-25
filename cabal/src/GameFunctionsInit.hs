@@ -9,6 +9,7 @@ import qualified Data.ByteString.Char8 as BS2
 
 import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.Types (Query(Query))
+import Data.String (String)
 
 
 
@@ -94,3 +95,18 @@ getRoomBots rName = do
     ----------------------------------------------
     close conn
     return $ map (\(Only player_uuid) -> player_uuid) result
+
+getRoomUuid :: String -> IO (Maybe String)
+getRoomUuid rName = do
+    conn <- getDbConnection
+
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "SELECT room_uuid FROM Room WHERE room_name = ?"    
+    result <- query conn sqlQuery (Only rName)
+    ----------------------------------------------
+    
+    close conn
+    
+    case result of
+        [Only uuid] -> return $ Just uuid
+        _           -> return Nothing
