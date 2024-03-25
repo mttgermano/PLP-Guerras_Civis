@@ -13,7 +13,6 @@ import Data.UUID.V4 (nextRandom)
 import Data.UUID (toString)
 import Control.Monad (forM)
 
-
 import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.ToField
 import Database.PostgreSQL.Simple.ToRow
@@ -29,8 +28,10 @@ botActionChoice rName = do
     posicao <- randomRIO (0, length players - 1)
     let player_uuid = players !! posicao
     alive <- isPlayerAlive player_uuid  -- Unwrap the result from IO monad
+    
     if alive
         then return player_uuid
+
         else botActionChoice rName
 
 
@@ -86,7 +87,6 @@ botBrain rName messages botUuid = do
                                _        -> fail "No player to increment" -- Or handle this case appropriately
         incrementVote botName playerToIncrement
       Nothing -> return ()  -- Or handle this case appropriately
-
 
 
 compareIsGood :: String -> [Int] -> String -> IO Int

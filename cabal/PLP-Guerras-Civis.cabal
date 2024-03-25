@@ -47,7 +47,8 @@ library
         GameRoundFunctions,
         LoginPlayerFunctions,
         LoginRoomFunctions,
-        BackendServer
+        BackendServer,
+        BotLogic
 
     -- Modules included in this library but not exported.
     -- other-modules:
@@ -108,7 +109,8 @@ executable PLP-Guerras-Civis
         GameRoundFunctions,
         LoginPlayerFunctions,
         LoginRoomFunctions,
-        BackendServer
+        BackendServer,
+        BotLogic
 
     -- Directories containing source files.
     hs-source-dirs:  src 
