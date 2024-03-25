@@ -44,7 +44,7 @@ createBots quant rName
 
         let bot_Name = "bot" ++ take 4 uuid
         rUuid <- getRoomUuid rName
-        let newBot = Player { isBot = True, pId = uuid, pName = bot_Name, pPassword = "evertonquero10", currentRoom = Just rUuid}
+        let newBot = Player { isBot = True, pId = uuid, pName = bot_Name, pPassword = "evertonquero10", currentRoom = rUuid}
 
         -- DB Query ----------------------------------
         let sqlQuery = Query $ BS2.pack "INSERT INTO Player (is_bot ,player_uuid, player_name, player_password, current_room) VALUES (?, ?, ?, ?, ?)"
