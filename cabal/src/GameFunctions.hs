@@ -15,12 +15,12 @@ import Database.PostgreSQL.Simple.Types (Query(Query))
 
 -- User Data Type
 data UserGame = UserGame { 
-    pId :: String
+    pId_ :: String
 } deriving (Show, Generic)
 
 -- Convert User into a tuple for SQL insert
 instance ToRow UserGame where
-    toRow userGame = [toField (pId userGame)]
+    toRow userGame = [toField (pId_ userGame)]
 
 
 -- Count the number of live players of a role
@@ -55,12 +55,15 @@ incrementVote pName pName_voted = do
 
 
 -- Return a list with the players names
-getPlayersNames :: [Int] -> IO [Maybe String]
+getPlayersNames :: [String] -> IO [String]
 getPlayersNames [] = return []
 getPlayersNames (id:ids) = do
     maybeName <- getPlayerFromID (show id)
     rest <- getPlayersNames ids
-    return (maybeName : rest)
+    return $ case maybeName of
+        Just name -> name : rest
+        Nothing   -> rest
+
 
 
 isPlayerAlive ::  String -> IO Bool
@@ -88,3 +91,16 @@ getIsGood uuid = do
     case result of
         [Only alive] -> return alive
         _            -> return False
+
+
+getRole :: String -> IO Int
+getRole uuid = do
+    conn <- getDbConnection
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "SELECT r.role_idx FROM UserGameData u INNER JOIN Roles r ON u.role_idx = r.role_idx WHERE u.player_uuid = ?"
+    result <- query conn sqlQuery (Only uuid)
+    ----------------------------------------------
+    close conn
+    case result of
+        [Only role] -> return role
+        _            -> return (-1)

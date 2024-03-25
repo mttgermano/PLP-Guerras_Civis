@@ -5,6 +5,7 @@ import GameFunctionsInit
 import GameRoundController
 import GameRoleFunctions
 import GameChatFunctions
+import BotLogic
 
 
 
@@ -30,10 +31,16 @@ startGame rName pName = do
 
     if roomMaster
         then do
-            putStrLn $ ("> The [" ++ rName ++ "] game started!")
+            players <- getRoomPlayers rName
+            let nPlayers = length players
+            createBots (12 - nPlayers) rName 
+
             distributeRoles rName
+            putStrLn $ "> The [" ++ rName ++ "] game started!"
             game rName 0 6 6
         else putStrLn "Você não é o room master."
+
+
 
 
 -- Finish the game
