@@ -11,6 +11,7 @@ import qualified Data.ByteString.Char8 as BS2
 
 import Data.UUID.V4 (nextRandom)
 import Data.UUID (toString)
+import Control.Monad (forM)
 
 import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.ToField
@@ -26,14 +27,17 @@ botActionChoice rName = do
 
     posicao <- randomRIO (0, length players - 1)
     let player_uuid = players !! posicao
-    if isPlayerAlive player_uuid
-        then return (player_uuid)
+    alive <- isPlayerAlive player_uuid  -- Unwrap the result from IO monad
+    
+    if alive
+        then return player_uuid
+
         else botActionChoice rName
 
 
 createBots :: Int -> String -> IO ()
 createBots quant rName
-    | quant == 0    = return
+    | quant == 0    = return ()
     | otherwise     = do
         uuid <- fmap toString nextRandom    -- Generate random UUID
         conn <- getDbConnection
@@ -47,44 +51,58 @@ createBots quant rName
         ----------------------------------------------
         close conn
         putStrLn $ "Bot created: " ++ show newBot
-        createBots quant-1 rName
+        createBots (quant-1) rName
 
 
 botBrain :: String -> String -> String -> IO ()
 botBrain rName messages botUuid = do
     players <- getRoomPlayers rName
-
     playersNames <- getPlayersNames players
 
-    let isGood = getIsGood playerUUID
-    let allWords = words  messages
-    let references = countReferencesForAll allWords playersNames
-    
+    let allWords = words messages
+        references = countReferencesForAll allWords playersNames
 
     conn <- getDbConnection
     -- DB Query ----------------------------------
     let sqlQuery = Query $ BS2.pack "SELECT role_idx FROM UserGameData WHERE user_id IN ?"
-    roles <- Query conn sqlQuery (Only $ In playerIds)
-    ----------------------------------------------
-    let comparation = compareIsGoodList botUuid players roles
+    roles <- forM players $ \player -> do
+        [Only role] <- query conn sqlQuery (Only player)
+        return role
 
-    let resultado = listSom comparation references
+    ----------------------------------------------
+
+    let comparation = compareIsGoodList botUuid players roles
+    comp <- comparation
+    let resultado = listSom comp references
     let ind = biggestVote resultado
 
-    putStrLn $ "> Vote incremented for user [" ++ (pName_voted) ++ "]"
     close conn
 
+    botNameMaybe <- getPlayerFromID botUuid
+    case botNameMaybe of
+      Just botName -> do
+        playerToIncrement <- case ind of
+                               Just idx -> return (players !! idx)
+                               _        -> fail "No player to increment" -- Or handle this case appropriately
+        incrementVote botName playerToIncrement
+      Nothing -> return ()  -- Or handle this case appropriately
 
-    incrementVote botName players[ind]
+
+compareIsGood :: String -> [Int] -> String -> IO Int
+compareIsGood botId roles playerId = do
+    botIsGood <- getIsGood botId
+    playerIsGood <- getIsGood playerId
+    playerRole <- getRole playerId
+    if (botIsGood /= playerIsGood) && (playerRole `elem` roles)
+        then return 1000000
+    else if (botIsGood == playerIsGood) && (playerRole `elem` roles)
+        then return (-100000)
+    else
+        return 0
 
 
-compareIsGood :: String -> [String] -> String -> Int
-compareIsGood botId roles playerId
-    | getIsGood botId /= getIsGood playerId && playerId `elem` roles = 1000000
-    | otherwise = 0
-
-compareIsGoodList :: String -> [String] -> [String] -> [Int]
-compareIsGoodList botId playerIds roles = map (compareIsGood botId roles) playerIds
+compareIsGoodList :: String -> [String] -> [Int] -> IO [Int]
+compareIsGoodList botId playerIds roles = mapM (compareIsGood botId roles) playerIds
 
 
 biggestVote :: Ord a => [a] -> Maybe Int
@@ -98,9 +116,9 @@ biggestVote lista = Just (maiorIndiceAux lista 0 0)
 
 
 
-countReferencesForAll :: String -> [String] -> [Int]
+countReferencesForAll :: [String] -> [String] -> [Int]
 countReferencesForAll _ [] = []
-countReferencesForAll names (x:xs) = nameCountReferences x names : countReferencesForAll names xs
+countReferencesForAll words (x:xs) = nameCountReferences x words : countReferencesForAll words xs
 
 listSom :: [Int] -> [Int] -> [Int]
 listSom [] [] = []

@@ -5,8 +5,7 @@ import GameFunctionsInit
 import GameRoundController
 import GameRoleFunctions
 import GameChatFunctions
--- import BotLogic
-
+import BotLogic
 import Control.Monad (unless)
 
 
@@ -34,12 +33,12 @@ startGame rName pName = do
 
     if roomMaster
         then do
-            nPlayers <- fmap length (getRoomPlayers rName)
-            -- let nPlayers = length (getRoomPlayers rName)
-            -- createBots (12 - nPlayers) rName 
+            players <- getRoomPlayers rName
+            let nPlayers = length players
+            createBots (12 - nPlayers) rName 
 
             distributeRoles rName
-            putStrLn $ ("> The [" ++ rName ++ "] game started!")
+            putStrLn $ "> The [" ++ rName ++ "] game started!"
             game rName 0 6 6
             return GameStarted
 
@@ -47,6 +46,8 @@ startGame rName pName = do
             let errMsg = "Você não é o room master."
             putStrLn errMsg
             return (NotRoomMaster errMsg)
+
+
 
 
 -- Finish the game
