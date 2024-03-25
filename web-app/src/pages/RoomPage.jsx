@@ -5,7 +5,7 @@ import { UserContext } from '../contexts/userContext';
 
 import { api } from '../services/api';
 
-import '../css/room.css';
+import '../css/room-game.css';
 
 const RoomPage = () => {
     const [players, setPlayers] = useState([]);
@@ -39,7 +39,7 @@ const RoomPage = () => {
     // )
 
     return (
-        <div className='room-container'>
+        <div className='room-game-container'>
             <div className="left-container">
                 <div className='infos'>
                     <div className='infos-data'>

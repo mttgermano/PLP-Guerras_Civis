@@ -5,7 +5,7 @@ import { UserContext } from '../contexts/userContext';
 
 import { api } from '../services/api';
 
-import '../css/user-auth.css';
+import '../css/creation.css';
 
 const RegisterPage = () => {
   const [pName, setPName] = useState('');
