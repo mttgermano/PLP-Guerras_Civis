@@ -35,9 +35,9 @@ startGame rName pName = do
             roomPlayers     <- getRoomPlayers rName
             let nPlayers    = 12 - length roomPlayers
 
-            addPlayersToGame rName
-            createBots nPlayers rName 
-            distributeRoles rName
+            createBots          nPlayers rName 
+            addPlayersToGame    rName
+            distributeRoles     rName
 
             putStrLn $ "> The [" ++ rName ++ "] game started!"
             game rName 0 6 6

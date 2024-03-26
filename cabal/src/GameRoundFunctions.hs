@@ -1,5 +1,7 @@
 module GameRoundFunctions where
 import DbFunctions
+import GameFunctions
+import GameFunctionsInit
 
 import qualified Data.ByteString.Char8 as BS2
 
@@ -7,45 +9,25 @@ import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.Types (Query(Query))
 
 
--- Get the list of all evil players in a room
-getRoomPlayersEvil :: String -> IO [String]
-getRoomPlayersEvil rName = do
-    conn <- getDbConnection
 
-    -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "\
-               \SELECT u.player_uuid \
-               \FROM Player p \
-               \JOIN UserGameData u ON p.player_uuid = u.player_uuid \
-               \WHERE p.current_room = ?;"    
-    result <- query conn sqlQuery (Only rName)
-    ----------------------------------------------
-    close conn
-    return $ map (\(Only player_uuid) -> player_uuid) result
-
+-- It selects the itens of the first list whom index, in the second list is equal to flag
+selectTheIndex :: [String] -> [Bool] -> Bool -> [String]
+selectTheIndex pList gList b = [x | (x, flag) <- zip pList gList, flag == b]
 
 -- Get the list of all good players in a room
-getRoomPlayersGood :: String -> IO [String]
-getRoomPlayersGood rName = do
-    conn <- getDbConnection
+getRoomPlayersGoodness :: String -> Bool -> IO [String]
+getRoomPlayersGoodness rName isGood = do
+    rPlayers        <- getRoomPlayers rName
+    goodnessList    <- mapM getIsGood rPlayers
 
-    -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "\
-               \SELECT u.player_uuid \
-               \FROM Player p \
-               \JOIN UserGameData u ON p.player_uuid = u.player_uuid \
-               \WHERE p.current_room = ?;"    
-    result <- query conn sqlQuery (Only rName)
-    ----------------------------------------------
-    close conn
-    return $ map (\(Only player_uuid) -> player_uuid) result
+    return $ selectTheIndex rPlayers goodnessList isGood
 
 
 -- Run the evil guys round
 actionEvilRound :: String -> IO ()
 actionEvilRound rName = do
     putStrLn $ ("> Começando Round Mafiosos [" ++ (rName) ++ "]")
-    evil_list <- getRoomPlayersEvil rName
+    evilList <- getRoomPlayersGoodness rName False
 
     -- send a request to the front, so it will allert that the user can make an action
     -- deixa rodar por 2 min
@@ -57,8 +39,8 @@ actionEvilRound rName = do
 actionGoodRound :: String -> IO ()
 actionGoodRound rName = do
     putStrLn $ ("> Começando Round Civis [" ++ (rName) ++ "]")
-    -- send a request to the front, so the bad guys can make an action
-    good_list <- getRoomPlayersGood rName
+    goodList <- getRoomPlayersGoodness rName True
+
     -- send a request to the front, so it will allert that the user can make an action
     -- deixa rodar por 2 min
     -- desfaz a acao
@@ -81,3 +63,14 @@ getPlayerFromID playerId = do
         [Only playerName] -> return (Just playerName)
         _ -> return Nothing
 
+
+-- Return a list with the players names
+getPlayersNames :: [String] -> IO [String]
+getPlayersNames [] = return []
+getPlayersNames (id:ids) = do
+    maybeName   <- getPlayerFromID (show id)
+    rest        <- getPlayersNames ids
+
+    return $ case maybeName of
+        Just name -> name : rest
+        Nothing   -> rest

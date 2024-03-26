@@ -39,10 +39,16 @@ createBots quant rName
         uuid <- fmap toString nextRandom    -- Generate random UUID
         conn <- getDbConnection
 
-        let bot_Name = "bot-" ++ take 4 uuid
-        rUuid <- getRoomUuid rName
+        let bot_Name    = "bot-" ++ take 4 uuid
+        rUuid           <- getRoomUuid rName
 
-        let newBot  = Player { isBot = True, pId = uuid, pName = bot_Name, pPassword = "botpasswd", currentRoom = Just rUuid}
+        let newBot  = Player {
+            isBot   = True, 
+            pId     = uuid, 
+            pName   = bot_Name, 
+            pPassword   = "botpasswd", 
+            currentRoom = Just rUuid
+        }
 
         -- DB Query ----------------------------------
         let sqlQuery = Query $ BS2.pack "INSERT INTO Player (is_bot ,player_uuid, player_name, player_password, current_room) VALUES (?, ?, ?, ?, ?)"
@@ -72,6 +78,7 @@ botBrain rName messages botUuid = do
 
     let comparation = compareIsGoodList botUuid players roles
     comp <- comparation
+
     let resultado = listSom comp references
     let ind = biggestVote resultado
 

@@ -54,18 +54,20 @@ setRole pName role = do
     close conn
 
 
--- Get all Players from a Room
+-- Get all Players UUID from a Room
 getRoomPlayers :: String -> IO [String]
 getRoomPlayers rName = do
-    conn        <- getDbConnection
-    rUuid    <- getRoomUuid rName
+    conn    <- getDbConnection
+    rUuid   <- getRoomUuid rName
 
     -- DB Query ----------------------------------
     let sqlQuery = Query $ BS2.pack "SELECT player_uuid FROM Player WHERE current_room = ?"    
     result <- query conn sqlQuery (Only rUuid)
     ----------------------------------------------
     close conn
-    return $ (map (\(Only player_uuid) -> player_uuid) result)
+
+    let pList = (map (\(Only player_uuid) -> player_uuid) result)
+    return pList
 
 
 -- Random List of Integers
@@ -85,11 +87,11 @@ addPlayersToGame rName = do
     -- Iterate over roomPlayers and perform insertion for each player
     mapM_ (\playerUuid -> do
         let newUserGameData = UserGameData {
-            player_uuid = playerUuid,
-            role_idx    = (-1),
-            is_alive    = True,
-            votes       = 0,
-            kill_vote   = 0,
+            player_uuid     = playerUuid,
+            role_idx        = (-1),
+            is_alive        = True,
+            votes           = 0,
+            kill_vote       = 0,
             is_paralized    = False,
             is_silenced     = False,
             is_dead_by_cursed_word = False

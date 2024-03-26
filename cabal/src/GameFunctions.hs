@@ -1,5 +1,4 @@
 module GameFunctions where
-import GameRoundFunctions
 import GameFunctionsInit
 import DbFunctions
 
@@ -24,18 +23,6 @@ instance ToRow UserGame where
     toRow userGame = [toField (pId_ userGame)]
 
 
--- Count the number of live players of a role
-getPlayerRolesCount :: String -> Bool -> IO Int
-getPlayerRolesCount rName isGood = do
-    rPlayers    <- getRoomPlayers rName
-
-    -- DB Query ----------------------------------
-    total       <- mapM getIsGood rPlayers
-    let count   = length $ filter id total 
-    ----------------------------------------------
-    if isGood
-        then return count
-        else return (12 - count)
 
 -- Increment the vote for a user in the db
 incrementVote :: String -> String -> IO ()   
@@ -48,19 +35,6 @@ incrementVote pName pName_voted = do
     ----------------------------------------------
     putStrLn $ ("> Voto incrementado para user [" ++ (pName_voted) ++ "]")
     close conn
-
-
--- Return a list with the players names
-getPlayersNames :: [String] -> IO [String]
-getPlayersNames [] = return []
-getPlayersNames (id:ids) = do
-    maybeName   <- getPlayerFromID (show id)
-    rest        <- getPlayersNames ids
-
-    return $ case maybeName of
-        Just name -> name : rest
-        Nothing   -> rest
-
 
 
 isPlayerAlive ::  String -> IO Bool
@@ -77,6 +51,20 @@ isPlayerAlive playerUuid = do
         _            -> return False
 
 
+-- Count the number of live players of a role
+getPlayerRolesCount :: String -> Bool -> IO Int
+getPlayerRolesCount rName isGood = do
+    rPlayers    <- getRoomPlayers rName
+
+    -- DB Query ----------------------------------
+    total       <- mapM getIsGood rPlayers
+    let count   = length $ filter id total 
+    ----------------------------------------------
+    if isGood
+        then return count
+        else return (12 - count)
+
+
 getIsGood :: String -> IO Bool
 getIsGood uuid = do
     conn <- getDbConnection
@@ -86,7 +74,8 @@ getIsGood uuid = do
     ----------------------------------------------
     close conn
 
-    return (fromOnly (head result))
+    let answer = (fromOnly (head result))
+    return answer
 
 
 getRole :: String -> IO Int
