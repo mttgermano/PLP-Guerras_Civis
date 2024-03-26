@@ -28,10 +28,13 @@ actionEvilRound :: String -> IO ()
 actionEvilRound rName = do
     putStrLn $ ("> Começando Round Mafiosos [" ++ (rName) ++ "]")
     evilList <- getRoomPlayersGoodness rName False
+    
+    sleep 5
 
     -- send a request to the front, so it will allert that the user can make an action
     -- deixa rodar por 2 min
     -- desfaz a acao
+
     putStrLn $ ("> Terminou Round Mafiosos [" ++ (rName) ++ "]")
 
 
@@ -41,9 +44,12 @@ actionGoodRound rName = do
     putStrLn $ ("> Começando Round Civis [" ++ (rName) ++ "]")
     goodList <- getRoomPlayersGoodness rName True
 
+    sleep 5
+
     -- send a request to the front, so it will allert that the user can make an action
     -- deixa rodar por 2 min
     -- desfaz a acao
+
     putStrLn $ ("> Terminou Round Civis [" ++ (rName) ++ "]")
 
 

@@ -2,9 +2,9 @@ module GameFunctions where
 import GameFunctionsInit
 import DbFunctions
 
-import GHC.Generics
-
 import qualified Data.ByteString.Char8 as BS2
+import Control.Concurrent (threadDelay)
+import GHC.Generics
 
 import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.ToField
@@ -23,6 +23,10 @@ instance ToRow UserGame where
     toRow userGame = [toField (pId_ userGame)]
 
 
+sleep :: Int -> IO ()
+sleep minutes = do
+    let delay = minutes * (60 * 1000000)
+    threadDelay delay
 
 -- Increment the vote for a user in the db
 incrementVote :: String -> String -> IO ()   
