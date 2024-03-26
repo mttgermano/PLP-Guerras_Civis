@@ -35,7 +35,7 @@ incrementVote pName pName_voted = do
 
     -- DB Query ----------------------------------
     let sqlQuery = Query $ BS2.pack "UPDATE UserGameData SET votes = votes + 1 WHERE user_id = ?"
-    result <- execute conn sqlQuery (Only pName_voted)
+    _ <- execute conn sqlQuery (Only pName_voted)
     ----------------------------------------------
     putStrLn $ ("> Voto incrementado para user [" ++ (pName_voted) ++ "]")
     close conn

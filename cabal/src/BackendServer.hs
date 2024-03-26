@@ -203,6 +203,9 @@ main = do
                         NotRoomMaster errMsg    -> do  
                             status status400
                             json $ object ["error" .= (errMsg :: String)]
+                        RoomAlreadyUp errMsg    -> do
+                            status status400
+                            json $ object ["error" .= (errMsg :: String)]
                         
                 _ -> do
                     status status400 -- Set HTTP status code to 400 (Bad Request)
@@ -225,6 +228,37 @@ main = do
 
 
         post "/game/running/send_message/" $ do
+            liftIO $ putStrLn $ replicate 50 '-'
+            requestBody <- body
+
+            case decode requestBody of
+                Just (messageObj :: MessageJson) -> do
+                    liftIO $ putStrLn $ "JSON [game]: " ++ show messageObj
+
+                    -- Call createRoom from LoginFunctions
+                    liftIO $ makeMessage (gcType messageObj) (pmName messageObj) (message messageObj)
+                _ -> do
+                    status status400 -- Set HTTP status code to 400 (Bad Request)
+                    json $ object ["error" .= ("Invalid game message JSON" :: String)]
+
+
+        -- Front API --------------------------------------
+        get "/api/system/get_rooms/" $ do
+            liftIO $ putStrLn $ replicate 50 '-'
+            requestBody <- body
+
+            case decode requestBody of
+                Just (messageObj :: MessageJson) -> do
+                    liftIO $ putStrLn $ "JSON [game]: " ++ show messageObj
+
+                    -- Call createRoom from LoginFunctions
+                    liftIO $ makeMessage (gcType messageObj) (pmName messageObj) (message messageObj)
+                _ -> do
+                    status status400 -- Set HTTP status code to 400 (Bad Request)
+                    json $ object ["error" .= ("Invalid game message JSON" :: String)]
+
+
+        get "/api/room/get_players/" $ do
             liftIO $ putStrLn $ replicate 50 '-'
             requestBody <- body
 

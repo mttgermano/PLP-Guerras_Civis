@@ -25,23 +25,32 @@ game rName roundNum teamEvil teamGood
         game rName (roundNum + 1) cTeamEvil cTeamGood
 
 -- Start the game
-data StartGameResult = GameStarted | NotRoomMaster String
+data StartGameResult = GameStarted | NotRoomMaster String | RoomAlreadyUp String
 startGame :: String -> String -> IO StartGameResult
 startGame rName pName = do
     roomMaster <- isRoomMaster rName pName
 
     if roomMaster
         then do
-            roomPlayers     <- getRoomPlayers rName
-            let nPlayers    = 12 - length roomPlayers
+            isRoomUp <- getRoomState rName
 
-            createBots          nPlayers rName 
-            addPlayersToGame    rName
-            distributeRoles     rName
+            if not isRoomUp
+                then do
+                    roomPlayers     <- getRoomPlayers rName
+                    let nPlayers    = 12 - length roomPlayers
 
-            putStrLn $ "> The [" ++ rName ++ "] game started!"
-            game rName 0 6 6
-            return GameStarted
+                    createBots          nPlayers rName 
+                    addPlayersToGame    rName
+                    distributeRoles     rName
+                    setRoomState        rName True
+
+                    putStrLn $ "> The [" ++ rName ++ "] game started!"
+                    game rName 0 6 6
+                    return GameStarted
+                else do
+                    let errMsg = "O jogo já começou"
+                    putStrLn errMsg
+                    return (RoomAlreadyUp errMsg)
 
         else do
             let errMsg = "Você não é o room master."
@@ -56,6 +65,11 @@ startGame rName pName = do
 endGame :: String -> String -> IO ()
 endGame rName reason = do
     putStrLn $ ("> O jogo [" ++ (rName) ++ "] acabou!")
+    setRoomState rName False
+    -- TODO
+        -- Delete all entries from UserGameData which contain players that were playing
+        -- Update the current_room from Player to ''    of the players that were playing
+        
     -- make post request to the front end, saying that it need to go to the endGame page
 
 -- Make the Game Rounds

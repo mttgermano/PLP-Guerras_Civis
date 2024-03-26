@@ -41,6 +41,18 @@ instance ToRow UserGameData where
         toField (is_dead_by_cursed_word userGameData)]
 
 
+-- Build up a Room
+setRoomState :: String -> Bool -> IO ()
+setRoomState rName state = do
+    conn <- getDbConnection
+
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "UPDATE Room SET is_up = ? WHERE room_name = ?"
+    _ <- execute conn sqlQuery (state, rName)
+    ----------------------------------------------
+    close conn
+
+
 -- Set the Role of a Player
 setRole :: String -> String -> IO ()
 setRole pName role = do
@@ -48,7 +60,7 @@ setRole pName role = do
 
     -- DB Query ----------------------------------
     let sqlQuery = Query $ BS2.pack "UPDATE UserGameData SET role_idx = ? WHERE player_uuid = ?"
-    result <- execute conn sqlQuery (role, pName)
+    _ <- execute conn sqlQuery (role, pName)
     ----------------------------------------------
     putStrLn $ ("> User [" ++ (pName) ++ "] foi settado para [" ++ (role) ++ "]")
     close conn
@@ -148,6 +160,7 @@ getRoomBots rName = do
     close conn
     return $ map (\(Only player_uuid) -> player_uuid) result
 
+-- Get the UUID of a Room
 getRoomUuid :: String -> IO String
 getRoomUuid rName = do
     conn <- getDbConnection
@@ -159,3 +172,27 @@ getRoomUuid rName = do
     close conn
 
     return result
+
+-- Get the State of a Room
+getRoomState :: String -> IO Bool
+getRoomState rName = do
+    conn <- getDbConnection
+
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "SELECT is_up FROM Room WHERE room_name = ?"    
+    [Only result] <- query conn sqlQuery (Only rName)
+    ----------------------------------------------
+    close conn
+
+    return result
+
+-- Reset the Round Messages
+resetRoundMessages :: String -> IO ()
+resetRoundMessages rName = do
+    conn <- getDbConnection
+
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "UPDATE Room SET round_messages = '' WHERE room_name = ?"
+    _ <- execute conn sqlQuery (Only rName)
+    ----------------------------------------------
+    close conn

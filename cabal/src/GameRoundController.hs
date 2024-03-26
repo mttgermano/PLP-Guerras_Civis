@@ -1,5 +1,6 @@
 module GameRoundController where
 import GameRoundFunctions
+import GameFunctionsInit
 import GameFunctions
 
 -- Run the Round that the actions happend
@@ -12,6 +13,7 @@ actionRound rName = do
 voteRound :: String -> IO ()
 voteRound rName = do
     putStrLn $ ("> Começando Round da Votação  [" ++ (rName) ++ "]")
+    updateRoundState rName "voteRound"
 
     sleep 5
 
@@ -21,5 +23,13 @@ voteRound rName = do
 -- Run all the sequence of rounds
 runRound :: String -> IO ()
 runRound rName = do
-    actionRound rName
-    voteRound rName
+    actionRound             rName
+    voteRound               rName
+    roundDefaultSettings    rName
+
+-- Reset all the setting of a Room
+roundDefaultSettings :: String -> IO ()
+roundDefaultSettings rName = do
+    updateRoundState    rName "startRound"
+    resetRoundMessages  rName   
+
