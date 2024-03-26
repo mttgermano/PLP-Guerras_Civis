@@ -54,8 +54,9 @@ incrementVote pName pName_voted = do
 getPlayersNames :: [String] -> IO [String]
 getPlayersNames [] = return []
 getPlayersNames (id:ids) = do
-    maybeName <- getPlayerFromID (show id)
-    rest <- getPlayersNames ids
+    maybeName   <- getPlayerFromID (show id)
+    rest        <- getPlayersNames ids
+
     return $ case maybeName of
         Just name -> name : rest
         Nothing   -> rest

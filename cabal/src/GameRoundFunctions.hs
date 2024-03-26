@@ -44,13 +44,13 @@ getRoomPlayersGood rName = do
 -- Run the evil guys round
 actionEvilRound :: String -> IO ()
 actionEvilRound rName = do
-    putStrLn $ ("Começando Round Mafiosos [" ++ (rName) ++ "]")
+    putStrLn $ ("> Começando Round Mafiosos [" ++ (rName) ++ "]")
     evil_list <- getRoomPlayersEvil rName
 
     -- send a request to the front, so it will allert that the user can make an action
     -- deixa rodar por 2 min
     -- desfaz a acao
-    putStrLn $ ("Terminou Round Mafiosos [" ++ (rName) ++ "]")
+    putStrLn $ ("> Terminou Round Mafiosos [" ++ (rName) ++ "]")
 
 
 -- Run the good guys round
@@ -74,7 +74,7 @@ getPlayerFromID playerId = do
     let sqlQuery = Query $ BS2.pack "\
                \SELECT p.player_name \
                \FROM Player p \
-               \WHERE p.player_uuid = ?;"
+               \WHERE p.player_uuid = ?"
     result <- query conn sqlQuery (Only playerId)
     ----------------------------------------------
     case result of

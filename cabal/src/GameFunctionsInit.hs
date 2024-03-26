@@ -59,16 +59,13 @@ getRoomPlayers :: String -> IO [String]
 getRoomPlayers rName = do
     conn        <- getDbConnection
     rUuid    <- getRoomUuid rName
-    print rUuid
 
     -- DB Query ----------------------------------
     let sqlQuery = Query $ BS2.pack "SELECT player_uuid FROM Player WHERE current_room = ?"    
     result <- query conn sqlQuery (Only rUuid)
     ----------------------------------------------
     close conn
-    let listaa = map (\(Only player_uuid) -> player_uuid) result
-    print listaa
-    return listaa
+    return $ (map (\(Only player_uuid) -> player_uuid) result)
 
 
 -- Random List of Integers
@@ -131,7 +128,6 @@ isRoomMaster rName pName = do
     [Only result] <- query conn sqlQuery (Only rName)
     ----------------------------------------------
     close conn
-    print result
     return $ result == pName
 
 
