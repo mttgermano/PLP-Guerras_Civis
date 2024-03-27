@@ -1,7 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
--- module RoomFunctions (createRoom, loginRoom) where
-module LoginRoomFunctions where
-import DbFunctions
+module LoginUtils.RoomFunctions where
+import Core.DbFunctions
 
 import GHC.Generics
 import Data.UUID.V4 (nextRandom)
@@ -66,11 +65,15 @@ createRoom player_name room_name room_password = do
             }
 
             -- DB Query ----------------------------------
-            let sqlQuery = Query $ BS2.pack "INSERT INTO Room (room_uuid, room_name, room_password, room_master, is_up, cursed_word, round_messages) VALUES (?, ?, ?, ?, ?, ?, ?)"
-            _ <- execute conn sqlQuery newRoom 
+            let sqlQuery1 = Query $ BS2.pack "INSERT INTO Room (room_uuid, room_name, room_password, room_master, is_up, cursed_word, round_messages) VALUES (?, ?, ?, ?, ?, ?, ?)"
+            _ <- execute conn sqlQuery1 newRoom 
             ----------------------------------------------
             close conn
             putStrLn $ ("> Room created: " ++ show newRoom)
+
+            -- auto Login the RoomMaster
+            loginRoom player_name room_name room_password
+
             return RoomCreated
 
 -- Chek if a room already exist in the database
@@ -106,9 +109,14 @@ loginRoom player_name room_name room_password = do
         else do
             let room_uuid = fromOnly (head result)
 
-            -- DB Query ----------------------------------
-            let sqlQuery = Query $ BS2.pack "UPDATE Player SET current_room = ? WHERE player_name = ?"
-            _ <- execute conn sqlQuery (room_uuid, player_name)
+            -- DB Query change current room --------------
+            let sqlQuery1 = Query $ BS2.pack "UPDATE Player SET current_room = ? WHERE player_name = ?"
+            _ <- execute conn sqlQuery1 (room_uuid, player_name)
+            ----------------------------------------------
+            
+            -- DB  Query update GameRoomData -------------
+            let sqlQuery2 = Query $ BS2.pack "UPDATE Player SET current_room = ? WHERE player_name = ?"
+            _ <- execute conn sqlQuery2 (room_uuid, player_name)
             ----------------------------------------------
             close conn
 

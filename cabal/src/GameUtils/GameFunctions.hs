@@ -1,10 +1,11 @@
-module GameFunctions where
-import GameRoundFunctions
-import DbFunctions
+module GameUtils.GameFunctions where
 
-import GHC.Generics
+import Core.DbFunctions
+import GameUtils.GameStartFunctions
 
 import qualified Data.ByteString.Char8 as BS2
+import Control.Concurrent (threadDelay)
+import GHC.Generics
 
 import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.ToField
@@ -23,23 +24,10 @@ instance ToRow UserGame where
     toRow userGame = [toField (pId_ userGame)]
 
 
--- Count the number of live players of a role
-getPlayerRolesCount :: Bool -> String -> IO Int
-getPlayerRolesCount isGood rName = do
-    conn <- getDbConnection
-    -- TODO concertar a logica --
-    -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "SELECT Player.player_uuid, COUNT(*) \
-        \FROM UserGameData \
-        \JOIN Player ON UserGameData.player_uuid = Player.player_uuid \
-        \JOIN Roles ON UserGameData.role_idx = Roles.role_idx \
-        \WHERE current_room = ? AND Roles.isGood = ? AND Roles.role_idx = 0 \
-        \GROUP BY Player.player_uuid"
-    answer <- execute conn sqlQuery (isGood, rName)
-    ----------------------------------------------
-    close conn
-    return $ fromIntegral answer
-
+sleep :: Int -> IO ()
+sleep minutes = do
+    let delay = minutes * (60 * 1000000)
+    threadDelay delay
 
 -- Increment the vote for a user in the db
 incrementVote :: String -> String -> IO ()   
@@ -48,22 +36,10 @@ incrementVote pName pName_voted = do
 
     -- DB Query ----------------------------------
     let sqlQuery = Query $ BS2.pack "UPDATE UserGameData SET votes = votes + 1 WHERE user_id = ?"
-    result <- execute conn sqlQuery (Only pName_voted)
+    _ <- execute conn sqlQuery (Only pName_voted)
     ----------------------------------------------
     putStrLn $ ("> Voto incrementado para user [" ++ (pName_voted) ++ "]")
     close conn
-
-
--- Return a list with the players names
-getPlayersNames :: [String] -> IO [String]
-getPlayersNames [] = return []
-getPlayersNames (id:ids) = do
-    maybeName <- getPlayerFromID (show id)
-    rest <- getPlayersNames ids
-    return $ case maybeName of
-        Just name -> name : rest
-        Nothing   -> rest
-
 
 
 isPlayerAlive ::  String -> IO Bool
@@ -80,17 +56,31 @@ isPlayerAlive playerUuid = do
         _            -> return False
 
 
+-- Count the number of live players of a role
+getPlayerRolesCount :: String -> Bool -> IO Int
+getPlayerRolesCount rName isGood = do
+    rPlayers    <- getRoomPlayers rName
+
+    -- DB Query ----------------------------------
+    total       <- mapM getIsGood rPlayers
+    let count   = length $ filter id total 
+    ----------------------------------------------
+    if isGood
+        then return count
+        else return (12 - count)
+
+
 getIsGood :: String -> IO Bool
 getIsGood uuid = do
     conn <- getDbConnection
     -- DB Query ----------------------------------
     let sqlQuery = Query $ BS2.pack "SELECT r.isGood FROM UserGameData u INNER JOIN Roles r ON u.role_idx = r.role_idx WHERE u.player_uuid = ?"
-    result <- query conn sqlQuery (Only uuid)
+    result <- query conn sqlQuery (Only uuid) :: IO [Only Bool]
     ----------------------------------------------
     close conn
-    case result of
-        [Only alive] -> return alive
-        _            -> return False
+
+    let answer = (fromOnly (head result))
+    return answer
 
 
 getRole :: String -> IO Int
@@ -102,5 +92,16 @@ getRole uuid = do
     ----------------------------------------------
     close conn
     case result of
-        [Only role] -> return role
-        _            -> return (-1)
+        [Only role]     -> return role
+        _               -> return (-1)
+
+getPlayerRoomName :: String -> IO String
+getPlayerRoomName pUUID = do
+    conn <- getDbConnection
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "SELECT room_name FROM Room WHERE room_uuid = (SELECT current_room FROM Player WHERE player_uuid = ?)"
+    [Only rName] <- query conn sqlQuery (Only pUUID) :: IO [Only String]
+    ----------------------------------------------
+    close conn
+
+    return rName

@@ -1,4 +1,4 @@
-module DbFunctions where
+module Core.DbFunctions where
 
 import qualified Data.ByteString.Char8 as BS2
 import Database.PostgreSQL.Simple

@@ -1,4 +1,4 @@
-module GameChatFunctions where
+module GameUtils.ChatFunctions where
 
 import GHC.Generics (Generic)
 

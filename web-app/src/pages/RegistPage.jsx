@@ -23,29 +23,28 @@ const RegisterPage = () => {
     setPassword(event.target.value);
   };
 
-  const registerPlayer = async () => {
+  const registerPlayer = async (event) => {
+    event.preventDefault();
+
     // Create a JSON object with username and password
     const userData = {
       pName: pName,
-      password: password
+      pPassword: password
     };
 
     // Send JSON request to endpoint
-    await api.post('login/create_player', userData, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(response => {
-        console.log(response.data)
-        setCurrentUser(response.data);
-
-        // redirects the user to room
-        navigate("/room/home")
-      })
-      .catch(error => {
-        console.error('Error:', error);
+    try {
+      const { data } = await api.post('login/create_player', userData, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
+
+      setCurrentUser(data);
+      navigate('/room/home');
+    } catch (error) {
+      console.error('Error:', error);
+    }
 
 
     // fetch('http://localhost/login/create_player', {

@@ -27,26 +27,23 @@ const LoginPage = () => {
 
     // Create a JSON object with username and password
     const userData = {
-      username: username,
-      password: password
+      pName: username,
+      pPassword: password
     };
 
     // Send JSON request to endpoint
-    await api.post('login/login_player', userData, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(response => {
-        console.log(response.data)
-        setCurrentUser(response.data)
-
-        // redirects user to room
-        navigate("/room/home");
-      })
-      .catch(error => {
-        console.error('Error:', error);
+    try {
+      const { data } = await api.post('login/login_player', userData, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
+
+      setCurrentUser(data);
+      navigate('/room/home');
+    } catch (error) {
+      console.error('Error:', error);
+    }
 
     // Send JSON request to endpoint
     // fetch('http://localhost:3000/login/login_player', {

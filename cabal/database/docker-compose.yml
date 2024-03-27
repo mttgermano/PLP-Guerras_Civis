@@ -1,5 +1,4 @@
-version: '3.9'
-
+#version: '3.9'
 services:
   db:
     image: postgres
@@ -11,7 +10,7 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - ./data/postgres:/var/lib/postgresql/data
+      # - ./data/postgres:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # Mount the SQL initialization script
 
   adminer:

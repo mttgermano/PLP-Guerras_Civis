@@ -1,7 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
---module LoginFunctions (createPlayer, loginPlayer) where
-module LoginPlayerFunctions where
-import DbFunctions
+module LoginUtils.PlayerFunctions where
+import Core.DbFunctions
 
 import GHC.Generics
 import Data.UUID.V4 (nextRandom)

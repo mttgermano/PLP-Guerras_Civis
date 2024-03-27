@@ -1,12 +1,11 @@
-module GameController where
+module Controllers.GameController where
 
-import GameFunctions
-import GameFunctionsInit
-import GameRoundController
-import GameRoleFunctions
-import GameChatFunctions
-import BotLogic
-import Control.Monad (unless)
+import Controllers.RoundController
+import GameUtils.GameFunctions
+import GameUtils.GameStartFunctions
+import GameUtils.RoleFunctions
+import GameUtils.ChatFunctions
+import GameUtils.BotLogic
 
 
 
@@ -19,28 +18,39 @@ game rName roundNum teamEvil teamGood
     | otherwise = do
         makeRound rName
         -- DB Query ----------------------------------
-        cTeamEvil <- getPlayerRolesCount False rName
-        cTeamGood <- getPlayerRolesCount True rName
+        cTeamEvil <- getPlayerRolesCount rName False
+        cTeamGood <- getPlayerRolesCount rName True
         ----------------------------------------------
         -- make request to the front, saying that need to fresh the data
         game rName (roundNum + 1) cTeamEvil cTeamGood
 
 -- Start the game
-data StartGameResult = GameStarted | NotRoomMaster String
+data StartGameResult = GameStarted | NotRoomMaster String | RoomAlreadyUp String
 startGame :: String -> String -> IO StartGameResult
 startGame rName pName = do
     roomMaster <- isRoomMaster rName pName
 
     if roomMaster
         then do
-            players <- getRoomPlayers rName
-            let nPlayers = length players
-            createBots (12 - nPlayers) rName 
+            isRoomUp <- getRoomUpState rName
 
-            distributeRoles rName
-            putStrLn $ "> The [" ++ rName ++ "] game started!"
-            game rName 0 6 6
-            return GameStarted
+            if not isRoomUp
+                then do
+                    roomPlayers     <- getRoomPlayers rName
+                    let nPlayers    = 12 - length roomPlayers
+
+                    createBots          nPlayers rName 
+                    addPlayersToGame    rName
+                    distributeRoles     rName
+                    setRoomUpState      rName True
+
+                    putStrLn $ "> The [" ++ rName ++ "] game started!"
+                    game rName 0 6 6
+                    return GameStarted
+                else do
+                    let errMsg = "O jogo já começou"
+                    putStrLn errMsg
+                    return (RoomAlreadyUp errMsg)
 
         else do
             let errMsg = "Você não é o room master."
@@ -55,6 +65,11 @@ startGame rName pName = do
 endGame :: String -> String -> IO ()
 endGame rName reason = do
     putStrLn $ ("> O jogo [" ++ (rName) ++ "] acabou!")
+    setRoomUpState rName False
+    -- TODO
+        -- Delete all entries from UserGameData which contain players that were playing
+        -- Update the current_room from Player to ''    of the players that were playing
+        
     -- make post request to the front end, saying that it need to go to the endGame page
 
 -- Make the Game Rounds
