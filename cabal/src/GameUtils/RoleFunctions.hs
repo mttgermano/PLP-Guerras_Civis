@@ -2,6 +2,7 @@ module GameUtils.RoleFunctions where
 
 import Core.DbFunctions
 import GameUtils.RoundFunctions
+import GameUtils.RoundUtils
 
 import qualified Data.ByteString.Char8 as BS2
 

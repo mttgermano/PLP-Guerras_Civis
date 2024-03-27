@@ -4,6 +4,7 @@ import Core.DbFunctions
 import GameUtils.GameFunctions
 import GameUtils.GameStartFunctions
 import GameUtils.RoundFunctions
+import GameUtils.RoundUtils
 import GameUtils.RoleFunctions
 import LoginUtils.PlayerFunctions
 
@@ -85,7 +86,7 @@ botBrain rName messages botUuid = do
 
     close conn
 
-    bName <- getPlayerFromID botUuid
+    bName <- getPlayerFromUUID botUuid
     let playerToIncrement = players !! ind
     incrementVote bName playerToIncrement
 
