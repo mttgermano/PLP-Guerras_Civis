@@ -2,8 +2,8 @@ module GameUtils.BotLogic where
 
 import Core.DbFunctions
 import GameUtils.GameFunctions
-import GameUtils.GameFunctionsInit
-import GameUtils.GameRoundFunctions
+import GameUtils.GameStartFunctions
+import GameUtils.RoundFunctions
 import LoginUtils.LoginPlayerFunctions
 
 import qualified Data.ByteString.Char8 as BS2

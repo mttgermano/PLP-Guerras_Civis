@@ -1,5 +1,5 @@
 {-# LANGUAGE DeriveGeneric #-}
-module GameUtils.GameFunctionsInit where
+module GameUtils.GameStartFunctions where
 import Core.DbFunctions
 
 import System.Random

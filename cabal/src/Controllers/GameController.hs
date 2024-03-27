@@ -1,10 +1,10 @@
 module Controllers.GameController where
 
-import Controllers.GameRoundController
+import Controllers.RoundController
 import GameUtils.GameFunctions
-import GameUtils.GameFunctionsInit
-import GameUtils.GameRoleFunctions
-import GameUtils.GameChatFunctions
+import GameUtils.GameStartFunctions
+import GameUtils.RoleFunctions
+import GameUtils.ChatFunctions
 import GameUtils.BotLogic
 
 

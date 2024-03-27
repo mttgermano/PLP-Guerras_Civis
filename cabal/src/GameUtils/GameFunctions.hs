@@ -1,7 +1,7 @@
 module GameUtils.GameFunctions where
 
 import Core.DbFunctions
-import GameUtils.GameFunctionsInit
+import GameUtils.GameStartFunctions
 
 import qualified Data.ByteString.Char8 as BS2
 import Control.Concurrent (threadDelay)

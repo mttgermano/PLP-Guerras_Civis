@@ -1,8 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Core.BackendServer where
 
-import LoginUtils.LoginPlayerFunctions
-import LoginUtils.LoginRoomFunctions
+import LoginUtils.PlayerFunctions
+import LoginUtils.RoomFunctions
 import Controllers.GameController
 
 import Web.Scotty

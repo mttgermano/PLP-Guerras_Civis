@@ -1,5 +1,5 @@
 {-# LANGUAGE DeriveGeneric #-}
-module LoginUtils.LoginRoomFunctions where
+module LoginUtils.RoomFunctions where
 import Core.DbFunctions
 
 import GHC.Generics

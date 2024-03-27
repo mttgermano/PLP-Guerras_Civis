@@ -23,15 +23,15 @@ executable PLP-Guerras-Civis
         Core.DbFunctions,
         Core.BackendServer,
         Controllers.GameController,
-        Controllers.GameRoundController,
+        Controllers.RoundController,
         GameUtils.GameFunctions,
-        GameUtils.GameFunctionsInit,
-        GameUtils.GameRoleFunctions,
-        GameUtils.GameChatFunctions,
-        GameUtils.GameRoundFunctions,
+        GameUtils.GameStartFunctions,
+        GameUtils.RoleFunctions,
+        GameUtils.ChatFunctions,
+        GameUtils.RoundFunctions,
         GameUtils.BotLogic,
-        LoginUtils.LoginPlayerFunctions,
-        LoginUtils.LoginRoomFunctions
+        LoginUtils.PlayerFunctions,
+        LoginUtils.RoomFunctions
 
     -- Other library packages from which modules are imported.
     build-depends:
