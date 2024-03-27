@@ -60,7 +60,7 @@ isPlayerAlive pUUID = do
 -- Count the number of live players of a role
 getPlayerRolesCount :: String -> Bool -> IO Int
 getPlayerRolesCount rName isGood = do
-    rPlayers    <- getRoomPlayers rName
+    rPlayers    <- getRoomPlayersUUIDList rName
 
     -- DB Query ----------------------------------
     total       <- mapM getIsGood rPlayers

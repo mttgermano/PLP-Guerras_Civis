@@ -17,12 +17,12 @@ import Database.PostgreSQL.Simple.Types (Query(Query))
 
 -- Room Data Type 
 data Room = Room{ 
-    rId :: String,
-    rName :: String,
-    rPassword :: String,
-    rMaster :: String,
-    isUp :: Bool,
-    cursedWord :: Maybe String,
+    rId         :: String,
+    rName       :: String,
+    rPassword   :: String,
+    rMaster     :: String,
+    isUp       :: Bool,
+    cursedWord  :: Maybe String,
     roundMessages :: Maybe String
 }deriving (Show, Generic)
 
@@ -55,12 +55,12 @@ createRoom player_name room_name room_password = do
             uuid <- fmap toString nextRandom    -- Generate random UUID
 
             let newRoom = Room { 
-                rId = uuid, 
-                rName = room_name,
-                rPassword = room_password, 
-                rMaster = player_name,
-                isUp = False,
-                cursedWord = Nothing,
+                rId         = uuid, 
+                rName       = room_name,
+                rPassword   = room_password, 
+                rMaster     = player_name,
+                isUp        = False,
+                cursedWord  = Nothing,
                 roundMessages = Nothing
             }
 

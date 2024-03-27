@@ -18,7 +18,7 @@ selectTheIndex pList gList b = [x | (x, flag) <- zip pList gList, flag == b]
 -- Get the list of all good players in a room
 getRoomPlayersGoodness :: String -> Bool -> IO [String]
 getRoomPlayersGoodness rName isGood = do
-    rPlayers        <- getRoomPlayers rName
+    rPlayers        <- getRoomPlayersUUIDList rName
     goodnessList    <- mapM getIsGood rPlayers
 
     return $ selectTheIndex rPlayers goodnessList isGood
@@ -32,8 +32,8 @@ getRoomBotsGoodness rName isGood = do
     return $ selectTheIndex rBots goodnessList isGood
 
 -- Get player name from id
-getPlayerFromUUID :: String -> IO String
-getPlayerFromUUID pUUID = do
+getPlayerNameFromUUID :: String -> IO String
+getPlayerNameFromUUID pUUID = do
     conn <- getDbConnection
 
     -- DB Query ----------------------------------
@@ -59,7 +59,7 @@ getUUIDFromPlayerName pName = do
 getPlayersNames :: [String] -> IO [String]
 getPlayersNames [] = return []
 getPlayersNames (id:ids) = do
-    pName           <- getPlayerFromUUID (show id)
+    pName           <- getPlayerNameFromUUID (show id)
     remainingStr    <- getPlayersNames ids
 
     return (pName : remainingStr)

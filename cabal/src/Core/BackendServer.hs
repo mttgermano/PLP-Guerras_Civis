@@ -4,16 +4,17 @@ module Core.BackendServer where
 import LoginUtils.PlayerFunctions
 import LoginUtils.RoomFunctions
 import Controllers.GameController
+import Controllers.ApiController
 
 import Web.Scotty
 import Data.Aeson (FromJSON(..), ToJSON(..), withObject, (.:), (.=), decode, object)
 import Network.Wai.Middleware.Cors (cors, CorsResourcePolicy(..))
-import Network.HTTP.Types (status400)
+import Network.HTTP.Types (status400, status200)
 
 -- Player -------------------------------------------------------
 data PlayerJson = PlayerJson { 
-    pjName :: String,
-    pjPassword :: String
+    pjName      :: String,
+    pjPassword  :: String
 } deriving (Show)
 
 instance FromJSON PlayerJson where
@@ -26,9 +27,9 @@ instance ToJSON PlayerJson where
 
 -- Room ---------------------------------------------------------
 data RoomJson = RoomJson{ 
-    rpjName :: String,
-    rjName :: String,
-    rjPassword :: String
+    rpjName     :: String,
+    rjName      :: String,
+    rjPassword  :: String
 } deriving (Show)
 
 instance FromJSON RoomJson where
@@ -84,7 +85,18 @@ instance ToJSON MessageJson where
     toJSON (MessageJson gcType pmName message) =
         object ["gcType" .= gcType, "pmName" .= pmName, "message" .= message]
 
+-- API Room JSON------------------------------------------------
+data ApiRoomJson = ApiRoomJson{
+    apiRName :: String
+} deriving (Show)
 
+instance FromJSON ApiRoomJson where
+    parseJSON = withObject "api" $ \v ->
+        ApiRoomJson <$> v .: "apiRName"
+
+instance ToJSON ApiRoomJson where
+    toJSON (ApiRoomJson apiRName) =
+        object ["apiRName" .= apiRName]
 
 -- Main ---------------------------------------------------------
 main :: IO ()
@@ -170,7 +182,7 @@ main = do
                     -- Call createRoom from LoginFunctions
                     result <- liftIO $ loginRoom (rpjName roomObj) (rjName roomObj) (rjPassword roomObj)
                     case result of
-                        RoomLoggedIn            -> return ()
+                        RoomLoggedIn                -> return ()
                         IncorrectRoomData errMsg    -> do
                             status status400
                             json $ object ["error" .= (errMsg :: String)]
@@ -229,31 +241,46 @@ main = do
 
 
         -- Front API --------------------------------------
-        get "/api/system/get_rooms/" $ do
+        get "/api/get_room/" $ do
             liftIO $ putStrLn $ replicate 50 '-'
             requestBody <- body
 
             case decode requestBody of
-                Just (messageObj :: MessageJson) -> do
-                    liftIO $ putStrLn $ "JSON [game]: " ++ show messageObj
-
-                    -- Call createRoom from LoginFunctions
-                    liftIO $ makeMessage (gcType messageObj) (pmName messageObj) (message messageObj)
+                Just (apiRoomObj :: ApiRoomJson) -> do
+                    -- Call getRoomData from 
+                    roomData <- liftIO $ getRoomData (apiRName apiRoomObj)
+                    let roomInfo = map (\(RoomData rName rMaster isUp) -> object ["rName" .= rName, "rMaster" .= rMaster, "isUp" .= isUp]) roomData
+                    
+                    status status200
+                    json roomInfo
                 _ -> do
                     status status400 -- Set HTTP status code to 400 (Bad Request)
-                    json $ object ["error" .= ("Invalid game message JSON" :: String)]
+                    json $ object ["error" .= ("Invalid get_room JSON" :: String)]
 
 
-        get "/api/room/get_players/" $ do
+        get "/api/get_roomm_list/" $ do
+            liftIO $ putStrLn $ replicate 50 '-'
+
+            -- Call getRoomList from ApiController
+            rList <- liftIO $ getRoomList
+
+            status status200
+            json $ object ["rList" .= (rList:: [String])]
+
+
+        get "/api/get_room_players/" $ do
             liftIO $ putStrLn $ replicate 50 '-'
             requestBody <- body
 
             case decode requestBody of
-                Just (messageObj :: MessageJson) -> do
-                    liftIO $ putStrLn $ "JSON [game]: " ++ show messageObj
-
+                Just (apiRoomObj :: ApiRoomJson) -> do
                     -- Call createRoom from LoginFunctions
-                    liftIO $ makeMessage (gcType messageObj) (pmName messageObj) (message messageObj)
+                    rPlayers <- liftIO $ getRoomPlayers (apiRName apiRoomObj)
+                    
+                    status status200
+                    json $ object ["rPlayers" .= (rPlayers:: [String])]
+
+
                 _ -> do
                     status status400 -- Set HTTP status code to 400 (Bad Request)
-                    json $ object ["error" .= ("Invalid game message JSON" :: String)]
+                    json $ object ["error" .= ("Invalid get_room_players JSON" :: String)]

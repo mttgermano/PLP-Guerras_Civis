@@ -17,10 +17,10 @@ import Database.PostgreSQL.Simple.Types (Query(Query))
 
 -- Player Data Type
 data Player = Player{ 
-    isBot :: Bool,
-    pId :: String,
-    pName :: String,
-    pPassword :: String,
+    isBot       :: Bool,
+    pId         :: String,
+    pName       :: String,
+    pPassword   :: String,
     currentRoom :: Maybe String     -- Represents the presence of the user in a room
 } deriving (Show, Generic)
 

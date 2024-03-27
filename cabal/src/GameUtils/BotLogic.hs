@@ -23,7 +23,7 @@ import GHC.Base (IO)
 
 botActionChoice :: String -> IO String
 botActionChoice rName = do
-    players <- getRoomPlayers rName
+    players <- getRoomPlayersUUIDList rName
 
     posicao <- randomRIO (0, length players - 1)
     let player_uuid = players !! posicao
@@ -64,7 +64,7 @@ createBots quant rName
 
 botBrain :: String -> String -> String -> IO ()
 botBrain rName messages botUuid = do
-    players <- getRoomPlayers rName
+    players <- getRoomPlayersUUIDList rName
     playersNames <- getPlayersNames players
 
     let allWords = words messages
@@ -86,7 +86,7 @@ botBrain rName messages botUuid = do
 
     close conn
 
-    bName <- getPlayerFromUUID botUuid
+    bName <- getPlayerNameFromUUID botUuid
     let playerToIncrement = players !! ind
     incrementVote bName playerToIncrement
 

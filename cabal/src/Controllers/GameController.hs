@@ -37,7 +37,7 @@ startGame rName pName = do
 
             if not isRoomUp
                 then do
-                    roomPlayers     <- getRoomPlayers rName
+                    roomPlayers     <- getRoomPlayersUUIDList rName
                     let nPlayers    = 12 - length roomPlayers
 
                     createBots          nPlayers rName 
@@ -60,18 +60,12 @@ startGame rName pName = do
 
 
 -- Finish the game
--- TODO
 endGame :: String -> String -> IO ()
 endGame rName reason = do
     putStrLn $ ("> O jogo [" ++ (rName) ++ "] acabou!")
     deleteRoom              rName
     deleteUserGameData      rName
     resetPlayersCurrentRoom rName
-    -- TODO
-        -- Delete all entries from UserGameData which contain players that were playing
-        -- Update the current_room from Player to ''    of the players that were playing
-        
-    -- make post request to the front end, saying that it need to go to the endGame page
 
 -- Make the Game Rounds
 makeRound :: String -> IO ()
