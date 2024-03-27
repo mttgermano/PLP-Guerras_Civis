@@ -23,6 +23,14 @@ getRoomPlayersGoodness rName isGood = do
 
     return $ selectTheIndex rPlayers goodnessList isGood
 
+-- Get the list of all good bots in a room
+getRoomBotsGoodness :: String -> Bool -> IO [String]
+getRoomBotsGoodness rName isGood = do
+    rBots        <- getRoomBots rName
+    goodnessList    <- mapM getIsGood rBots
+
+    return $ selectTheIndex rBots goodnessList isGood
+
 -- Update the round state of the Room
 updateRoundState :: String -> String -> IO ()
 updateRoundState room_name state = do
