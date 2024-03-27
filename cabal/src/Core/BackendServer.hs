@@ -112,8 +112,6 @@ main = do
 
             case decode requestBody of
                 Just (playerObj :: PlayerJson) -> do
-                    liftIO $ putStrLn $ "JSON [player]: " ++ show playerObj
-
                     -- Call createplayer from LoginFunctions
                     result <- liftIO $ createPlayer (pjName playerObj) (pjPassword playerObj)   -- cast Text to String
                     case result of
@@ -132,8 +130,6 @@ main = do
 
             case decode requestBody of
                 Just (playerObj :: PlayerJson) -> do
-                    liftIO $ putStrLn $ "JSON [player]: " ++ show playerObj
-
                     -- Call loginplayer from LoginFunctions
                     result <- liftIO $ loginPlayer (pjName playerObj) (pjPassword playerObj)
                     case result of
@@ -153,8 +149,6 @@ main = do
 
             case decode requestBody of
                 Just (roomObj :: RoomJson) -> do
-                    liftIO $ putStrLn $ "JSON [room]: " ++ show roomObj
-
                     -- Call createRoom from LoginFunctions
                     result <- liftIO $ createRoom (rpjName roomObj) (rjName roomObj) (rjPassword roomObj)
                     case result of
@@ -173,8 +167,6 @@ main = do
 
             case decode requestBody of
                 Just (roomObj :: RoomJson) -> do
-                    liftIO $ putStrLn $ "JSON [room]: " ++ show roomObj
-
                     -- Call createRoom from LoginFunctions
                     result <- liftIO $ loginRoom (rpjName roomObj) (rjName roomObj) (rjPassword roomObj)
                     case result of
@@ -194,8 +186,6 @@ main = do
 
             case decode requestBody of
                 Just (gameObj :: GameJson) -> do
-                    liftIO $ putStrLn $ "JSON [game]: " ++ show gameObj
-
                     -- Call createRoom from LoginFunctions
                     result <- liftIO $ startGame (grjName gameObj) (gpjName gameObj)
                     case result of
@@ -218,8 +208,6 @@ main = do
 
             case decode requestBody of
                 Just (actionObj :: ActionJson) -> do
-                    liftIO $ putStrLn $ "JSON [game]: " ++ show actionObj
-
                     -- Call createRoom from LoginFunctions
                     liftIO $ makeAction (paName actionObj) (action actionObj) (aReciever actionObj)
                 _ -> do
@@ -233,8 +221,6 @@ main = do
 
             case decode requestBody of
                 Just (messageObj :: MessageJson) -> do
-                    liftIO $ putStrLn $ "JSON [game]: " ++ show messageObj
-
                     -- Call createRoom from LoginFunctions
                     liftIO $ makeMessage (gcType messageObj) (pmName messageObj) (message messageObj)
                 _ -> do
