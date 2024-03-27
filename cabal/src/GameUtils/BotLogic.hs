@@ -165,6 +165,7 @@ botAction botId rName = do
         8 -> kill botId playerId
         9 -> police botId playerId
         10 -> save botId playerId
+        12 -> revenge botId playerId
 
 
 
