@@ -73,7 +73,6 @@ botBrain rName messages botUuid = do
     roles <- forM players $ \player -> do
         [Only role] <- query conn sqlQuery (Only player)
         return role
-
     ----------------------------------------------
 
     let comparation = compareIsGoodList botUuid players roles
@@ -84,42 +83,36 @@ botBrain rName messages botUuid = do
 
     close conn
 
-    botNameMaybe <- getPlayerFromID botUuid
-    case botNameMaybe of
-      Just botName -> do
-        playerToIncrement <- case ind of
-                               Just idx -> return (players !! idx)
-                               _        -> fail "No player to increment" -- Or handle this case appropriately
-        incrementVote botName playerToIncrement
-      Nothing -> return ()  -- Or handle this case appropriately
+    bName <- getPlayerFromID botUuid
+    let playerToIncrement = players !! ind
+    incrementVote bName playerToIncrement
 
 
 compareIsGood :: String -> [Int] -> String -> IO Int
 compareIsGood botId roles playerId = do
-    botIsGood <- getIsGood botId
-    playerIsGood <- getIsGood playerId
-    playerRole <- getRole playerId
+    botIsGood       <- getIsGood botId
+    playerIsGood    <- getIsGood playerId
+    playerRole      <- getRole playerId
+
     if (botIsGood /= playerIsGood) && (playerRole `elem` roles)
-        then return 1000000
-    else if (botIsGood == playerIsGood) && (playerRole `elem` roles)
-        then return (-100000)
-    else
-        return 0
+        then    return 1000000
+    else if ((botIsGood == playerIsGood) && (playerRole `elem` roles))
+        then    return (-100000)
+    else        return 0
 
 
 compareIsGoodList :: String -> [String] -> [Int] -> IO [Int]
 compareIsGoodList botId playerIds roles = mapM (compareIsGood botId roles) playerIds
 
 
-biggestVote :: Ord a => [a] -> Maybe Int
-biggestVote [] = Nothing
-biggestVote lista = Just (maiorIndiceAux lista 0 0)
+biggestVote :: Ord a => [a] -> Int
+biggestVote []      = 0
+biggestVote list    = biggestIdxAux list 0 0
   where
-    maiorIndiceAux [] _ _ = 0
-    maiorIndiceAux (x:xs) indice maiorIndiceAtual
-      | x > (lista !! maiorIndiceAtual) = maiorIndiceAux xs (indice + 1) indice
-      | otherwise = maiorIndiceAux xs (indice + 1) maiorIndiceAtual
-
+    biggestIdxAux [] _ _ = 0
+    biggestIdxAux (x:xs) idx maiorIndiceAtual
+      | x > (list !! maiorIndiceAtual)  = biggestIdxAux xs (idx + 1) idx
+      | otherwise                       = biggestIdxAux xs (idx + 1) maiorIndiceAtual
 
 
 countReferencesForAll :: [String] -> [String] -> [Int]
@@ -133,8 +126,7 @@ listSom xs [] = xs
 listSom (x:xs) (y:ys) = (x + y) : listSom xs ys
 
 
-
 nameCountReferences :: String -> [String]-> Int
 nameCountReferences player playersNames
     | null playersNames = 0
-    | otherwise = length (filter(== player)playersNames)
+    | otherwise         = length (filter(== player)playersNames)

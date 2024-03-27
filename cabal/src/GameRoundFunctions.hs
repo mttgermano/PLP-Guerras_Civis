@@ -64,29 +64,49 @@ actionGoodRound rName = do
 
 
 -- Get player name from id
-getPlayerFromID :: String -> IO (Maybe String)
-getPlayerFromID playerId = do
+getPlayerFromID :: String -> IO String
+getPlayerFromID pUUID = do
     conn <- getDbConnection
 
     -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "\
-               \SELECT p.player_name \
-               \FROM Player p \
-               \WHERE p.player_uuid = ?"
-    result <- query conn sqlQuery (Only playerId)
+    let sqlQuery = Query $ BS2.pack "SELECT player_name FROM Player WHERE player_uuid = ?"
+    [Only pName] <- query conn sqlQuery [pUUID]
     ----------------------------------------------
-    case result of
-        [Only playerName] -> return (Just playerName)
-        _ -> return Nothing
+    close conn
+    return pName
+
+-- Get player ID from Name
+getUUIDFromPlayerName :: String -> IO String
+getUUIDFromPlayerName pName = do
+    conn <- getDbConnection
+
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "SELECT player_uuid FROM Player WHERE player_name = ?"
+    [Only pUUID] <- query conn sqlQuery [pName]
+    ----------------------------------------------
+    close conn
+    return pUUID
 
 
 -- Return a list with the players names
 getPlayersNames :: [String] -> IO [String]
 getPlayersNames [] = return []
 getPlayersNames (id:ids) = do
-    maybeName   <- getPlayerFromID (show id)
-    rest        <- getPlayersNames ids
+    pName           <- getPlayerFromID (show id)
+    remainingStr    <- getPlayersNames ids
 
-    return $ case maybeName of
-        Just name -> name : rest
-        Nothing   -> rest
+    return (pName : remainingStr)
+
+
+-- Check if the player can do the action
+isAllowed :: String ->  IO Bool
+isAllowed pName = do
+    conn    <- getDbConnection
+
+    pUUID   <- getUUIDFromPlayerName pName
+    pRoom   <- getPlayerRoomName pUUID
+    
+    pRoleIsGood     <- getIsGood pUUID
+    rState          <- getRoomRoundState pRoom
+
+    return $ (not pRoleIsGood && rState == "evilRound") || (pRoleIsGood && rState == "goodRound")

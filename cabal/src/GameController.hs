@@ -32,7 +32,7 @@ startGame rName pName = do
 
     if roomMaster
         then do
-            isRoomUp <- getRoomState rName
+            isRoomUp <- getRoomUpState rName
 
             if not isRoomUp
                 then do
@@ -42,7 +42,7 @@ startGame rName pName = do
                     createBots          nPlayers rName 
                     addPlayersToGame    rName
                     distributeRoles     rName
-                    setRoomState        rName True
+                    setRoomUpState      rName True
 
                     putStrLn $ "> The [" ++ rName ++ "] game started!"
                     game rName 0 6 6
@@ -65,7 +65,7 @@ startGame rName pName = do
 endGame :: String -> String -> IO ()
 endGame rName reason = do
     putStrLn $ ("> O jogo [" ++ (rName) ++ "] acabou!")
-    setRoomState rName False
+    setRoomUpState rName False
     -- TODO
         -- Delete all entries from UserGameData which contain players that were playing
         -- Update the current_room from Player to ''    of the players that were playing

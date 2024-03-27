@@ -93,3 +93,14 @@ getRole uuid = do
     case result of
         [Only role]     -> return role
         _               -> return (-1)
+
+getPlayerRoomName :: String -> IO String
+getPlayerRoomName pUUID = do
+    conn <- getDbConnection
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "SELECT room_name FROM Room WHERE room_uuid = (SELECT current_room FROM Player WHERE player_uuid = ?)"
+    [Only rName] <- query conn sqlQuery (Only pUUID) :: IO [Only String]
+    ----------------------------------------------
+    close conn
+
+    return rName

@@ -42,8 +42,8 @@ instance ToRow UserGameData where
 
 
 -- Build up a Room
-setRoomState :: String -> Bool -> IO ()
-setRoomState rName state = do
+setRoomUpState :: String -> Bool -> IO ()
+setRoomUpState rName state = do
     conn <- getDbConnection
 
     -- DB Query ----------------------------------
@@ -174,8 +174,8 @@ getRoomUuid rName = do
     return result
 
 -- Get the State of a Room
-getRoomState :: String -> IO Bool
-getRoomState rName = do
+getRoomUpState :: String -> IO Bool
+getRoomUpState rName = do
     conn <- getDbConnection
 
     -- DB Query ----------------------------------
@@ -183,8 +183,18 @@ getRoomState rName = do
     [Only result] <- query conn sqlQuery (Only rName)
     ----------------------------------------------
     close conn
-
     return result
+
+getRoomRoundState :: String -> IO String
+getRoomRoundState rName = do
+    conn <- getDbConnection
+
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "SELECT round_state FROM Room WHERE room_name = ?"    
+    [Only state] <- query conn sqlQuery (Only rName)
+    ----------------------------------------------
+    close conn
+    return state
 
 -- Reset the Round Messages
 resetRoundMessages :: String -> IO ()

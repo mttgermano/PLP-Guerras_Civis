@@ -1,5 +1,6 @@
 module GameRoleFunctions where
 import DbFunctions
+import GameRoundFunctions
 
 import qualified Data.ByteString.Char8 as BS2
 
@@ -9,18 +10,26 @@ import Database.PostgreSQL.Simple.ToRow
 import Database.PostgreSQL.Simple.Types (Query(Query))
 
 
+errPermissionMessage :: String -> IO ()
+errPermissionMessage pName = putStrLn $ ("> User [" ++ pName ++ "] doesn't permission to execute the action")
 
 -- Kill a player 
 kill :: String -> String -> IO ()     
 kill agent action_reciever = do
-    conn <- getDbConnection
+    allowed <- isAllowed agent
 
-    -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "UPDATE UserGameData SET kill_vote = true WHERE user_id = ?"
-    result <- execute conn sqlQuery (Only agent)
-    ----------------------------------------------
-    putStrLn $ ("> User [" ++ agent ++ "] Kill Vote for [" ++ (action_reciever) ++ "]")
-    close conn
+    if allowed
+        then do
+            conn    <- getDbConnection
+
+            -- DB Query ----------------------------------
+            let sqlQuery = Query $ BS2.pack "UPDATE UserGameData SET kill_vote = true WHERE user_id = ?"
+            result <- execute conn sqlQuery (Only agent)
+            ----------------------------------------------
+            putStrLn $ ("> User [" ++ agent ++ "] Kill Vote for [" ++ (action_reciever) ++ "]")
+            close conn
+        else
+            errPermissionMessage agent
     
 
 -- Save a player of being killed
@@ -28,6 +37,7 @@ save :: String -> String -> IO ()
 save agent action_reciever = do
     conn <- getDbConnection
 
+    
     -- DB Query ----------------------------------
     let sqlQuery = Query $ BS2.pack "UPDATE UserGameData SET kill_vote = kill_vote -1 WHERE user_id = ?"
     result <- execute conn sqlQuery (Only agent)
