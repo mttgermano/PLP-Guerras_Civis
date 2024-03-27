@@ -21,9 +21,11 @@ errPermissionMessage pName = putStrLn $ ("> User [" ++ pName ++ "] doesn't permi
 kill :: String -> String -> IO ()     
 kill agent action_reciever = do
     allowed <- isAllowed agent
+    
 
     if allowed
         then do
+            
             conn    <- getDbConnection
 
             -- DB Query ----------------------------------
@@ -32,11 +34,16 @@ kill agent action_reciever = do
             ----------------------------------------------
             putStrLn $ ("> User [" ++ agent ++ "] Kill Vote for [" ++ action_reciever ++ "]")
             close conn
+
+            role <- getRole action_reciever
+            if role == 1
+                then fbiIsWatching action_reciever agent
+                else return ()
         else
             errPermissionMessage agent
 
 
--- Kill a player 
+-- aprentice logic
 aprentice :: String -> String -> IO ()     
 aprentice agent action_reciever = do
     allowed <- isAllowed agent
@@ -44,17 +51,32 @@ aprentice agent action_reciever = do
     players <- getRoomPlayers rName
     isAssassinAlive <- isRoleAlive players 1
 
+    
 
     if allowed && isAssassinAlive
         then do
-            conn    <- getDbConnection
+            kill agent action_reciever
 
-            -- DB Query ----------------------------------
-            let sqlQuery = Query $ BS2.pack "UPDATE UserGameData SET kill_vote = kill_vote + 1 WHERE player_uuid = ?"
-            _ <- execute conn sqlQuery (Only agent)
-            ----------------------------------------------
-            putStrLn $ ("> User [" ++ agent ++ "] Kill Vote for [" ++ action_reciever ++ "]")
-            close conn
+            role <- getRole action_reciever
+            if role == 1
+                then fbiIsWatching action_reciever agent
+                else return ()
+        else
+            errPermissionMessage agent
+
+
+-- aprentice logic
+police :: String -> String -> IO ()     
+police agent action_reciever = do
+    allowed <- isAllowed agent
+    rName <- getPlayerRoomName agent
+    players <- getRoomPlayers rName
+    isJudgeAlive <- isRoleAlive players 8
+
+
+    if allowed && not isJudgeAlive
+        then do
+            kill agent action_reciever
         else
             errPermissionMessage agent
     
@@ -67,13 +89,17 @@ save agent action_reciever = do
     if allowed
         then do
             conn    <- getDbConnection
-    
             -- DB Query ----------------------------------
             let sqlQuery = Query $ BS2.pack "UPDATE UserGameData SET kill_vote = kill_vote -1 WHERE player_uuid = ?"
             result <- execute conn sqlQuery (Only agent)
             ----------------------------------------------
             putStrLn $ ("> User [" ++ agent ++ "] Saved [" ++ (action_reciever) ++ "]")
             close conn
+
+            role <- getRole action_reciever
+            if role == 1
+                then fbiIsWatching action_reciever agent
+                else return ()
         else
             errPermissionMessage agent
 
@@ -86,8 +112,12 @@ search agent action_reciever = do
     -- TODO
     if allowed
         then do
-            conn    <- getDbConnection
-            putStrLn $ ("> User [" ++ agent ++ "] Searched Role for [" ++ (action_reciever) ++ "]")
+            revealPlayerRole agent action_reciever
+            role <- getRole action_reciever
+
+            if role == 1
+                then fbiIsWatching action_reciever agent
+                else return ()
         else
             errPermissionMessage agent
 
@@ -95,12 +125,18 @@ search agent action_reciever = do
 reveal :: String -> String -> IO ()
 reveal agent action_reciever = do
     allowed <- isAllowed agent
+    rName <- getPlayerRoomName agent
+    players <- getRoomPlayers rName
 
     -- TODO
     if allowed
         then do
-            conn    <- getDbConnection
-            putStrLn $ ("> User [" ++ agent ++ "] Revealed [" ++ (action_reciever) ++ "]")
+            revealToAll players action_reciever
+            role <- getRole action_reciever
+
+            if role == 1
+                then fbiIsWatching action_reciever agent
+                else return ()
         else
             errPermissionMessage agent
 
@@ -120,6 +156,11 @@ silence agent action_reciever = do
             ----------------------------------------------
             putStrLn $ ("> User [" ++ agent ++ "] Silenced [" ++ (action_reciever) ++ "]")
             close conn
+
+            role <- getRole action_reciever
+            if role == 1
+                then fbiIsWatching action_reciever agent
+                else return ()
         else
             errPermissionMessage agent
 
@@ -139,6 +180,11 @@ paralize agent action_reciever = do
             ----------------------------------------------
             putStrLn $ ("> User [" ++ agent ++ "] Paralized [" ++ (action_reciever) ++ "]")
             close conn
+
+            role <- getRole action_reciever
+            if role == 1
+                then fbiIsWatching action_reciever agent
+                else return ()
         else
             errPermissionMessage agent
 
@@ -159,3 +205,8 @@ setCursedWord agent cursedWord = do
             putStrLn $ ("> User [" ++ agent ++ "] set Cursed Word for [" ++ "] rName")
         else
             errPermissionMessage agent
+
+
+fbiIsWatching :: String -> String -> IO()
+fbiIsWatching police actionMaker = do
+    revealPlayerRole police actionMaker

@@ -163,7 +163,7 @@ botAction botId rName = do
         6 -> setCursedWord botId choiceWord
         7 -> search botId playerId
         8 -> kill botId playerId
-        9 -> kill botId playerId
+        9 -> police botId playerId
         10 -> save botId playerId
 
 
