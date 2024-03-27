@@ -258,7 +258,7 @@ main = do
                     json $ object ["error" .= ("Invalid get_room JSON" :: String)]
 
 
-        get "/api/get_roomm_list/" $ do
+        get "/api/get_rooms_list/" $ do
             liftIO $ putStrLn $ replicate 50 '-'
 
             -- Call getRoomList from ApiController
