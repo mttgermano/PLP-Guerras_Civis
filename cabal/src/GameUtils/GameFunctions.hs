@@ -105,3 +105,13 @@ getPlayerRoomName pUUID = do
     close conn
 
     return rName
+
+
+isRoleAlive :: [String] -> Int -> IO Bool
+isRoleAlive [] _ = return False
+isRoleAlive (playerId:rest) role = do
+    isAlive <- isPlayerAlive playerId
+    playerRole <- getRole playerId
+    if isAlive && playerRole == role
+        then return True
+        else isRoleAlive rest role

@@ -2,6 +2,9 @@ module GameUtils.RoleFunctions where
 
 import Core.DbFunctions
 import GameUtils.RoundFunctions
+import GameUtils.GameFunctions
+import GameUtils.GameStartFunctions
+
 
 import qualified Data.ByteString.Char8 as BS2
 
@@ -27,7 +30,30 @@ kill agent action_reciever = do
             let sqlQuery = Query $ BS2.pack "UPDATE UserGameData SET kill_vote = kill_vote + 1 WHERE player_uuid = ?"
             _ <- execute conn sqlQuery (Only agent)
             ----------------------------------------------
-            putStrLn $ ("> User [" ++ agent ++ "] Kill Vote for [" ++ (action_reciever) ++ "]")
+            putStrLn $ ("> User [" ++ agent ++ "] Kill Vote for [" ++ action_reciever ++ "]")
+            close conn
+        else
+            errPermissionMessage agent
+
+
+-- Kill a player 
+aprentice :: String -> String -> IO ()     
+aprentice agent action_reciever = do
+    allowed <- isAllowed agent
+    rName <- getPlayerRoomName agent
+    players <- getRoomPlayers rName
+    isAssassinAlive <- isRoleAlive players 1
+
+
+    if allowed && isAssassinAlive
+        then do
+            conn    <- getDbConnection
+
+            -- DB Query ----------------------------------
+            let sqlQuery = Query $ BS2.pack "UPDATE UserGameData SET kill_vote = kill_vote + 1 WHERE player_uuid = ?"
+            _ <- execute conn sqlQuery (Only agent)
+            ----------------------------------------------
+            putStrLn $ ("> User [" ++ agent ++ "] Kill Vote for [" ++ action_reciever ++ "]")
             close conn
         else
             errPermissionMessage agent
