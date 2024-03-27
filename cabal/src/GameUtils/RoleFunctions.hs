@@ -57,6 +57,7 @@ search :: String -> String -> IO ()
 search agent action_reciever = do
     allowed <- isAllowed agent
 
+    -- TODO
     if allowed
         then do
             conn    <- getDbConnection
@@ -69,6 +70,7 @@ reveal :: String -> String -> IO ()
 reveal agent action_reciever = do
     allowed <- isAllowed agent
 
+    -- TODO
     if allowed
         then do
             conn    <- getDbConnection

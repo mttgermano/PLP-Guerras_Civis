@@ -1,7 +1,7 @@
-module Controllers.GameRoundController where
+module Controllers.RoundController where
 
-import GameUtils.GameRoundFunctions
-import GameUtils.GameFunctionsInit
+import GameUtils.RoundFunctions
+import GameUtils.GameStartFunctions
 import GameUtils.GameFunctions
 
 -- Run the Round that the actions happend

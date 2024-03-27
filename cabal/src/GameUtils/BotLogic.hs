@@ -4,7 +4,7 @@ import Core.DbFunctions
 import GameUtils.GameFunctions
 import GameUtils.GameStartFunctions
 import GameUtils.RoundFunctions
-import LoginUtils.LoginPlayerFunctions
+import LoginUtils.PlayerFunctions
 
 import qualified Data.ByteString.Char8 as BS2
 
