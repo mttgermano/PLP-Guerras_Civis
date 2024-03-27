@@ -24,8 +24,8 @@ kill agent action_reciever = do
             conn    <- getDbConnection
 
             -- DB Query ----------------------------------
-            let sqlQuery = Query $ BS2.pack "UPDATE UserGameData SET kill_vote = true WHERE user_id = ?"
-            result <- execute conn sqlQuery (Only agent)
+            let sqlQuery = Query $ BS2.pack "UPDATE UserGameData SET kill_vote = kill_vote + 1 WHERE player_uuid = ?"
+            _ <- execute conn sqlQuery (Only agent)
             ----------------------------------------------
             putStrLn $ ("> User [" ++ agent ++ "] Kill Vote for [" ++ (action_reciever) ++ "]")
             close conn
@@ -43,7 +43,7 @@ save agent action_reciever = do
             conn    <- getDbConnection
     
             -- DB Query ----------------------------------
-            let sqlQuery = Query $ BS2.pack "UPDATE UserGameData SET kill_vote = kill_vote -1 WHERE user_id = ?"
+            let sqlQuery = Query $ BS2.pack "UPDATE UserGameData SET kill_vote = kill_vote -1 WHERE player_uuid = ?"
             result <- execute conn sqlQuery (Only agent)
             ----------------------------------------------
             putStrLn $ ("> User [" ++ agent ++ "] Saved [" ++ (action_reciever) ++ "]")
@@ -89,7 +89,7 @@ silence agent action_reciever = do
             conn    <- getDbConnection
 
             -- DB Query ----------------------------------
-            let sqlQuery = Query $ BS2.pack "UPDATE UserGameData SET is_silenced = true WHERE user_id = ?"
+            let sqlQuery = Query $ BS2.pack "UPDATE UserGameData SET is_silenced = true WHERE player_uuid = ?"
             result <- execute conn sqlQuery (Only agent)
             ----------------------------------------------
             putStrLn $ ("> User [" ++ agent ++ "] Silenced [" ++ (action_reciever) ++ "]")
@@ -108,7 +108,7 @@ paralize agent action_reciever = do
             conn    <- getDbConnection
 
             -- DB Query ----------------------------------
-            let sqlQuery = Query $ BS2.pack "UPDATE UserGameData SET is_paralized = true WHERE user_id = ?"
+            let sqlQuery = Query $ BS2.pack "UPDATE UserGameData SET is_paralized = true WHERE player_uuid = ?"
             result <- execute conn sqlQuery (Only agent)
             ----------------------------------------------
             putStrLn $ ("> User [" ++ agent ++ "] Paralized [" ++ (action_reciever) ++ "]")
