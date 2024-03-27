@@ -207,6 +207,22 @@ setCursedWord agent cursedWord = do
             errPermissionMessage agent
 
 
+revenge :: String -> String -> IO ()
+revenge agent action_reciever = do
+    allowed <- isAllowed agent
+    conn    <- getDbConnection
+
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "SELECT kill_vote FROM UserGameData WHERE player_uuid = ?"
+    result <- execute conn sqlQuery (Only agent)
+    ----------------------------------------------
+
+    if allowed && result > 0
+        then do
+            kill agent action_reciever
+        else
+            errPermissionMessage agent
+
 fbiIsWatching :: String -> String -> IO()
 fbiIsWatching police actionMaker = do
     revealPlayerRole police actionMaker
