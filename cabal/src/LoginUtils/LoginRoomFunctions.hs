@@ -1,7 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
--- module RoomFunctions (createRoom, loginRoom) where
-module LoginRoomFunctions where
-import DbFunctions
+module LoginUtils.LoginRoomFunctions where
+import Core.DbFunctions
 
 import GHC.Generics
 import Data.UUID.V4 (nextRandom)

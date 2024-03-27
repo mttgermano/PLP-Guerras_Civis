@@ -1,6 +1,7 @@
-module GameFunctions where
-import GameFunctionsInit
-import DbFunctions
+module GameUtils.GameFunctions where
+
+import Core.DbFunctions
+import GameUtils.GameFunctionsInit
 
 import qualified Data.ByteString.Char8 as BS2
 import Control.Concurrent (threadDelay)

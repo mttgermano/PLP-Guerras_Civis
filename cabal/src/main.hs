@@ -1,5 +1,5 @@
 module Main where
-import BackendServer
+import Core.BackendServer as SYS
 
 main :: IO ()
-main = BackendServer.main 
+main = SYS.main 

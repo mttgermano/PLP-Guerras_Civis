@@ -1,9 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
-module BackendServer where
+module Core.BackendServer where
 
-import LoginPlayerFunctions
-import LoginRoomFunctions
-import GameController
+import LoginUtils.LoginPlayerFunctions
+import LoginUtils.LoginRoomFunctions
+import Controllers.GameController
 
 import Web.Scotty
 import Data.Aeson (FromJSON(..), ToJSON(..), withObject, (.:), (.=), decode, object)

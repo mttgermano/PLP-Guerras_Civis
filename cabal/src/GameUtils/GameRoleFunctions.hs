@@ -1,6 +1,7 @@
-module GameRoleFunctions where
-import DbFunctions
-import GameRoundFunctions
+module GameUtils.GameRoleFunctions where
+
+import Core.DbFunctions
+import GameUtils.GameRoundFunctions
 
 import qualified Data.ByteString.Char8 as BS2
 

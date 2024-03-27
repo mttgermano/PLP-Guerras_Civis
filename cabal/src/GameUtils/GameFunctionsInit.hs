@@ -1,6 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
-module GameFunctionsInit where
-import DbFunctions
+module GameUtils.GameFunctionsInit where
+import Core.DbFunctions
 
 import System.Random
 import Data.List (permutations)
