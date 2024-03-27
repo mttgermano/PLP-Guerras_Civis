@@ -22,6 +22,7 @@ executable PLP-Guerras-Civis
     other-modules:
         Core.DbFunctions,
         Core.BackendServer,
+        Controllers.ApiController,
         Controllers.GameController,
         Controllers.RoundController,
         GameUtils.GameFunctions,
