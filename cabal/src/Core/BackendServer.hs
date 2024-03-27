@@ -252,7 +252,7 @@ main = do
                     let roomInfo = map (\(RoomData rName rMaster isUp) -> object ["rName" .= rName, "rMaster" .= rMaster, "isUp" .= isUp]) roomData
                     
                     status status200
-                    json roomInfo
+                    json (head roomInfo)
                 _ -> do
                     status status400 -- Set HTTP status code to 400 (Bad Request)
                     json $ object ["error" .= ("Invalid get_room JSON" :: String)]
