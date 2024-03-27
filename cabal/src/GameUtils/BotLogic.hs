@@ -72,9 +72,9 @@ botBrain rName messages botUuid = do
 
     conn <- getDbConnection
     -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "SELECT role_idx FROM UserGameData WHERE user_id IN ?"
+    let sqlQuery = Query $ BS2.pack "SELECT who_is_known FROM RoleKnowledge WHERE who_knows = ?"
     roles <- forM players $ \player -> do
-        [Only role] <- query conn sqlQuery (Only player)
+        [Only role] <- query conn sqlQuery (Only botUuid)
         return role
     ----------------------------------------------
 
@@ -91,21 +91,20 @@ botBrain rName messages botUuid = do
     incrementVote bName playerToIncrement
 
 
-compareIsGoodIsAlive :: String -> [Int] -> String -> IO Int
+compareIsGoodIsAlive :: String -> [String] -> String -> IO Int
 compareIsGoodIsAlive botId roles playerId = do
     botIsGood       <- getIsGood botId
     playerIsGood    <- getIsGood playerId
-    playerRole      <- getRole playerId
     playerAlive     <- isPlayerAlive playerId
 
-    if (botIsGood /= playerIsGood) && (playerRole `elem` roles) && playerAlive
+    if (botIsGood /= playerIsGood) && (playerId `elem` roles) && playerAlive
         then    return 1000000
-    else if ((botIsGood == playerIsGood) && (playerRole `elem` roles)) || not playerAlive
+    else if ((botIsGood == playerIsGood) && (playerId `elem` roles)) || not playerAlive
         then    return (-100000)
     else        return 0
 
 
-compareIsGoodList :: String -> [String] -> [Int] -> IO [Int]
+compareIsGoodList :: String -> [String] -> [String] -> IO [Int]
 compareIsGoodList botId playerIds roles = mapM (compareIsGoodIsAlive botId roles) playerIds
 
 
@@ -139,7 +138,7 @@ nameCountReferences player playersNames
 
 
 possibleWords :: [String]
-possibleWords = ["matou", "acho", "", "livro", "água", "banana", "futebol", "computador", "verde", "amor", "tempo", "cidade", "música", "felicidade"]
+possibleWords = ["matou", "acho", "teste", "livro", "água", "banana", "futebol", "computador", "amor", "tempo", "cidade", "felicidade"]
 
 -- Function to generate a random Portuguese word
 randomWord :: IO String
@@ -158,15 +157,16 @@ botAction botId rName = do
 
     case botRole of
         1 -> kill botId playerId
-        2 -> kill botId playerId
+        2 -> aprentice botId playerId
         3 -> reveal botId playerId
         4 -> paralize botId playerId
         5 -> silence botId playerId
         6 -> setCursedWord botId choiceWord
         7 -> search botId playerId
         8 -> kill botId playerId
-        9 -> kill botId playerId
+        9 -> police botId playerId
         10 -> save botId playerId
+        12 -> revenge botId playerId
 
 
 

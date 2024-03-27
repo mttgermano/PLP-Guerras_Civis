@@ -11,6 +11,7 @@ import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.ToField
 import Database.PostgreSQL.Simple.ToRow
 import Database.PostgreSQL.Simple.Types (Query(Query))
+import GHC.Base (IO)
 
 
 
@@ -110,3 +111,27 @@ getPlayerRoomName pUUID = do
     close conn
 
     return rName
+
+
+isRoleAlive :: [String] -> Int -> IO Bool
+isRoleAlive [] _ = return False
+isRoleAlive (playerId:rest) role = do
+    isAlive <- isPlayerAlive playerId
+    playerRole <- getRole playerId
+    if isAlive && playerRole == role
+        then return True
+        else isRoleAlive rest role
+
+
+revealPlayerRole :: String -> String -> IO ()
+revealPlayerRole agent agent_reciever = do
+    conn <- getDbConnection
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "INSERT INTO RoleKnowledge (who_knows, who_is_known) VALUES (?, ?)"
+    _ <- execute conn sqlQuery (agent, agent_reciever)
+    ----------------------------------------------
+    close conn
+
+
+revealToAll :: [String] -> String -> IO ()
+revealToAll players action_receiver = mapM_ (\id -> revealPlayerRole id action_receiver) players
