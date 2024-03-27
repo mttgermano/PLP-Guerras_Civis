@@ -1,8 +1,9 @@
 module Controllers.GameController where
 
 import Controllers.RoundController
-import GameUtils.GameFunctions
 import GameUtils.GameStartFunctions
+import GameUtils.GameStopFunctions
+import GameUtils.GameFunctions
 import GameUtils.RoleFunctions
 import GameUtils.ChatFunctions
 import GameUtils.BotLogic
@@ -58,14 +59,14 @@ startGame rName pName = do
             return (NotRoomMaster errMsg)
 
 
-
-
 -- Finish the game
 -- TODO
 endGame :: String -> String -> IO ()
 endGame rName reason = do
     putStrLn $ ("> O jogo [" ++ (rName) ++ "] acabou!")
-    setRoomUpState rName False
+    deleteRoom              rName
+    deleteUserGameData      rName
+    resetPlayersCurrentRoom rName
     -- TODO
         -- Delete all entries from UserGameData which contain players that were playing
         -- Update the current_room from Player to ''    of the players that were playing
