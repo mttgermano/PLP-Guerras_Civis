@@ -67,8 +67,8 @@ setRole pName role = do
 
 
 -- Get all Players UUID from a Room
-getRoomPlayers :: String -> IO [String]
-getRoomPlayers rName = do
+getRoomPlayersUUIDList :: String -> IO [String]
+getRoomPlayersUUIDList rName = do
     conn    <- getDbConnection
     rUuid   <- getRoomUuid rName
 
@@ -94,7 +94,8 @@ randomList n = do
 addPlayersToGame :: String -> IO ()
 addPlayersToGame rName = do
     conn            <- getDbConnection
-    roomPlayers     <- getRoomPlayers rName
+    roomPlayers     <- getRoomPlayersUUIDList rName
+
 
     -- Iterate over roomPlayers and perform insertion for each player
     mapM_ (\playerUuid -> do
@@ -126,7 +127,7 @@ distributeRoles rName = do
     putStrLn  action
     
     roles_index  <- randomList 12
-    room_players <- getRoomPlayers rName
+    room_players <- getRoomPlayersUUIDList rName
 
     zipWithM_ (\player roleIndex -> setRole player (show roleIndex)) room_players roles_index
 

@@ -1,8 +1,9 @@
 module Controllers.GameController where
 
 import Controllers.RoundController
-import GameUtils.GameFunctions
 import GameUtils.GameStartFunctions
+import GameUtils.GameStopFunctions
+import GameUtils.GameFunctions
 import GameUtils.RoleFunctions
 import GameUtils.ChatFunctions
 import GameUtils.BotLogic
@@ -36,7 +37,7 @@ startGame rName pName = do
 
             if not isRoomUp
                 then do
-                    roomPlayers     <- getRoomPlayers rName
+                    roomPlayers     <- getRoomPlayersUUIDList rName
                     let nPlayers    = 12 - length roomPlayers
 
                     createBots          nPlayers rName 
@@ -58,19 +59,13 @@ startGame rName pName = do
             return (NotRoomMaster errMsg)
 
 
-
-
 -- Finish the game
--- TODO
 endGame :: String -> String -> IO ()
 endGame rName reason = do
     putStrLn $ ("> O jogo [" ++ (rName) ++ "] acabou!")
-    setRoomUpState rName False
-    -- TODO
-        -- Delete all entries from UserGameData which contain players that were playing
-        -- Update the current_room from Player to ''    of the players that were playing
-        
-    -- make post request to the front end, saying that it need to go to the endGame page
+    deleteRoom              rName
+    deleteUserGameData      rName
+    resetPlayersCurrentRoom rName
 
 -- Make the Game Rounds
 makeRound :: String -> IO ()

@@ -43,13 +43,14 @@ incrementVote pName pName_voted = do
     close conn
 
 
+-- Get a Bool telling if the player is alive - using its UUID
 isPlayerAlive ::  String -> IO Bool
-isPlayerAlive playerUuid = do
+isPlayerAlive pUUID = do
     conn <- getDbConnection
 
     -- DB Query ----------------------------------
     let sqlQuery = Query $ BS2.pack "SELECT is_alive FROM UserGameData WHERE player_uuid = ?"    
-    result <- query conn sqlQuery (Only playerUuid)
+    result <- query conn sqlQuery (Only pUUID)
     ----------------------------------------------
     close conn
     case result of
@@ -60,7 +61,7 @@ isPlayerAlive playerUuid = do
 -- Count the number of live players of a role
 getPlayerRolesCount :: String -> Bool -> IO Int
 getPlayerRolesCount rName isGood = do
-    rPlayers    <- getRoomPlayers rName
+    rPlayers    <- getRoomPlayersUUIDList rName
 
     -- DB Query ----------------------------------
     total       <- mapM getIsGood rPlayers
@@ -71,12 +72,13 @@ getPlayerRolesCount rName isGood = do
         else return (12 - count)
 
 
+-- Get a Bool telling if the Player is good or not, using its UUID
 getIsGood :: String -> IO Bool
-getIsGood uuid = do
+getIsGood pUUID = do
     conn <- getDbConnection
     -- DB Query ----------------------------------
     let sqlQuery = Query $ BS2.pack "SELECT r.isGood FROM UserGameData u INNER JOIN Roles r ON u.role_idx = r.role_idx WHERE u.player_uuid = ?"
-    result <- query conn sqlQuery (Only uuid) :: IO [Only Bool]
+    result <- query conn sqlQuery (Only pUUID) :: IO [Only Bool]
     ----------------------------------------------
     close conn
 
@@ -84,18 +86,21 @@ getIsGood uuid = do
     return answer
 
 
+-- Get the role of a player, using its UUID
 getRole :: String -> IO Int
-getRole uuid = do
+getRole pUUID = do
     conn <- getDbConnection
     -- DB Query ----------------------------------
     let sqlQuery = Query $ BS2.pack "SELECT r.role_idx FROM UserGameData u INNER JOIN Roles r ON u.role_idx = r.role_idx WHERE u.player_uuid = ?"
-    result <- query conn sqlQuery (Only uuid)
+    result <- query conn sqlQuery (Only pUUID)
     ----------------------------------------------
     close conn
     case result of
         [Only role]     -> return role
         _               -> return (-1)
 
+
+-- Get the Room Name of a player, using its uuid
 getPlayerRoomName :: String -> IO String
 getPlayerRoomName pUUID = do
     conn <- getDbConnection
