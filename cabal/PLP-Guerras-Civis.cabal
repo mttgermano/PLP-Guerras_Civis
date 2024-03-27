@@ -26,6 +26,7 @@ executable PLP-Guerras-Civis
         Controllers.RoundController,
         GameUtils.GameFunctions,
         GameUtils.GameStartFunctions,
+        GameUtils.GameStopFunctions,
         GameUtils.RoleFunctions,
         GameUtils.ChatFunctions,
         GameUtils.RoundFunctions,
