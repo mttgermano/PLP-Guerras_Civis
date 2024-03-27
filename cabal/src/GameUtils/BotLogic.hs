@@ -4,6 +4,7 @@ import Core.DbFunctions
 import GameUtils.GameFunctions
 import GameUtils.GameStartFunctions
 import GameUtils.RoundFunctions
+import GameUtils.RoleFunctions
 import LoginUtils.PlayerFunctions
 
 import qualified Data.ByteString.Char8 as BS2
@@ -16,6 +17,7 @@ import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.Types (Query(Query))
 
 import System.Random
+import GHC.Base (IO)
 
 
 botActionChoice :: String -> IO String
@@ -77,9 +79,9 @@ botBrain rName messages botUuid = do
 
     let comparation = compareIsGoodList botUuid players roles
     comp <- comparation
+    let results = listSom comp references
 
-    let resultado = listSom comp references
-    let ind = biggestVote resultado
+    let ind = biggestVote results
 
     close conn
 
@@ -88,21 +90,22 @@ botBrain rName messages botUuid = do
     incrementVote bName playerToIncrement
 
 
-compareIsGood :: String -> [Int] -> String -> IO Int
-compareIsGood botId roles playerId = do
+compareIsGoodIsAlive :: String -> [Int] -> String -> IO Int
+compareIsGoodIsAlive botId roles playerId = do
     botIsGood       <- getIsGood botId
     playerIsGood    <- getIsGood playerId
     playerRole      <- getRole playerId
+    playerAlive     <- isPlayerAlive playerId
 
-    if (botIsGood /= playerIsGood) && (playerRole `elem` roles)
+    if (botIsGood /= playerIsGood) && (playerRole `elem` roles) && playerAlive
         then    return 1000000
-    else if ((botIsGood == playerIsGood) && (playerRole `elem` roles))
+    else if ((botIsGood == playerIsGood) && (playerRole `elem` roles)) || not playerAlive
         then    return (-100000)
     else        return 0
 
 
 compareIsGoodList :: String -> [String] -> [Int] -> IO [Int]
-compareIsGoodList botId playerIds roles = mapM (compareIsGood botId roles) playerIds
+compareIsGoodList botId playerIds roles = mapM (compareIsGoodIsAlive botId roles) playerIds
 
 
 biggestVote :: Ord a => [a] -> Int
@@ -130,3 +133,49 @@ nameCountReferences :: String -> [String]-> Int
 nameCountReferences player playersNames
     | null playersNames = 0
     | otherwise         = length (filter(== player)playersNames)
+
+
+
+
+possibleWords :: [String]
+possibleWords = ["matou", "acho", "", "livro", "água", "banana", "futebol", "computador", "verde", "amor", "tempo", "cidade", "música", "felicidade"]
+
+-- Function to generate a random Portuguese word
+randomWord :: IO String
+randomWord = do
+    index <- randomRIO (0, length possibleWords - 1)
+    return (possibleWords !! index)
+
+
+
+-- Function to test each element
+botAction :: String -> String -> IO ()
+botAction botId rName = do
+    botRole        <- getRole botId
+    playerId       <- botActionChoice rName
+    choiceWord <- randomWord
+
+    case botRole of
+        1 -> kill botId playerId
+        2 -> kill botId playerId
+        3 -> reveal botId playerId
+        4 -> paralize botId playerId
+        5 -> silence botId playerId
+        6 -> setCursedWord botId choiceWord
+        7 -> search botId playerId
+        8 -> kill botId playerId
+        9 -> kill botId playerId
+        10 -> save botId playerId
+
+
+
+callBots :: [String] -> String -> IO ()
+callBots arr rName = mapM_ (\botId -> botAction botId rName) arr
+
+
+
+
+botsRound :: Bool -> String -> IO ()
+botsRound good rName = do
+    bots <- getRoomBotsGoodness rName good
+    callBots bots rName
