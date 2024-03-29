@@ -186,17 +186,6 @@ getRoomUpState rName = do
     close conn
     return result
 
-getRoomRoundState :: String -> IO String
-getRoomRoundState rName = do
-    conn <- getDbConnection
-
-    -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "SELECT round_state FROM Room WHERE room_name = ?"    
-    [Only state] <- query conn sqlQuery (Only rName)
-    ----------------------------------------------
-    close conn
-    return state
-
 -- Reset the Round Messages
 resetRoundMessages :: String -> IO ()
 resetRoundMessages rName = do

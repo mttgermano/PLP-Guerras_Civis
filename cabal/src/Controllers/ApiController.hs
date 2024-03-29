@@ -72,15 +72,6 @@ getRoomPlayers rName = do
     return playerList
  
 
--- Get the room State
+-- Get the Round State
 getRoomState :: String -> IO String
-getRoomState rName = do
-    conn <- getDbConnection
-
-    -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "SELECT round_state FROM Room WHERE room_name = ?"
-    [Only result] <- query conn sqlQuery (Only rName) :: IO [Only String]
-    ----------------------------------------------
-    close conn
-
-    return result
+getRoomState rName = getRoomRoundState rName

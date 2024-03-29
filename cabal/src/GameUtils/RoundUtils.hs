@@ -11,6 +11,22 @@ import Database.PostgreSQL.Simple.Types (Query(Query))
 
 
 
+-- Check if the player can do the action
+isAllowed :: String ->  IO Bool
+isAllowed pName = do
+    conn    <- getDbConnection
+
+    pUUID   <- getUUIDFromPlayerName pName
+    pRoom   <- getPlayerRoomName pUUID
+    
+    pRoleIsGood     <- getIsGood pUUID
+    rState          <- getRoomRoundState pRoom
+
+    putStrLn $ rState ++ " " ++ show pRoleIsGood
+
+    return $ (not pRoleIsGood && rState == "evilRound") || (pRoleIsGood && rState == "goodRound")
+
+
 -- It selects the itens of the first list whom index, in the second list is equal to flag
 selectTheIndex :: [String] -> [Bool] -> Bool -> [String]
 selectTheIndex pList gList b = [x | (x, flag) <- zip pList gList, flag == b]
@@ -64,17 +80,16 @@ getPlayersNames (id:ids) = do
 
     return (pName : remainingStr)
 
--- Check if the player can do the action
-isAllowed :: String ->  IO Bool
-isAllowed pName = do
-    conn    <- getDbConnection
 
-    pUUID   <- getUUIDFromPlayerName pName
-    pRoom   <- getPlayerRoomName pUUID
-    
-    pRoleIsGood     <- getIsGood pUUID
-    rState          <- getRoomRoundState pRoom
+-- Get the room State
+getRoomRoundState :: String -> IO String
+getRoomRoundState rName = do
+    conn <- getDbConnection
 
-    putStrLn $ rState ++ " " ++ show pRoleIsGood
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "SELECT round_state FROM Room WHERE room_name = ?"
+    [Only result] <- query conn sqlQuery (Only rName) :: IO [Only String]
+    ----------------------------------------------
+    close conn
 
-    return $ (not pRoleIsGood && rState == "evilRound") || (pRoleIsGood && rState == "goodRound")
+    return result

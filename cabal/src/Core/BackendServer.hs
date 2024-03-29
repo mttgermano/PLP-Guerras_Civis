@@ -72,18 +72,17 @@ instance ToJSON ActionJson where
 
 -- Game Chat --------------------------------------------------
 data MessageJson = MessageJson{
-    gcType      :: String,
     pmName      :: String,
     message     :: String
 } deriving (Show)
 
 instance FromJSON MessageJson where
     parseJSON = withObject "message" $ \v ->
-        MessageJson <$> v .: "gcType" <*> v .:"pmName" <*> v .:"message"
+        MessageJson <$> v .:"pmName" <*> v .:"message"
 
 instance ToJSON MessageJson where
-    toJSON (MessageJson gcType pmName message) =
-        object ["gcType" .= gcType, "pmName" .= pmName, "message" .= message]
+    toJSON (MessageJson pmName message) =
+        object ["pmName" .= pmName, "message" .= message]
 
 -- API Room JSON------------------------------------------------
 data ApiRoomJson = ApiRoomJson{
@@ -234,7 +233,7 @@ main = do
             case decode requestBody of
                 Just (messageObj :: MessageJson) -> do
                     -- Call createRoom from LoginFunctions
-                    liftIO $ makeMessage (gcType messageObj) (pmName messageObj) (message messageObj)
+                    liftIO $ makeMessage (pmName messageObj) (message messageObj)
                 _ -> do
                     status status400 -- Set HTTP status code to 400 (Bad Request)
                     json $ object ["error" .= ("Invalid game message JSON" :: String)]

@@ -89,5 +89,5 @@ makeAction agent action action_reciever
     | otherwise                 = putStrLn $ "Invalid Action"
 
 -- Sebnd a message to a chat
-makeMessage :: String -> String -> String -> IO ()
-makeMessage chaType player msg = sendMessage chaType player msg
+makeMessage :: String -> String -> IO ()
+makeMessage pName msg = sendMessage pName msg
