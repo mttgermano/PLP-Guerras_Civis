@@ -64,9 +64,9 @@ getRoomList = do
 
 
 -- Get the players of a Room
-getRoomPlayers :: String -> IO [String]
+getRoomPlayers :: String -> IO [(String, String)]
 getRoomPlayers rName = do
-    pListUUID   <- getRoomPlayersUUIDList rName
-    pListNames  <- mapM getPlayerNameFromUUID pListUUID
-
-    return pListNames
+    pListUUID <- getRoomPlayersUUIDList rName
+    pListNames <- mapM getPlayerNameFromUUID pListUUID
+    let playerList = zip pListUUID pListNames
+    return playerList

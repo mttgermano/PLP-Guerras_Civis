@@ -277,7 +277,7 @@ main = do
                     rPlayers <- liftIO $ getRoomPlayers (apiRName apiRoomObj)
                     
                     status status200
-                    json $ object ["rPlayers" .= (rPlayers:: [String])]
+                    json $ object ["rPlayers" .= (rPlayers:: [(String, String)])]
 
 
                 _ -> do
