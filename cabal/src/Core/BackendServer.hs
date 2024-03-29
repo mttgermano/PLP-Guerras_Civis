@@ -243,6 +243,7 @@ main = do
         -- Front API --------------------------------------
         get "/api/get_room/" $ do
             liftIO $ putStrLn $ replicate 50 '-'
+            liftIO $ putStrLn "> Api request for room info"
             requestBody <- body
 
             case decode requestBody of
@@ -260,6 +261,7 @@ main = do
 
         get "/api/get_rooms_list/" $ do
             liftIO $ putStrLn $ replicate 50 '-'
+            liftIO $ putStrLn "> Api request for room list"
 
             rList <- liftIO getRoomList
 
@@ -269,6 +271,7 @@ main = do
 
         get "/api/get_room_players/" $ do
             liftIO $ putStrLn $ replicate 50 '-'
+            liftIO $ putStrLn "> Api request for room_players"
             requestBody <- body
 
             case decode requestBody of
@@ -283,3 +286,20 @@ main = do
                 _ -> do
                     status status400 -- Set HTTP status code to 400 (Bad Request)
                     json $ object ["error" .= ("Invalid get_room_players JSON" :: String)]
+
+
+        get "/api/get_room_state/" $ do
+            liftIO $ putStrLn $ replicate 50 '-'
+            liftIO $ putStrLn "> Api request for room state"
+            requestBody <- body
+
+            case decode requestBody of
+                Just (apiRoomObj :: ApiRoomJson) -> do
+                    -- Call getRoomData from 
+                    roomData <- liftIO $ getRoomState (apiRName apiRoomObj)
+                    
+                    status status200
+                    json $ object ["rState" .= (roomData :: String)] 
+                _ -> do
+                    status status400 -- Set HTTP status code to 400 (Bad Request)
+                    json $ object ["error" .= ("Invalid get_room JSON" :: String)]

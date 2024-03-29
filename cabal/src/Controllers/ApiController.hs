@@ -51,7 +51,6 @@ getRoomList = do
     let sqlQuery = Query $ BS2.pack "SELECT room_name FROM Room"
     result <- query_ conn sqlQuery :: IO [Only String]
     ----------------------------------------------
-
     close conn
 
     -- Fetch players count for each room
@@ -66,7 +65,22 @@ getRoomList = do
 -- Get the players of a Room
 getRoomPlayers :: String -> IO [(String, String)]
 getRoomPlayers rName = do
-    pListUUID <- getRoomPlayersUUIDList rName
-    pListNames <- mapM getPlayerNameFromUUID pListUUID
+    pListUUID   <- getRoomPlayersUUIDList rName
+    pListNames  <- mapM getPlayerNameFromUUID pListUUID
+
     let playerList = zip pListUUID pListNames
     return playerList
+ 
+
+-- Get the room State
+getRoomState :: String -> IO String
+getRoomState rName = do
+    conn <- getDbConnection
+
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "SELECT round_state FROM Room WHERE room_name = ?"
+    [Only result] <- query conn sqlQuery (Only rName) :: IO [Only String]
+    ----------------------------------------------
+    close conn
+
+    return result
