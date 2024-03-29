@@ -58,6 +58,13 @@ isPlayerAlive pUUID = do
         _            -> return False
 
 
+-- Function to get number of players for a room
+getRoomPlayersCount :: String -> IO Int
+getRoomPlayersCount rName = do
+    roomPlayersUUIDList <- getRoomPlayersUUIDList rName
+    return $ length roomPlayersUUIDList
+
+
 -- Count the number of live players of a role
 getPlayerRolesCount :: String -> Bool -> IO Int
 getPlayerRolesCount rName isGood = do

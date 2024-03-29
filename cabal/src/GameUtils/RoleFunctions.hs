@@ -49,7 +49,7 @@ aprentice :: String -> String -> IO ()
 aprentice agent action_reciever = do
     allowed <- isAllowed agent
     rName <- getPlayerRoomName agent
-    players <- getRoomPlayers rName
+    players <- getRoomPlayersUUIDList rName
     isAssassinAlive <- isRoleAlive players 1
 
     
@@ -71,7 +71,7 @@ police :: String -> String -> IO ()
 police agent action_reciever = do
     allowed <- isAllowed agent
     rName <- getPlayerRoomName agent
-    players <- getRoomPlayers rName
+    players <- getRoomPlayersUUIDList rName
     isJudgeAlive <- isRoleAlive players 8
 
 
@@ -127,7 +127,7 @@ reveal :: String -> String -> IO ()
 reveal agent action_reciever = do
     allowed <- isAllowed agent
     rName <- getPlayerRoomName agent
-    players <- getRoomPlayers rName
+    players <- getRoomPlayersUUIDList rName
 
     -- TODO
     if allowed
