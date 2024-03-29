@@ -37,8 +37,8 @@ startGame rName pName = do
 
             if not isRoomUp
                 then do
-                    roomPlayers     <- getRoomPlayersUUIDList rName
-                    let nPlayers    = 12 - length roomPlayers
+                    roomPlayers     <- getRoomPlayersCount rName
+                    let nPlayers    = 12 - roomPlayers
 
                     createBots          nPlayers rName 
                     addPlayersToGame    rName

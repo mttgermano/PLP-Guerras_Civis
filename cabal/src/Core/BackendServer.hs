@@ -261,11 +261,10 @@ main = do
         get "/api/get_rooms_list/" $ do
             liftIO $ putStrLn $ replicate 50 '-'
 
-            -- Call getRoomList from ApiController
-            rList <- liftIO $ getRoomList
+            rList <- liftIO getRoomList
 
             status status200
-            json $ object ["rList" .= (rList:: [String])]
+            json $ object ["rList" .= (rList :: [(String, Int)])]
 
 
         get "/api/get_room_players/" $ do
@@ -278,7 +277,7 @@ main = do
                     rPlayers <- liftIO $ getRoomPlayers (apiRName apiRoomObj)
                     
                     status status200
-                    json $ object ["rPlayers" .= (rPlayers:: [String])]
+                    json $ object ["rPlayers" .= (rPlayers:: [(String, String)])]
 
 
                 _ -> do

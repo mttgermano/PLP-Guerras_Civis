@@ -43,7 +43,7 @@ getRoomData rName = do
 
 
 -- Get the list of all Rooms
-getRoomList :: IO [String]
+getRoomList :: IO [(String, Int)]
 getRoomList = do
     conn <- getDbConnection
 
@@ -51,14 +51,22 @@ getRoomList = do
     let sqlQuery = Query $ BS2.pack "SELECT room_name FROM Room"
     result <- query_ conn sqlQuery :: IO [Only String]
     ----------------------------------------------
+
     close conn
-    return $ map fromOnly result
+
+    -- Fetch players count for each room
+    roomPlayersCounts <- mapM getRoomPlayersCount (map fromOnly result)
+
+    -- Combine room names with their player counts into tuples
+    let roomList = zip (map fromOnly result) roomPlayersCounts
+
+    return roomList
 
 
 -- Get the players of a Room
-getRoomPlayers :: String -> IO [String]
+getRoomPlayers :: String -> IO [(String, String)]
 getRoomPlayers rName = do
-    pListUUID   <- getRoomPlayersUUIDList rName
-    pListNames  <- mapM getPlayerNameFromUUID pListUUID
-
-    return pListNames
+    pListUUID <- getRoomPlayersUUIDList rName
+    pListNames <- mapM getPlayerNameFromUUID pListUUID
+    let playerList = zip pListUUID pListNames
+    return playerList
