@@ -75,3 +75,16 @@ getRoomPlayers rName = do
 -- Get the Round State
 getRoomState :: String -> IO String
 getRoomState rName = getRoomRoundState rName
+
+
+-- Get the Room messages 
+getRoomMessages :: String -> Int -> IO [String] 
+getRoomMessages rName lastIdxPlayer = do
+    lastIdxServer <- getLastMessageIdx rName
+
+    if lastIdxPlayer /= lastIdxPlayer
+        then do
+            lastMessages <- getMessagesListFromRoom rName lastIdxPlayer
+            return lastMessages
+        else
+            return [""]
