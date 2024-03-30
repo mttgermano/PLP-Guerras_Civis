@@ -9,7 +9,7 @@ import qualified Data.ByteString.Char8 as BS2
 
 import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.Types (Query(Query))
-
+import Control.Monad (forM_)
 
 
 
@@ -52,3 +52,20 @@ actionGoodRound rName = do
     sleep 1
 
     putStrLn $ ("> Terminou Round Civis [" ++ (rName) ++ "]")
+
+
+-- Reset all room players atributes
+resetRoomPlayersAtributes :: String -> IO ()
+resetRoomPlayersAtributes rName = do
+    conn    <- getDbConnection
+    pList   <- getRoomPlayersUUIDList rName
+    let atributes = ["votes", "kill_vote", "is_paralized", "is_silenced"]
+
+    -- For each pUUID and attribute, execute the SQL query
+    forM_ pList $ \pUUID ->
+        forM_ atributes $ \atribute -> do
+            let sqlQuery = Query $ BS2.pack $ "UPDATE UserGameData SET " ++ atribute ++ " = 0 WHERE player_uuid = ?"
+            _ <- execute conn sqlQuery (Only pUUID)
+            return ()
+    close conn
+

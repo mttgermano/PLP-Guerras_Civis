@@ -26,8 +26,8 @@ CREATE TABLE UserGameData (
     is_alive                BOOLEAN,
     votes                   INT,
     kill_vote               INT,
-    is_paralized            BOOLEAN,
-    is_silenced             BOOLEAN,
+    is_paralized            INT,
+    is_silenced             INT,
     is_dead_by_cursed_word  BOOLEAN,
     FOREIGN KEY (player_uuid) REFERENCES Player(player_uuid)
 );

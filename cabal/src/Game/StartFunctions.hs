@@ -19,13 +19,13 @@ import Database.PostgreSQL.Simple.ToField (toField)
 
 -- UserGame Data Type 
 data UserGameData = UserGameData{
-    player_uuid :: String, 
-    role_idx    :: Int, 
-    is_alive    :: Bool, 
-    votes       :: Int, 
-    kill_vote   :: Int, 
-    is_paralized    :: Bool, 
-    is_silenced     :: Bool, 
+    player_uuid     :: String, 
+    role_idx        :: Int, 
+    is_alive        :: Bool, 
+    votes           :: Int, 
+    kill_vote       :: Int, 
+    is_paralized    :: Int, 
+    is_silenced     :: Int, 
     is_dead_by_cursed_word :: Bool
 }deriving (Show, Generic)
 
@@ -90,8 +90,8 @@ addPlayersToGame rName = do
             is_alive        = True,
             votes           = 0,
             kill_vote       = 0,
-            is_paralized    = False,
-            is_silenced     = False,
+            is_paralized    = 0,
+            is_silenced     = 0,
             is_dead_by_cursed_word = False
         }
 
