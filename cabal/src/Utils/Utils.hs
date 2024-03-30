@@ -196,12 +196,20 @@ getRoomPlayersUUIDList rName = do
     let pList = (map (\(Only player_uuid) -> player_uuid) result)
     return pList
 
-deleteKnowledge :: IO ()
-deleteKnowledge = do
-    conn <- getDbConnection
+-- Delete all room players knowlegde
+deleteRoomPlayersKnowledge :: IO ()
+deleteRoomPlayersKnowledge rName = do
+    pList   <- getRoomPlayersUUIDList rName
+    mapM deletePLayerKnowledge pList
+
+    
+-- Delete a player knowlegde
+deletePLayerKnowledge :: IO ()
+deletePLayerKnowledge pUUID = do
+    conn    <- getDbConnection
 
     -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "DELETE FROM RoleKnowledge"
-    _ <- execute_ conn sqlQuery
+    let sqlQuery = Query $ BS2.pack "DELETE FROM RoleKnowledge WHERE who_knows = ?"
+    _ <- execute conn sqlQuery (Only pUUID)
     ----------------------------------------------
     close conn
