@@ -176,7 +176,7 @@ callBots arr rName = mapM_ (\botId -> botAction botId rName) arr
 
 
 
-botsRound :: Bool -> String -> IO ()
-botsRound good rName = do
-    bots <- getRoomBotsGoodness rName good
+botsRound :: String -> IO ()
+botsRound rName = do
+    bots <- getRoomBots rName
     callBots bots rName

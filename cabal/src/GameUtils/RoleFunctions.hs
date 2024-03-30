@@ -227,3 +227,4 @@ revenge agent action_reciever = do
 fbiIsWatching :: String -> String -> IO()
 fbiIsWatching police actionMaker = do
     revealPlayerRole police actionMaker
+
