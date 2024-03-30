@@ -21,14 +21,6 @@ getRoomPlayersGoodness rName isGood = do
 
     return $ selectTheIndex rPlayers goodnessList isGood
 
--- Get the list of all good bots in a room
-getRoomBotsGoodness :: String -> Bool -> IO [String]
-getRoomBotsGoodness rName isGood = do
-    rBots           <- getRoomBots rName
-    goodnessList    <- mapM getIsGood rBots
-
-    return $ selectTheIndex rBots goodnessList isGood
-
 -- Get player name from id
 getPlayerNameFromUUID :: String -> IO String
 getPlayerNameFromUUID pUUID = do
@@ -203,3 +195,13 @@ getRoomPlayersUUIDList rName = do
 
     let pList = (map (\(Only player_uuid) -> player_uuid) result)
     return pList
+
+deleteKnowledge :: IO ()
+deleteKnowledge = do
+    conn <- getDbConnection
+
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "DELETE FROM RoleKnowledge"
+    _ <- execute_ conn sqlQuery
+    ----------------------------------------------
+    close conn
