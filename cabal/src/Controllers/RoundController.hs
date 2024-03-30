@@ -14,12 +14,12 @@ actionRound rName = do
 -- Run the Round which the users can vote
 voteRound :: String -> IO ()
 voteRound rName = do
-    putStrLn $ ("> Começando Round da Votação  [" ++ (rName) ++ "]")
+    putStrLn $ ("> [" ++ (rName) ++ "] Room - Começando Round da Votação")
     updateRoundState rName "voteRound"
 
     --sleep 1
 
-    putStrLn $ ("> Término Round da Votação    [" ++ (rName) ++ "]")
+    putStrLn $ ("> [" ++ (rName) ++ "] Room - término no Round da Votação")
     putStrLn $ replicate 50 '-'
 
 -- Run all the sequence of rounds
@@ -33,7 +33,7 @@ runRound rName = do
 -- Reset all the setting of a Room
 roundDefaultSettings :: String -> IO ()
 roundDefaultSettings rName = do
-    updateRoundState    rName "startRound"
-    resetRoundMessages  rName   
-    resetRoomPlayersAtributes     rName
+    updateRoundState                rName "startRound"
+    resetRoundMessages              rName   
+    resetRoomPlayersAtributes       rName
 

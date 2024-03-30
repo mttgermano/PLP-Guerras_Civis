@@ -33,9 +33,9 @@ sendMessage pName msg = do
             close conn
 
             -- send a request to the react server    
-            putStrLn $ "> Mensagem [" ++ msg ++ "] enviada no Room [" ++ rName ++ "]"
+            putStrLn $ "> [" ++ rName ++ "] Room - recebeu mensagem [" ++ msg ++ "]"
         else do
-            putStrLn $ "> Room [" ++ rName ++ "] não está num round de votação"
+            putStrLn $ "> [" ++ rName ++ "] Room - não está num round de votação"
 
 
 -- Get the last message idx

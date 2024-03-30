@@ -21,7 +21,7 @@ deleteRoom rName = do
     let sqlQuery = Query $ BS2.pack "DELETE FROM Room WHERE room_name = ?"
     _ <- execute conn sqlQuery (Only rName)
     ----------------------------------------------
-    putStrLn $ ("> Room [" ++ (rName) ++ "] foi deletado")
+    putStrLn $ ("> [" ++ (rName) ++ "] Room - foi deletado")
     close conn
 
 
@@ -31,7 +31,7 @@ deleteUserGameData :: String -> IO ()
 deleteUserGameData rName = do
     pList <- getRoomPlayersUUIDList rName
     mapM_ changeUserGameData pList
-    putStrLn $ ("> Room [" ++ rName ++ "] teve seu UserGameData deletado")
+    putStrLn $ ("> [" ++ rName ++ "] Room - teve seu UserGameData deletado")
 
 -- Delete the UserGameData entrie for a Player - using its UUID
 changeUserGameData :: String -> IO ()

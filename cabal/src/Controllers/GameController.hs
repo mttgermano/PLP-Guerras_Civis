@@ -46,16 +46,16 @@ startGame rName pName = do
                     distributeRoles     rName
                     setRoomUpState      rName True
 
-                    putStrLn $ "> The [" ++ rName ++ "] game started!"
+                    putStrLn $ "> [" ++ rName ++ "] Room - jogo começou!"
                     game rName 0 6 6
                     return GameStarted
                 else do
-                    let errMsg = "O jogo já começou"
+                    let errMsg = "[" ++ (rName) ++ "] Room - jogo já começou"
                     putStrLn errMsg
                     return (RoomAlreadyUp errMsg)
 
         else do
-            let errMsg = "Você não é o room master."
+            let errMsg = "[" ++ (rName) ++ "] Room - Você não é o room master."
             putStrLn errMsg
             return (NotRoomMaster errMsg)
 
@@ -63,7 +63,7 @@ startGame rName pName = do
 -- Finish the game
 endGame :: String -> String -> IO ()
 endGame rName reason = do
-    putStrLn $ ("> O jogo [" ++ (rName) ++ "] acabou!")
+    putStrLn $ ("> [" ++ (rName) ++ "] Room - o jogo  acabou!")
     deleteUserGameData      rName
     deleteRoomBots          rName
     resetPlayersCurrentRoom rName

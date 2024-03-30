@@ -58,7 +58,6 @@ createBots quant rName
         _ <- execute conn sqlQuery newBot
         ----------------------------------------------
         close conn
-        putStrLn $ "> Bot created: " ++ show newBot
         createBots (quant-1) rName
 
 
@@ -181,7 +180,7 @@ deleteRoomBots :: String -> IO ()
 deleteRoomBots rName = do
     bList <- getRoomBots rName
     mapM_ deleteBot bList
-    putStrLn $ "> Room [" ++ rName ++ "] teve seus bots deletados"
+    putStrLn $ "> [" ++ rName ++ "] Room - bots deletados"
 
 
 -- Delete a single bot

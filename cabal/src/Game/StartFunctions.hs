@@ -66,7 +66,8 @@ setRole pUUID roleIdx = do
 
     pName       <- getPlayerNameFromUUID pUUID
     roleName    <- getRoleName roleIdx
-    putStrLn $ ("> User [" ++ (pName) ++ "] foi settado para [" ++ (roleName) ++ "]")
+    putStrLn $ ("> [" ++ (pName) ++ "] User - settado para [" ++ (show roleIdx) ++ "] [" ++ (roleName) ++ "]")
+
     close conn
 
 
@@ -105,13 +106,13 @@ addPlayersToGame rName = do
         ) roomPlayers
     close conn
 
-    putStrLn $ ("> All players from [" ++ rName ++ "] are in the game")
+    putStrLn $ ("> [" ++ rName ++ "] Room - Todos os jogadores estão no jogo")
 
 
 -- Distribute Roles to the players
 distributeRoles :: String -> IO ()
 distributeRoles rName = do 
-    let action = "[Roles distribution] [" ++ (rName) ++ "]" ++ replicate 10 '-'
+    let action = "[" ++ (rName) ++ "] [Roles distribution]"  ++ replicate 10 '-'
     putStrLn  action
     
     roles_index  <- randomList 12

@@ -16,7 +16,7 @@ import Database.PostgreSQL.Simple.Types (Query(Query))
 
 
 errPermissionMessage :: String -> IO ()
-errPermissionMessage pName = putStrLn $ ("> User [" ++ pName ++ "] doesn't permission to execute the action")
+errPermissionMessage pName = putStrLn $ ("> [" ++ (pName)  ++ "] User - doesn't have permission to execute the action")
 
 -- Kill a player 
 kill :: String -> String -> IO ()     
@@ -33,7 +33,7 @@ kill agent action_reciever = do
             let sqlQuery = Query $ BS2.pack "UPDATE UserGameData SET kill_vote = kill_vote + 1 WHERE player_uuid = ?"
             _ <- execute conn sqlQuery (Only agent)
             ----------------------------------------------
-            putStrLn $ ("> User [" ++ agent ++ "] Kill Vote for [" ++ action_reciever ++ "]")
+            putStrLn $ ("> [" ++ agent ++ "] User - Kill Vote for [" ++ action_reciever ++ "]")
             close conn
 
             role <- getRole action_reciever
@@ -94,7 +94,7 @@ save agent action_reciever = do
             let sqlQuery = Query $ BS2.pack "UPDATE UserGameData SET kill_vote = kill_vote -1 WHERE player_uuid = ?"
             result <- execute conn sqlQuery (Only agent)
             ----------------------------------------------
-            putStrLn $ ("> User [" ++ agent ++ "] Saved [" ++ (action_reciever) ++ "]")
+            putStrLn $ ("> [" ++ agent ++ "] User - Saved [" ++ (action_reciever) ++ "]")
             close conn
 
             role <- getRole action_reciever
@@ -155,7 +155,7 @@ silence agent action_reciever = do
             let sqlQuery = Query $ BS2.pack "UPDATE UserGameData SET is_silenced = 1 WHERE player_uuid = ?"
             result <- execute conn sqlQuery (Only agent)
             ----------------------------------------------
-            putStrLn $ ("> User [" ++ agent ++ "] Silenced [" ++ (action_reciever) ++ "]")
+            putStrLn $ ("> [" ++ agent ++ "] User - Silenced [" ++ (action_reciever) ++ "]")
             close conn
 
             role <- getRole action_reciever
@@ -179,7 +179,7 @@ paralize agent action_reciever = do
             let sqlQuery = Query $ BS2.pack "UPDATE UserGameData SET is_paralized = 1 WHERE player_uuid = ?"
             result <- execute conn sqlQuery (Only agent)
             ----------------------------------------------
-            putStrLn $ ("> User [" ++ agent ++ "] Paralized [" ++ (action_reciever) ++ "]")
+            putStrLn $ ("> [" ++ agent ++ "] User - Paralized [" ++ (action_reciever) ++ "]")
             close conn
 
             role <- getRole action_reciever
@@ -203,7 +203,7 @@ setCursedWord agent cursedWord = do
             let sqlQuery = Query $ BS2.pack "UPDATE Room SET cursed_word = ? WHERE room_uuid = (SELECT current_room FROM Player WHERE player_name = ?)"
             result <- execute conn sqlQuery (cursedWord, agent)
             ----------------------------------------------
-            putStrLn $ ("> User [" ++ agent ++ "] set Cursed Word for [" ++ "] rName")
+            putStrLn $ ("> [" ++ agent ++ "] User - setted Cursed Word for [" ++ "] rName")
         else
             errPermissionMessage agent
 
