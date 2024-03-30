@@ -126,7 +126,12 @@ main = do
                     -- Call createplayer from LoginFunctions
                     result <- liftIO $ createPlayer (pjName playerObj) (pjPassword playerObj)   -- cast Text to String
                     case result of
-                        PlayerCreated               -> return ()
+                        PlayerCreated       pData -> do
+                            let pInfo = map (\(Player isBot pId pName pPassword currentRoom) -> object ["isBot" .= isBot, "pUUID" .= pId, "pName" .= pName, "currentRoom" .= currentRoom]) pData
+
+                            status status200
+                            json (head pInfo)
+
                         PlayerAlreadyExist  errMsg  -> do
                             status status400
                             json $ object ["error" .= (errMsg :: String)]
@@ -144,8 +149,13 @@ main = do
                     -- Call loginplayer from LoginFunctions
                     result <- liftIO $ loginPlayer (pjName playerObj) (pjPassword playerObj)
                     case result of
-                        PlayerLoggedIn          -> return ()
-                        IncorrectPlayerData errMsg    -> do
+                        PlayerLoggedIn      pData   -> do
+                            let pInfo = map (\(Player isBot pId pName pPassword currentRoom) -> object ["isBot" .= isBot, "pUUID" .= pId, "pName" .= pName, "currentRoom" .= currentRoom]) pData
+
+                            status status200
+                            json (head pInfo)
+
+                        IncorrectPlayerData errMsg  -> do
                             status status400
                             json $ object ["error" .= (errMsg :: String)]
 
@@ -280,7 +290,6 @@ main = do
                     
                     status status200
                     json $ object ["rPlayers" .= (rPlayers:: [(String, String)])]
-
 
                 _ -> do
                     status status400 -- Set HTTP status code to 400 (Bad Request)
