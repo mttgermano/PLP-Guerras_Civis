@@ -1,10 +1,10 @@
-module GameUtils.RoleFunctions where
+module Game.RoleFunctions where
 
 import Core.DbFunctions
-import GameUtils.RoundFunctions
-import GameUtils.GameFunctions
-import GameUtils.GameStartFunctions
-import GameUtils.RoundUtils
+import Game.RoundFunctions
+import Game.GameFunctions
+import Game.StartFunctions
+import Utils.Utils
 
 
 import qualified Data.ByteString.Char8 as BS2

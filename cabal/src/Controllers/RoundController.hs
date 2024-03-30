@@ -1,8 +1,9 @@
 module Controllers.RoundController where
 
-import GameUtils.RoundFunctions
-import GameUtils.GameStartFunctions
-import GameUtils.GameFunctions
+import Game.RoundFunctions
+import Game.StartFunctions
+import Game.GameFunctions
+import Utils.Utils
 
 -- Run the Round that the actions happend
 actionRound :: String -> IO ()

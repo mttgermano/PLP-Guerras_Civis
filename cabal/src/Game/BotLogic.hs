@@ -1,12 +1,12 @@
-module GameUtils.BotLogic where
+module Game.BotLogic where
 
 import Core.DbFunctions
-import GameUtils.GameFunctions
-import GameUtils.GameStartFunctions
-import GameUtils.RoundFunctions
-import GameUtils.RoundUtils
-import GameUtils.RoleFunctions
+import Game.GameFunctions
+import Game.StartFunctions
+import Game.RoundFunctions
+import Game.RoleFunctions
 import LoginUtils.PlayerFunctions
+import Utils.Utils
 
 import qualified Data.ByteString.Char8 as BS2
 

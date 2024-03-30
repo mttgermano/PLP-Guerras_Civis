@@ -1,9 +1,9 @@
-module GameUtils.ChatFunctions where
+module Game.ChatFunctions where
 
 import Core.DbFunctions
-import GameUtils.RoundUtils
-import GameUtils.GameFunctions
-import GameUtils.GameStartFunctions
+import Game.GameFunctions
+import Game.StartFunctions
+import Utils.Utils
 
 import qualified Data.ByteString.Char8 as BS2
 

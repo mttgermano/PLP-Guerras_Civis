@@ -1,6 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
-module GameUtils.GameStartFunctions where
+module Game.StartFunctions where
 import Core.DbFunctions
+import Utils.Utils
 
 import System.Random
 import Data.List (permutations)
@@ -66,22 +67,6 @@ setRole pName role = do
     close conn
 
 
--- Get all Players UUID from a Room
-getRoomPlayersUUIDList :: String -> IO [String]
-getRoomPlayersUUIDList rName = do
-    conn    <- getDbConnection
-    rUuid   <- getRoomUuid rName
-
-    -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "SELECT player_uuid FROM Player WHERE current_room = ?"    
-    result <- query conn sqlQuery (Only rUuid)
-    ----------------------------------------------
-    close conn
-
-    let pList = (map (\(Only player_uuid) -> player_uuid) result)
-    return pList
-
-
 -- Random List of Integers
 randomList :: Int -> IO [Int]
 randomList n = do
@@ -145,46 +130,6 @@ isRoomMaster rName pName = do
     close conn
     return $ result == pName
 
-
-getRoomBots :: String -> IO [String]
-getRoomBots rName = do
-    conn <- getDbConnection
-
-    -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "\
-               \SELECT u.player_uuid \
-               \FROM Player p \
-               \JOIN UserGameData u ON p.player_uuid = u.player_uuid \
-               \WHERE p.current_room = ? AND p.is_bot = true;"    
-    result <- query conn sqlQuery (Only rName)
-    ----------------------------------------------
-    close conn
-    return $ map (\(Only player_uuid) -> player_uuid) result
-
--- Get the UUID of a Room
-getRoomUuid :: String -> IO String
-getRoomUuid rName = do
-    conn <- getDbConnection
-
-    -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "SELECT room_uuid FROM Room WHERE room_name = ?"    
-    [Only result] <- query conn sqlQuery (Only rName)
-    ----------------------------------------------
-    close conn
-
-    return result
-
--- Get the State of a Room
-getRoomUpState :: String -> IO Bool
-getRoomUpState rName = do
-    conn <- getDbConnection
-
-    -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "SELECT is_up FROM Room WHERE room_name = ?"    
-    [Only result] <- query conn sqlQuery (Only rName)
-    ----------------------------------------------
-    close conn
-    return result
 
 -- Reset the Round Messages
 resetRoundMessages :: String -> IO ()

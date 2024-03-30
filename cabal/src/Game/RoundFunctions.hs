@@ -1,9 +1,9 @@
-module GameUtils.RoundFunctions where
+module Game.RoundFunctions where
 
 import Core.DbFunctions
-import GameUtils.GameFunctions
-import GameUtils.GameStartFunctions
-import GameUtils.RoundUtils
+import Game.GameFunctions
+import Game.StartFunctions
+import Utils.Utils
 
 import qualified Data.ByteString.Char8 as BS2
 
