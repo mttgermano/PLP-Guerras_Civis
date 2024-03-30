@@ -32,7 +32,7 @@ actionEvilRound rName = do
 
     evilList <- getRoomPlayersGoodness rName False
 
-    sleep 1
+    --sleep 1
 
     -- send a request to the front, so it will allert that the user can make an action
     -- deixa rodar por 2 min
@@ -49,7 +49,7 @@ actionGoodRound rName = do
 
     goodList <- getRoomPlayersGoodness rName True
 
-    sleep 1
+    --sleep 1
 
     putStrLn $ ("> Terminou Round Civis [" ++ (rName) ++ "]")
 

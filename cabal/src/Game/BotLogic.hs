@@ -135,8 +135,6 @@ nameCountReferences player playersNames
     | otherwise         = length (filter(== player)playersNames)
 
 
-
-
 possibleWords :: [String]
 possibleWords = ["matou", "acho", "teste", "livro", "água", "banana", "futebol", "computador", "amor", "tempo", "cidade", "felicidade"]
 
@@ -145,7 +143,6 @@ randomWord :: IO String
 randomWord = do
     index <- randomRIO (0, length possibleWords - 1)
     return (possibleWords !! index)
-
 
 
 -- Function to test each element
@@ -169,14 +166,31 @@ botAction botId rName = do
         12 -> revenge botId playerId
 
 
-
 callBots :: [String] -> String -> IO ()
 callBots arr rName = mapM_ (\botId -> botAction botId rName) arr
-
-
 
 
 botsRound :: Bool -> String -> IO ()
 botsRound good rName = do
     bots <- getRoomBotsGoodness rName good
     callBots bots rName
+
+
+-- Deletes all bots, after the game ended
+deleteRoomBots :: String -> IO ()
+deleteRoomBots rName = do
+    bList <- getRoomBots rName
+    mapM_ deleteBot bList
+    putStrLn $ "> Room [" ++ rName ++ "] teve seus bots deletados"
+
+
+-- Delete a single bot
+deleteBot :: String -> IO ()
+deleteBot bUUID = do
+    conn <- getDbConnection
+
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "DELETE FROM Player WHERE player_uuid = ?"
+    _ <- execute conn sqlQuery (Only bUUID)
+    ----------------------------------------------
+    close conn

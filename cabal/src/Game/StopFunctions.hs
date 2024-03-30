@@ -31,6 +31,7 @@ deleteUserGameData :: String -> IO ()
 deleteUserGameData rName = do
     pList <- getRoomPlayersUUIDList rName
     mapM_ changeUserGameData pList
+    putStrLn $ ("> Room [" ++ rName ++ "] teve seu UserGameData deletado")
 
 -- Delete the UserGameData entrie for a Player - using its UUID
 changeUserGameData :: String -> IO ()
@@ -41,7 +42,6 @@ changeUserGameData pUUID = do
     let sqlQuery = Query $ BS2.pack "DELETE FROM UserGameData WHERE player_uuid = ?"
     _ <- execute conn sqlQuery (Only pUUID)
     ----------------------------------------------
-    putStrLn $ ("> User [" ++ (pUUID) ++ "] teve seu UserGameData deletado")
     close conn
 
 
@@ -57,8 +57,7 @@ changePlayerCurrentRoom pUUID = do
     conn <- getDbConnection
 
     -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "UPDATE Player SET current_room = '' WHERE player_uuid = ?"
+    let sqlQuery = Query $ BS2.pack "UPDATE Player SET current_room = NULL WHERE player_uuid = ?"
     _ <- execute conn sqlQuery (Only pUUID)
     ----------------------------------------------
-    putStrLn $ ("> User [" ++ (pUUID) ++ "] teve seu current_room resetado")
     close conn

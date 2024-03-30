@@ -124,6 +124,19 @@ getRole pUUID = do
         [Only role]     -> return role
         _               -> return (-1)
 
+-- Get the role name - using its idx
+getRoleName :: Int -> IO String
+getRoleName roleIdx = do
+    conn <- getDbConnection
+
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "SELECT role FROM Roles WHERE role_idx = ?"
+    [Only result] <- query conn sqlQuery (Only roleIdx) :: IO [Only String]
+    ----------------------------------------------
+    close conn
+
+    return result
+
 
 -- Get the Room Name of a player, using its uuid
 getPlayerRoomName :: String -> IO String
@@ -137,18 +150,15 @@ getPlayerRoomName pUUID = do
 
     return rName
 
-
+-- Get the list of Bots UUID that are present in a room
 getRoomBots :: String -> IO [String]
 getRoomBots rName = do
-    conn <- getDbConnection
+    conn    <- getDbConnection
+    rUUID   <- getRoomUuid rName
 
     -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "\
-               \SELECT u.player_uuid \
-               \FROM Player p \
-               \JOIN UserGameData u ON p.player_uuid = u.player_uuid \
-               \WHERE p.current_room = ? AND p.is_bot = true;"    
-    result <- query conn sqlQuery (Only rName)
+    let sqlQuery = Query $ BS2.pack "SELECT player_uuid FROM Player WHERE current_room = ? AND is_bot = true"    
+    result <- query conn sqlQuery (Only rUUID)
     ----------------------------------------------
     close conn
     return $ map (\(Only player_uuid) -> player_uuid) result

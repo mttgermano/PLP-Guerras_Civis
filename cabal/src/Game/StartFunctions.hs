@@ -55,15 +55,18 @@ setRoomUpState rName state = do
 
 
 -- Set the Role of a Player
-setRole :: String -> String -> IO ()
-setRole pName role = do
+setRole :: String -> Int -> IO ()
+setRole pUUID roleIdx = do
     conn <- getDbConnection
 
     -- DB Query ----------------------------------
     let sqlQuery = Query $ BS2.pack "UPDATE UserGameData SET role_idx = ? WHERE player_uuid = ?"
-    _ <- execute conn sqlQuery (role, pName)
+    _ <- execute conn sqlQuery (roleIdx, pUUID)
     ----------------------------------------------
-    putStrLn $ ("> User [" ++ (pName) ++ "] foi settado para [" ++ (role) ++ "]")
+
+    pName       <- getPlayerNameFromUUID pUUID
+    roleName    <- getRoleName roleIdx
+    putStrLn $ ("> User [" ++ (pName) ++ "] foi settado para [" ++ (roleName) ++ "]")
     close conn
 
 
@@ -114,7 +117,7 @@ distributeRoles rName = do
     roles_index  <- randomList 12
     room_players <- getRoomPlayersUUIDList rName
 
-    zipWithM_ (\player roleIndex -> setRole player (show roleIndex)) room_players roles_index
+    zipWithM_ (\player roleIndex -> setRole player roleIndex) room_players roles_index
 
     putStrLn $ replicate (length action) '-'
 
@@ -137,7 +140,7 @@ resetRoundMessages rName = do
     conn <- getDbConnection
 
     -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "UPDATE Room SET round_messages = '' WHERE room_name = ?"
+    let sqlQuery = Query $ BS2.pack "UPDATE Room SET round_messages = ARRAY[]::varchar[] WHERE room_name = ?"
     _ <- execute conn sqlQuery (Only rName)
     ----------------------------------------------
     close conn

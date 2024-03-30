@@ -9,6 +9,7 @@ CREATE TABLE Room (
     round_messages  VARCHAR[],
     round_state     VARCHAR(36)
 );
+
 -- Create User Table
 CREATE TABLE Player (
     is_bot BOOLEAN,
