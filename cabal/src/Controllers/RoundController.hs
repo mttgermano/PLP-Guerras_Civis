@@ -5,21 +5,17 @@ import Game.StartFunctions
 import Game.GameFunctions
 import Utils.Utils
 
--- Run the Round that the actions happend
-actionRound :: String -> IO ()
-actionRound rName = do
-    actionEvilRound rName
-    actionGoodRound rName
+
 
 -- Run the Round which the users can vote
 voteRound :: String -> IO ()
 voteRound rName = do
-    putStrLn $ ("> [" ++ (rName) ++ "] Room - Começando Round da Votação")
+    putStrLn $ ("> [" ++ (rName) ++ "] Room - Começando Vote   Round ")
     updateRoundState rName "voteRound"
 
     --sleep 1
 
-    putStrLn $ ("> [" ++ (rName) ++ "] Room - término no Round da Votação")
+    putStrLn $ ("> [" ++ (rName) ++ "] Room - Terminou  Vote   Round")
     putStrLn $ replicate 50 '-'
 
 -- Run all the sequence of rounds

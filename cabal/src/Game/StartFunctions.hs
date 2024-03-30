@@ -85,7 +85,6 @@ addPlayersToGame rName = do
     conn            <- getDbConnection
     roomPlayers     <- getRoomPlayersUUIDList rName
 
-
     -- Iterate over roomPlayers and perform insertion for each player
     mapM_ (\playerUuid -> do
         let newUserGameData = UserGameData {

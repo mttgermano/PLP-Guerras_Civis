@@ -62,17 +62,11 @@ isPlayerAlive pUUID = do
 -- Check if the player can do the action
 isAllowed :: String ->  IO Bool
 isAllowed pName = do
-    conn    <- getDbConnection
-
     pUUID   <- getUUIDFromPlayerName pName
     pRoom   <- getPlayerRoomName pUUID
-    
-    pRoleIsGood     <- getIsGood pUUID
-    rState          <- getRoomRoundState pRoom
+    rState  <- getRoomRoundState pRoom
 
-    putStrLn $ rState ++ " " ++ show pRoleIsGood
-
-    return $ (not pRoleIsGood && rState == "evilRound") || (pRoleIsGood && rState == "goodRound")
+    return $ (rState == "actionRound")
 
 
 isRoleAlive :: [String] -> Int -> IO Bool

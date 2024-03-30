@@ -25,13 +25,13 @@ deleteRoom rName = do
     close conn
 
 
-
 -- Delte all UserGameData entries for a Room - using its room_name
 deleteUserGameData :: String -> IO ()
 deleteUserGameData rName = do
     pList <- getRoomPlayersUUIDList rName
     mapM_ changeUserGameData pList
     putStrLn $ ("> [" ++ rName ++ "] Room - teve seu UserGameData deletado")
+
 
 -- Delete the UserGameData entrie for a Player - using its UUID
 changeUserGameData :: String -> IO ()
@@ -50,6 +50,7 @@ resetPlayersCurrentRoom :: String -> IO ()
 resetPlayersCurrentRoom rName = do
     pList <- getRoomPlayersUUIDList rName
     mapM_ changePlayerCurrentRoom pList
+
 
 -- Change the current_room of a single Player - using its UUID
 changePlayerCurrentRoom :: String -> IO ()

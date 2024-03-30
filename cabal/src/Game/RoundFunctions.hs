@@ -25,33 +25,20 @@ updateRoundState room_name state = do
     close conn
 
 -- Run the evil guys round
-actionEvilRound :: String -> IO ()
-actionEvilRound rName = do
-    putStrLn $ ("> [" ++ (rName) ++ "] Room - Começando Round Mafiosos")
-    updateRoundState rName "evilRound" 
+actionRound :: String -> IO ()
+actionRound rName = do
+    putStrLn $ ("> [" ++ (rName) ++ "] Room - Começando Action Round ")
+    updateRoundState rName "actionRound" 
 
     evilList <- getRoomPlayersGoodness rName False
-
+    goodList <- getRoomPlayersGoodness rName True
     --sleep 1
 
     -- send a request to the front, so it will allert that the user can make an action
     -- deixa rodar por 2 min
     -- desfaz a acao
 
-    putStrLn $ ("> [" ++ (rName) ++ "] Room - Terminou Round Mafiosos")
-
-
--- Run the good guys round
-actionGoodRound :: String -> IO ()
-actionGoodRound rName = do
-    putStrLn $ ("> [" ++ (rName) ++ "] Room - Começando Round Civis")
-    updateRoundState rName "goodRound" 
-
-    goodList <- getRoomPlayersGoodness rName True
-
-    --sleep 1
-
-    putStrLn $ ("> [" ++ (rName) ++ "] Room - Terminou Round Civis")
+    putStrLn $ ("> [" ++ (rName) ++ "] Room - Terminou  Action Round")
 
 
 -- Reset all room players atributes
