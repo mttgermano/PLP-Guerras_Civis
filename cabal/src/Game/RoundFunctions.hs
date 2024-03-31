@@ -5,6 +5,9 @@ import Game.StartFunctions
 import Utils.Utils
 
 import qualified Data.ByteString.Char8 as BS2
+import Data.List (sortBy)
+import Data.Function (on)
+
 
 import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.Types (Query(Query))
@@ -74,4 +77,36 @@ killPlayer playerUUID = do
     let sqlQuery = Query $ BS2.pack $ "UPDATE UserGameData SET is_alive = False WHERE player_uuid = ?"
     _ <- execute conn sqlQuery (Only playerUUID)
     putStrLn $ "User " ++ playerUUID ++ " morreu."
-    
+
+
+computeVote ::  IO()
+computeVote = do
+    conn <- getDbConnection
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack $ "SELECT player_uuid FROM UserGameData WHERE is_alive = ?"
+    players <- query conn sqlQuery (Only True) :: IO [Only String]
+    ----------------------------------------------
+    close conn
+    -- Calculate votes for each player
+    votes <- mapM (\(Only pUuid) -> countVotes pUuid) players
+
+    -- Find the player with the most votes
+    let maxVotes = maximum votes
+        maxVotePlayers = filter (\(p,v) -> v == maxVotes) (zip players votes)
+    -- If everyone has 0 votes or multiple players have the same maximum votes, do nothing
+    if maxVotes == 0 || length maxVotePlayers /= 1
+        then return ()
+        else let (Only maxPlayer, _):_ = maxVotePlayers in killPlayer maxPlayer
+
+
+
+
+
+countVotes :: String -> IO Int
+countVotes pUuid = do
+    conn <- getDbConnection
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack $ "SELECT votes FROM UserGameDAta WHERE player_uuid = ?"
+    [Only votes]  <- query conn sqlQuery (Only pUuid) :: IO [Only Int]
+    close conn
+    return votes

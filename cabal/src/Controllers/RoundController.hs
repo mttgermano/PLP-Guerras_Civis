@@ -32,6 +32,7 @@ runRound rName = do
     voteRound               rName
     sendMessage "john" "o culpado e john"
     voteBotsRound           rName
+    computeVote
     
 
 -- Reset all the setting of a Room

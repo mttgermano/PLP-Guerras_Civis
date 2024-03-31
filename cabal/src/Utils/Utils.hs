@@ -267,7 +267,6 @@ isAllowed pName actionType = do
     pUUID   <- getUUIDFromPlayerName pName
     pRoom   <- getPlayerRoomName pUUID
     rState  <- getRoomRoundState pRoom
-    print rState
     paralized   <- isParalized  pUUID
     silenced    <- isSilenced   pUUID
     isAlive     <- isPlayerAlive pUUID

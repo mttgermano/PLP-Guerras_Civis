@@ -14,6 +14,8 @@ import qualified Data.ByteString.Char8 as BS2
 import Data.UUID.V4 (nextRandom)
 import Data.UUID (toString)
 import Control.Monad (forM)
+import Data.List (maximumBy)
+import Data.Ord (comparing)
 
 import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.Types (Query(Query))
@@ -90,7 +92,7 @@ compareIsGoodIsAlive botId players playerId = do
     playerIsGood    <- getIsGood playerId
     playerAlive     <- isPlayerAlive playerId
 
-    if (botIsGood /= playerIsGood) && (playerId `elem` players) && playerAlive
+    if ((botIsGood /= playerIsGood) && (playerId `elem` players)) && playerAlive
         then    return 1000000
     else if ((botIsGood == playerIsGood) && (playerId `elem` players)) || not playerAlive
         then    return (-100000)
@@ -102,13 +104,7 @@ compareIsGoodList botId playerIds players = mapM (compareIsGoodIsAlive botId pla
 
 -- Take the biggest voted player
 biggestVote :: Ord a => [a] -> Int
-biggestVote []      = 0
-biggestVote list    = biggestIdxAux list 0 0
-  where
-    biggestIdxAux [] _ _ = 0
-    biggestIdxAux (x:xs) idx maiorIndiceAtual
-      | x > (list !! maiorIndiceAtual)  = biggestIdxAux xs (idx + 1) idx
-      | otherwise                       = biggestIdxAux xs (idx + 1) maiorIndiceAtual
+biggestVote xs = snd $ maximumBy (comparing fst) $ zip xs [0..]
 
 -- Call nameCountReferences for every player
 countReferencesForAll :: [String] -> [String] -> [Int]
