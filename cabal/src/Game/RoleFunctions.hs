@@ -63,8 +63,6 @@ apprentice agent action_reciever = do
 -- police logic
 police :: String -> String -> IO ()     
 police agent action_reciever = do
-    print $ agent
-    print action_reciever
     agentUuid       <- getUUIDFromPlayerName agent
     allowed         <- isAllowed agent "action"
     rName           <- getPlayerRoomName agentUuid
@@ -108,7 +106,7 @@ search agent action_reciever = do
     -- TODO
     if allowed
         then do
-            revealPlayerRole agent action_reciever
+            revealPaparazi agent action_reciever
             role <- getRole action_reciever
 
             if role == 1
@@ -128,7 +126,7 @@ reveal agent action_reciever = do
 
     if allowed
         then do
-            revealToAll pList action_reciever
+            revealToAll pList agentUuid
             role <- getRole action_reciever
 
             if role == 1
@@ -186,6 +184,7 @@ paralize agent action_reciever = do
 setCursedWord :: String -> String -> IO ()
 setCursedWord agent cursedWord = do
     allowed <- isAllowed agent "action"
+    
 
     if allowed
         then do
@@ -211,7 +210,6 @@ revenge agent action_reciever = do
     close conn
     ----------------------------------------------
     
-    print result 
     if allowed && result > 0
         then do
             kill agent action_reciever
@@ -221,8 +219,13 @@ revenge agent action_reciever = do
 -- Reveal who took action in the police.
 fbiIsWatching :: String -> String -> IO()
 fbiIsWatching police actionMaker = do
-    revealPlayerRole police actionMaker
+    revealPaparazi police actionMaker
 
+revealPaparazi:: String -> String -> IO ()
+revealPaparazi agent action_reciever = do
+    agentUuid <- getUUIDFromPlayerName agent
+    action_reciever_Uuid <- getUUIDFromPlayerName action_reciever
+    revealPlayerRole agentUuid action_reciever_Uuid
 
 revealPlayerRole :: String -> String -> IO ()
 revealPlayerRole agent action_reciever = do
