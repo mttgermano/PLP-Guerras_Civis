@@ -5,6 +5,7 @@ import Utils.Utils
 
 
 import qualified Data.ByteString.Char8 as BS2
+import Data.Int (Int64)
 
 import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.ToField
@@ -120,11 +121,11 @@ search agent action_reciever = do
 -- Reveal the indetity of a player to all the other ones
 reveal :: String -> String -> IO ()
 reveal agent action_reciever = do
-    allowed <- isAllowed agent "action"
-    agentUuid <- getUUIDFromPlayerName agent
-    rName   <- getPlayerRoomName agentUuid
-    pList   <- getRoomPlayersUUIDList rName
-    -- TODO
+    allowed     <- isAllowed agent "action"
+    agentUuid   <- getUUIDFromPlayerName agent
+    rName       <- getPlayerRoomName agentUuid
+    pList       <- getRoomPlayersUUIDList rName
+
     if allowed
         then do
             revealToAll pList action_reciever
@@ -200,15 +201,17 @@ setCursedWord agent cursedWord = do
 -- The revenge of a spirit
 revenge :: String -> String -> IO ()
 revenge agent action_reciever = do
-    conn    <- getDbConnection
-    allowed <- isAllowed agent "action"
-    agentUuid <- getUUIDFromPlayerName agent
-    print $ agentUuid
+    conn        <- getDbConnection
+    allowed     <- isAllowed agent "action"
+    agentUUID   <- getUUIDFromPlayerName agent
+
     -- DB Query ----------------------------------
     let sqlQuery = Query $ BS2.pack "SELECT kill_vote FROM UserGameData WHERE player_uuid = ?"
-    [Only result] <- execute conn sqlQuery (Only agent) :: [Only String]    
+    [Only result] <- query conn sqlQuery (Only agentUUID) :: IO [(Only Int)]
+    close conn
     ----------------------------------------------
-    print result
+    
+    print result 
     if allowed && result > 0
         then do
             kill agent action_reciever

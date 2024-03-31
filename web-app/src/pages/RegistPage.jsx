@@ -39,29 +39,13 @@ const RegisterPage = () => {
           'Content-Type': 'application/json'
         }
       });
-
+      console.log(data);
       setCurrentUser(data);
       navigate('/room/home');
     } catch (error) {
       console.error('Error:', error);
     }
 
-
-    // fetch('http://localhost/login/create_player', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json'
-    //   },
-    //   body: JSON.stringify(userData)
-    // })
-    //   .then(response => response.json())
-    //   .then(data => {
-    //     // Handle response from server
-    //     console.log(data);
-    //   })
-    //   .catch(error => {
-    //     console.error('Error:', error);
-    //   });
   };
 
   return (
