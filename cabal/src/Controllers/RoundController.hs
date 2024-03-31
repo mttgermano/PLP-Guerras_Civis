@@ -15,7 +15,7 @@ voteRound rName = do
     putStrLn $ ("> [" ++ (rName) ++ "] Room - Começando Vote   Round ")
     updateRoundState rName "voteRound"
 
-    sleep 5
+    --sleep 5
 
     putStrLn $ ("> [" ++ (rName) ++ "] Room - Terminou  Vote   Round")
     putStrLn $ replicate 50 '-'
@@ -26,7 +26,7 @@ runRound rName = do
     updateRoundState rName "actionRound"
     roundDefaultSettings    rName
     actionRound             rName
-    --botsRound               rName
+    botsRound               rName
     voteRound               rName
     roundResult             rName -- --> se X ta com kill_vote 1, print: User morreu y, coloca is_alive pra 0, ...
 
