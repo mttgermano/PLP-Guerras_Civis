@@ -197,7 +197,7 @@ setCursedWord agent cursedWord = do
         else
             errPermissionMessage agent
 
-
+-- The revenge of a spirit
 revenge :: String -> String -> IO ()
 revenge agent action_reciever = do
     conn    <- getDbConnection
@@ -214,6 +214,7 @@ revenge agent action_reciever = do
         else
             errPermissionMessage agent
 
+-- Reveal who took action in the police.
 fbiIsWatching :: String -> String -> IO()
 fbiIsWatching police actionMaker = do
     revealPlayerRole police actionMaker
