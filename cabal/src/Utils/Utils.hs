@@ -129,6 +129,32 @@ getRoleName roleIdx = do
 
     return result
 
+-- Get the role idx - using the its name
+getRoleIdx :: String -> IO Int
+getRoleIdx roleName = do
+    conn <- getDbConnection
+
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "SELECT role_idx FROM Roles WHERE role = ?"
+    [Only result] <- query conn sqlQuery (Only roleName) :: IO [Only Int]
+    ----------------------------------------------
+    close conn
+
+    return result
+
+-- Get the player UUID - using its roleIdx
+getPlayerUUIDFromRoleIdx :: Int -> IO String
+getPlayerUUIDFromRoleIdx roleIdx = do
+    conn <- getDbConnection
+
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "SELECT player_uuid FROM UserGameData WHERE role_idx = ?"
+    [Only result] <- query conn sqlQuery (Only roleIdx) :: IO [Only String]
+    ----------------------------------------------
+    close conn
+
+    return result
+
 
 -- Get the Room Name of a player, using its uuid
 getPlayerRoomName :: String -> IO String
@@ -213,3 +239,36 @@ deletePLayerKnowledge pUUID = do
     _ <- execute conn sqlQuery (Only pUUID)
     ----------------------------------------------
     close conn
+
+isRoleAlive :: [String] -> Int -> IO Bool
+isRoleAlive [] _ = return False
+isRoleAlive (playerId:rest) role = do
+    isAlive <- isPlayerAlive playerId
+    playerRole <- getRole playerId
+    if isAlive && playerRole == role
+        then return True
+        else isRoleAlive rest role
+
+-- Check if the player can do the action
+isAllowed :: String ->  IO Bool
+isAllowed pName = do
+    pUUID   <- getUUIDFromPlayerName pName
+    pRoom   <- getPlayerRoomName pUUID
+    rState  <- getRoomRoundState pRoom
+
+    return $ (rState == "actionRound")
+
+
+-- Get a Bool telling if the player is alive - using its UUID
+isPlayerAlive ::  String -> IO Bool
+isPlayerAlive pUUID = do
+    conn <- getDbConnection
+
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "SELECT is_alive FROM UserGameData WHERE player_uuid = ?"    
+    result <- query conn sqlQuery (Only pUUID)
+    ----------------------------------------------
+    close conn
+    case result of
+        [Only alive] -> return alive
+        _            -> return False

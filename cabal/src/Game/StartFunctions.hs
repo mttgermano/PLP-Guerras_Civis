@@ -1,5 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
 module Game.StartFunctions where
+import Game.RoleFunctions
 import Core.DbFunctions
 import Utils.Utils
 
@@ -120,6 +121,39 @@ distributeRoles rName = do
     zipWithM_ (\player roleIndex -> setRole player roleIndex) room_players roles_index
 
     putStrLn $ replicate (length action) '-'
+
+
+distributePlayersInitialKnowledge :: String -> IO ()
+distributePlayersInitialKnowledge rName = do
+
+    -- Get Role Index
+    assassinoIdx    <- getRoleIdx "assassino"
+    aprendizIdx     <- getRoleIdx "aprendiz"
+    silenciadorIdx  <- getRoleIdx "silenciador"
+    juizIdx         <- getRoleIdx "juiz"
+    policialIdx     <- getRoleIdx "policial"
+    medicoIdx       <- getRoleIdx "medico"
+
+    -- Get Player UUID
+    assassino   <- getPlayerUUIDFromRoleIdx assassinoIdx
+    aprendiz    <- getPlayerUUIDFromRoleIdx aprendizIdx
+    silenciador <- getPlayerUUIDFromRoleIdx silenciadorIdx
+    juiz        <- getPlayerUUIDFromRoleIdx juizIdx
+    policial    <- getPlayerUUIDFromRoleIdx policialIdx
+    medico      <- getPlayerUUIDFromRoleIdx medicoIdx
+
+    -- Set the initial Knowledge
+    revealPlayerRole assassino aprendiz
+    revealPlayerRole assassino silenciador
+
+    revealPlayerRole aprendiz assassino
+    revealPlayerRole aprendiz silenciador
+
+    revealPlayerRole silenciador assassino
+    revealPlayerRole silenciador juiz 
+
+    revealPlayerRole juiz medico
+    revealPlayerRole policial juiz
 
 
 -- Check if the player is the room master
