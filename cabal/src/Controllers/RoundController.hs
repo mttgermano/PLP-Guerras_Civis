@@ -4,6 +4,7 @@ import Game.RoundFunctions
 import Game.StartFunctions
 import Game.GameFunctions
 import Utils.Utils
+import GHC.Generics (Constructor(conFixity))
 
 
 
@@ -24,7 +25,7 @@ runRound rName = do
     roundDefaultSettings    rName
     actionRound             rName
     voteRound               rName
-    -- roundResult          rName --> se X ta com kill_vote 1, print: User morreu y, coloca is_alive pra 0, ...
+    roundResult             rName -- --> se X ta com kill_vote 1, print: User morreu y, coloca is_alive pra 0, ...
 
 -- Reset all the setting of a Room
 roundDefaultSettings :: String -> IO ()

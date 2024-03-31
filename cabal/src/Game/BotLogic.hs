@@ -97,20 +97,20 @@ botBrain rName botUuid = do
 
 -- Verify whether someone is on the opposite team of the bot and whether they are alive.
 compareIsGoodIsAlive :: String -> [String] -> String -> IO Int
-compareIsGoodIsAlive botId roles playerId = do
+compareIsGoodIsAlive botId players playerId = do
     botIsGood       <- getIsGood botId
     playerIsGood    <- getIsGood playerId
     playerAlive     <- isPlayerAlive playerId
 
-    if (botIsGood /= playerIsGood) && (playerId `elem` roles) && playerAlive
+    if (botIsGood /= playerIsGood) && (playerId `elem` players) && playerAlive
         then    return 1000000
-    else if ((botIsGood == playerIsGood) && (playerId `elem` roles)) || not playerAlive
+    else if ((botIsGood == playerIsGood) && (playerId `elem` players)) || not playerAlive
         then    return (-100000)
     else        return 0
 
 -- Call compareIsGoodIsAlive for every player.
 compareIsGoodList :: String -> [String] -> [String] -> IO [Int]
-compareIsGoodList botId playerIds roles = mapM (compareIsGoodIsAlive botId roles) playerIds
+compareIsGoodList botId playerIds players = mapM (compareIsGoodIsAlive botId players) playerIds
 
 -- Take the biggest voted player
 biggestVote :: Ord a => [a] -> Int

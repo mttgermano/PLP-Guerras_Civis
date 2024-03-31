@@ -56,3 +56,22 @@ resetRoomPlayersAtributes rName = do
             return ()
     close conn
 
+roundResult :: String -> IO()
+roundResult rName = do
+    conn    <- getDbConnection
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack $ "SELECT player_uuid FROM UserGameData WHERE kill_vote > 0 AND is_alive = True"
+    players <- query_ conn sqlQuery :: IO [Only String]
+    ----------------------------------------------
+
+    -- Processing each player with kill_vote > 0 --
+    mapM_ (\(Only playerUUID) -> killPlayer playerUUID) players
+    close conn
+
+killPlayer :: String -> IO ()
+killPlayer playerUUID = do
+    -- Actions for each player with kill_vote > 0, e.g., print, update database, etc.
+    conn    <- getDbConnection
+    let sqlQuery = Query $ BS2.pack $ "UPDATE UserGameData SET is_alive = False WHERE player_uuid = ?"
+    _ <- execute conn sqlQuery (Only playerUUID)
+    putStrLn $ "User " ++ playerUUID ++ " morreu."
