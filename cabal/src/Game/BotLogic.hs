@@ -5,6 +5,7 @@ import Game.GameFunctions
 import Game.StartFunctions
 import Game.RoundFunctions
 import Game.RoleFunctions
+import Game.ChatFunctions
 import LoginUtils.PlayerFunctions
 import Utils.Utils
 
@@ -20,21 +21,21 @@ import Database.PostgreSQL.Simple.Types (Query(Query))
 import System.Random
 import GHC.Base (IO)
 
-
+-- Randomly choose a player who is alive to perform the action.
 botActionChoice :: String -> IO String
 botActionChoice rName = do
     players <- getRoomPlayersUUIDList rName
 
     posicao <- randomRIO (0, length players - 1)
     let player_uuid = players !! posicao
-    alive <- isPlayerAlive player_uuid  -- Unwrap the result from IO monad
+    alive <- isPlayerAlive player_uuid 
     
     if alive
         then return player_uuid
 
         else botActionChoice rName
 
-
+-- Create the bots in a room
 createBots :: Int -> String -> IO ()
 createBots quant rName
     | quant <= 0    = putStrLn $ ("> All Bots created in [" ++ rName ++ "]")
@@ -60,13 +61,18 @@ createBots quant rName
         close conn
         createBots (quant-1) rName
 
+-- Separete all strings by space
+splitBySpaces :: [String] -> [String]
+splitBySpaces = concatMap words
 
-botBrain :: String -> String -> String -> IO ()
-botBrain rName messages botUuid = do
+-- Choose the most mentioned player in the chat and vote for him.
+botBrain :: String -> String -> IO ()
+botBrain rName botUuid = do
     players <- getRoomPlayersUUIDList rName
     playersNames <- getPlayersNames players
+    messages <- getMessagesListFromRoom rName 0
 
-    let allWords = words messages
+    let allWords = splitBySpaces messages
         references = countReferencesForAll allWords playersNames
 
     conn <- getDbConnection
@@ -89,7 +95,7 @@ botBrain rName messages botUuid = do
     let playerToIncrement = players !! ind
     incrementVote bName playerToIncrement
 
-
+-- Verify whether someone is on the opposite team of the bot and whether they are alive.
 compareIsGoodIsAlive :: String -> [String] -> String -> IO Int
 compareIsGoodIsAlive botId roles playerId = do
     botIsGood       <- getIsGood botId
@@ -102,11 +108,11 @@ compareIsGoodIsAlive botId roles playerId = do
         then    return (-100000)
     else        return 0
 
-
+-- Call compareIsGoodIsAlive for every player.
 compareIsGoodList :: String -> [String] -> [String] -> IO [Int]
 compareIsGoodList botId playerIds roles = mapM (compareIsGoodIsAlive botId roles) playerIds
 
-
+-- Take the biggest voted player
 biggestVote :: Ord a => [a] -> Int
 biggestVote []      = 0
 biggestVote list    = biggestIdxAux list 0 0
@@ -116,35 +122,36 @@ biggestVote list    = biggestIdxAux list 0 0
       | x > (list !! maiorIndiceAtual)  = biggestIdxAux xs (idx + 1) idx
       | otherwise                       = biggestIdxAux xs (idx + 1) maiorIndiceAtual
 
-
+-- Call nameCountReferences for every player
 countReferencesForAll :: [String] -> [String] -> [Int]
 countReferencesForAll _ [] = []
 countReferencesForAll words (x:xs) = nameCountReferences x words : countReferencesForAll words xs
 
+-- Som two lists
 listSom :: [Int] -> [Int] -> [Int]
 listSom [] [] = []
 listSom [] ys = ys
 listSom xs [] = xs
 listSom (x:xs) (y:ys) = (x + y) : listSom xs ys
 
-
+-- Count the times a player's name was written in the chat.
 nameCountReferences :: String -> [String]-> Int
 nameCountReferences player playersNames
     | null playersNames = 0
     | otherwise         = length (filter(== player)playersNames)
 
-
+-- Words to be chosen as cursed word by the bot 
 possibleWords :: [String]
-possibleWords = ["matou", "acho", "teste", "livro", "água", "banana", "futebol", "computador", "amor", "tempo", "cidade", "felicidade"]
+possibleWords = ["sinto", "acho", "teste", "livro", "água", "banana", "futebol", "computador", "amor", "tempo", "cidade", "felicidade"]
 
--- Function to generate a random Portuguese word
+-- Function to choose a random word
 randomWord :: IO String
 randomWord = do
     index <- randomRIO (0, length possibleWords - 1)
     return (possibleWords !! index)
 
 
--- Function to test each element
+-- Call the action of the bot
 botAction :: String -> String -> IO ()
 botAction botId rName = do
     botRole        <- getRole botId
@@ -164,11 +171,11 @@ botAction botId rName = do
         10 -> save botId playerId
         12 -> revenge botId playerId
 
-
+-- Call botAction for every bot
 callBots :: [String] -> String -> IO ()
 callBots arr rName = mapM_ (\botId -> botAction botId rName) arr
 
-
+-- Take the bots of the room and call the actions
 botsRound :: String -> IO ()
 botsRound rName = do
     bots <- getRoomBots rName
@@ -193,3 +200,4 @@ deleteBot bUUID = do
     _ <- execute conn sqlQuery (Only bUUID)
     ----------------------------------------------
     close conn
+

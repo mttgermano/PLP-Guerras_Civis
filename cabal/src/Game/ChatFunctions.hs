@@ -15,7 +15,6 @@ import Database.PostgreSQL.Simple.ToRow
 import Database.PostgreSQL.Simple.Types (Query(Query))
 
 
-
 sendMessage :: String -> String -> IO ()
 sendMessage pName msg = do
     pUUID   <- getUUIDFromPlayerName pName
