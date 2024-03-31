@@ -197,14 +197,14 @@ getRoomPlayersUUIDList rName = do
     return pList
 
 -- Delete all room players knowlegde
-deleteRoomPlayersKnowledge :: IO ()
+deleteRoomPlayersKnowledge :: String -> IO ()
 deleteRoomPlayersKnowledge rName = do
     pList   <- getRoomPlayersUUIDList rName
-    mapM deletePLayerKnowledge pList
+    mapM_ deletePLayerKnowledge pList 
 
     
 -- Delete a player knowlegde
-deletePLayerKnowledge :: IO ()
+deletePLayerKnowledge :: String -> IO ()
 deletePLayerKnowledge pUUID = do
     conn    <- getDbConnection
 
