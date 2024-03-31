@@ -268,7 +268,7 @@ main = do
             rPlayers <- liftIO $ getRoomPlayers apiRName
             
             status status200
-            json $ object ["rPlayers" .= (rPlayers:: [(String, String)])]
+            json $ object ["rPlayers" .= (rPlayers:: [(String, String, Bool)])]
 
         get "/api/get_room_state/:rName" $ do
             liftIO $ putStrLn $ replicate 50 '-'
@@ -293,3 +293,17 @@ main = do
 
             status status200
             json knowledgeInfo
+
+
+        -- get "/api/get_actions_results/:rName" $ do
+        --     liftIO $ putStrLn $ replicate 50 '-'
+        --     liftIO $ putStrLn "> Api request for actions results"
+        --     rName <- param "rName"
+
+        --     resultsData <- liftIO $ getRoomActionsResults rName
+
+        --     let (players, actions) = foldr (\(ActionsData pList roleList) (accPlayers, accActions) -> (pList ++ accPlayers, roleList ++ accActions)) ([], []) resultsData
+        --     let resultsInfo = object ["player" .= (players :: [String]), "actions" .= (actions :: [String])]
+
+        --     status status200
+        --     json resultsInfo
