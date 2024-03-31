@@ -34,6 +34,11 @@ data KnowledgeData = KnowledgeData {
     roleList    :: [String]
 }
 
+data ActionsData = ActionsData {
+    paList      :: [String],
+    actionsList :: [String]
+}
+
 -- Get the room infos
 getRoomData :: String -> IO [RoomData]
 getRoomData rName = do
@@ -68,12 +73,13 @@ getRoomList = do
 
 
 -- Get the players of a Room
-getRoomPlayers :: String -> IO [(String, String)]
+getRoomPlayers :: String -> IO [(String, String, Bool)]
 getRoomPlayers rName = do
-    pListUUID   <- getRoomPlayersUUIDList rName
-    pListNames  <- mapM getPlayerNameFromUUID pListUUID
+    pListUUID   <- getRoomPlayersUUIDList       rName
+    pListNames  <- mapM getPlayerNameFromUUID   pListUUID
+    pAliveList  <- mapM isPlayerAlive           pListUUID
 
-    let playerList = zip pListUUID pListNames
+    let playerList = zip3 pListUUID pListNames pAliveList
     return playerList
  
 
@@ -106,3 +112,13 @@ getPlayerKnowledge pName = do
     
     let knowledgeDataList = zipWith (\pName pRoleName -> KnowledgeData { pList = [pName], roleList = [pRoleName] }) pNameList pRoleNameList
     return knowledgeDataList
+
+
+
+-- getRoomActionsResults :: String -> IO [ActionsData]
+-- getRoomActionsResults rName = do
+     
+
+    -- let actionsDataList = []
+
+    -- return actionsDataList
