@@ -68,33 +68,18 @@ botBrain :: String -> String -> IO ()
 botBrain rName botUuid = do
     playersUuid   <- getRoomPlayersUUIDList rName
     playersNames  <- mapM getPlayerNameFromUUID playersUuid
-    print playersUuid
-    print playersNames
     messages <- getMessagesListFromRoom rName 0
-    print "AQUI"
     let allWords = splitBySpaces messages
-        references = countReferencesForAll allWords playersNames
-    print "AQUI"
-    conn <- getDbConnection
-    -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "SELECT who_is_known FROM RoleKnowledge WHERE who_knows = ?"
-    roles <- forM playersUuid $ \player -> do
-        [Only role] <- query conn sqlQuery (Only botUuid)
-        return role
-    ----------------------------------------------
-    print "AQUI"
-    let comparation = compareIsGoodList botUuid playersUuid roles
-    print "AQUI"
+    let references = countReferencesForAll allWords playersNames
+
+    players <- getPlayerKnowledgeList botUuid
+
+    let comparation = compareIsGoodList botUuid playersUuid players
     comp <- comparation
-    print "AQUI"
     let results = listSom comp references
-    print "AQUI"
     let ind = biggestVote results
 
-    close conn
-    print botUuid
     bName <- getPlayerNameFromUUID botUuid
-    print bName
     let playerToIncrement = playersNames !! ind
     incrementVote bName playerToIncrement
 
@@ -174,7 +159,7 @@ botAction botId rName = do
         9 -> police botName playerName
         10 -> save botName playerName
         12 -> revenge botName playerName
-        _ -> print "aldeao"
+        _ -> putStrLn $ ("Aldeao")
 
 -- Call botAction for every bot
 callBots :: [String] -> String -> IO ()
@@ -187,10 +172,9 @@ callBots (botId:rest) rName = do
 botsRound :: String -> IO ()
 botsRound rName = do
     bots <- getRoomBots rName
-    print $ "Comecando Bot Round"
-    print bots
+    putStrLn $ ("> [" ++ (rName) ++ "] Room - Comecou  Bot Round")
     callBots bots rName
-    print $ "Fim Bot Round"
+    putStrLn $ ("> [" ++ (rName) ++ "] Room - Terminou  Bot Round")
 
 -- Call botAction for every bot
 callBotsVote :: [String] -> String -> IO ()
@@ -204,10 +188,9 @@ callBotsVote (botId:rest) rName = do
 voteBotsRound :: String -> IO ()
 voteBotsRound rName = do
     bots <- getRoomBots rName
-    print $ "Comecando Round de votacao dos bot"
-    print bots
+    putStrLn $ ("> [" ++ (rName) ++ "] Room - Comecou  Bot Vote")
     callBotsVote bots rName
-    print $ "Fim Bot Round de votacao dos bot"
+    putStrLn $ ("> [" ++ (rName) ++ "] Room - Terminou  Bot Vote")
 
 
 -- Deletes all bots, after the game ended

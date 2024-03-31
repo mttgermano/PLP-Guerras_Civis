@@ -25,7 +25,6 @@ getRoomPlayersGoodness rName isGood = do
 getPlayerNameFromUUID :: String -> IO String
 getPlayerNameFromUUID pUUID = do
     conn <- getDbConnection
-    print pUUID
     -- DB Query ----------------------------------
     let sqlQuery = Query $ BS2.pack "SELECT player_name FROM Player WHERE player_uuid = ?"
     [Only pName] <- query conn sqlQuery [pUUID]
@@ -48,7 +47,6 @@ getUUIDFromPlayerName pName = do
 getPlayersNames :: [String] -> IO [String]
 getPlayersNames [] = return []
 getPlayersNames (id:ids) = do
-    print id
     pName           <- getPlayerNameFromUUID id
     remainingStr    <- getPlayersNames ids
 
@@ -269,11 +267,11 @@ isAllowed pName actionType = do
     pUUID   <- getUUIDFromPlayerName pName
     pRoom   <- getPlayerRoomName pUUID
     rState  <- getRoomRoundState pRoom
-
+    print rState
     paralized   <- isParalized  pUUID
     silenced    <- isSilenced   pUUID
     isAlive     <- isPlayerAlive pUUID
-    if silenced > 0 || not isAlive || paralized > 0 || (actionType /= "action")
+    if silenced > 0 || not isAlive || paralized > 0 || (actionType /= rState)
         then return False 
     else        -- default
         return True

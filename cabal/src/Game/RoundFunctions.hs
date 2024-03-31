@@ -27,7 +27,7 @@ updateRoundState room_name state = do
 actionRound :: String -> IO ()
 actionRound rName = do
     putStrLn $ ("> [" ++ (rName) ++ "] Room - Começando Action Round ")
-    updateRoundState rName "actionRound" 
+    updateRoundState rName "action" 
 
     evilList <- getRoomPlayersGoodness rName False
     goodList <- getRoomPlayersGoodness rName True
