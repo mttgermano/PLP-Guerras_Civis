@@ -3,6 +3,7 @@ module Controllers.RoundController where
 import Game.RoundFunctions
 import Game.StartFunctions
 import Game.GameFunctions
+import Game.BotLogic
 import Utils.Utils
 import GHC.Generics (Constructor(conFixity))
 
@@ -25,6 +26,7 @@ runRound rName = do
     updateRoundState rName "actionRound"
     roundDefaultSettings    rName
     actionRound             rName
+    --botsRound               rName
     voteRound               rName
     roundResult             rName -- --> se X ta com kill_vote 1, print: User morreu y, coloca is_alive pra 0, ...
 

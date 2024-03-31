@@ -38,9 +38,9 @@ kill agent action_reciever = do
             errPermissionMessage agent
 
 
--- aprentice logic
-aprentice :: String -> String -> IO ()     
-aprentice agent action_reciever = do
+-- apprentice logic
+apprentice :: String -> String -> IO ()     
+apprentice agent action_reciever = do
     allowed         <- isAllowed agent "action"
     rName           <- getPlayerRoomName agent
     pList           <- getRoomPlayersUUIDList rName
@@ -58,7 +58,7 @@ aprentice agent action_reciever = do
             errPermissionMessage agent
 
 
--- aprentice logic
+-- police logic
 police :: String -> String -> IO ()     
 police agent action_reciever = do
     allowed         <- isAllowed agent "action"

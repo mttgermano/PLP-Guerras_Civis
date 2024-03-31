@@ -83,14 +83,23 @@ vote pName pName_voted = incrementVote pName pName_voted
 makeAction :: String -> String -> String -> IO ()
 makeAction agent action action_reciever 
     | action == "vote"          = vote      agent action_reciever 
-    | action == "kill"          = kill      agent action_reciever
-    | action == "save"          = save      agent action_reciever 
-    | action == "search"        = search    agent action_reciever 
-    | action == "reveal"        = reveal    agent action_reciever 
-    | action == "silence"       = silence   agent action_reciever 
-    | action == "paralize"      = paralize      agent action_reciever 
-    | action == "curse_word"    = setCursedWord agent action_reciever 
-    | otherwise                 = putStrLn $ "Invalid Action"
+    | otherwise = do
+        agentID <- getUUIDFromPlayerName agent
+        role <- getRole agentID
+        case role of
+            1  -> kill agent action_reciever
+            2  -> apprentice agent action_reciever
+            3  -> reveal agent action_reciever
+            4  -> paralize agent action_reciever
+            5  -> silence agent action_reciever
+            6  -> setCursedWord agent action_reciever
+            7  -> search agent action_reciever
+            8  -> kill agent action_reciever
+            9  -> police agent action_reciever
+            10 -> save agent action_reciever
+            12 -> revenge agent action_reciever
+            _  -> putStrLn $ "Invalid Action"
+
 
 -- Sebnd a message to a chat
 makeMessage :: String -> String -> IO ()
