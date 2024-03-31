@@ -28,6 +28,7 @@ runRound rName = do
     actionRound             rName
     botsRound               rName
     voteRound               rName
+    voteBotsRound           rName
     roundResult             rName -- --> se X ta com kill_vote 1, print: User morreu y, coloca is_alive pra 0, ...
 
 -- Reset all the setting of a Room
