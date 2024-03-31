@@ -68,7 +68,7 @@ isAllowed pName = do
 
     return $ (rState == "actionRound")
 
-
+-- Verify whether the player assigned to a role is alive.
 isRoleAlive :: [String] -> Int -> IO Bool
 isRoleAlive [] _ = return False
 isRoleAlive (playerId:rest) role = do
@@ -78,7 +78,7 @@ isRoleAlive (playerId:rest) role = do
         then return True
         else isRoleAlive rest role
 
-
+-- Reveal the role of a player
 revealPlayerRole :: String -> String -> IO ()
 revealPlayerRole agent agent_reciever = do
     conn <- getDbConnection
@@ -88,6 +88,6 @@ revealPlayerRole agent agent_reciever = do
     ----------------------------------------------
     close conn
 
-
+-- Reveal to all other players the role of a player
 revealToAll :: [String] -> String -> IO ()
 revealToAll players action_receiver = mapM_ (\id -> revealPlayerRole id action_receiver) players

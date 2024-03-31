@@ -79,7 +79,7 @@ randomList n = do
         (index, _) = randomR (0, length nums - 1) gen
     return $ nums !! index
 
-
+-- Add the players to a game
 addPlayersToGame :: String -> IO ()
 addPlayersToGame rName = do
     conn            <- getDbConnection
