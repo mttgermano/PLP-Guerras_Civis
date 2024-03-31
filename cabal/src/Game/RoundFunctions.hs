@@ -74,3 +74,4 @@ killPlayer playerUUID = do
     let sqlQuery = Query $ BS2.pack $ "UPDATE UserGameData SET is_alive = False WHERE player_uuid = ?"
     _ <- execute conn sqlQuery (Only playerUUID)
     putStrLn $ "User " ++ playerUUID ++ " morreu."
+    
