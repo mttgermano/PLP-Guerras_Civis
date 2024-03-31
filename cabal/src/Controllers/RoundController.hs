@@ -13,7 +13,7 @@ voteRound rName = do
     putStrLn $ ("> [" ++ (rName) ++ "] Room - Começando Vote   Round ")
     updateRoundState rName "voteRound"
 
-    --sleep 1
+    sleep 5
 
     putStrLn $ ("> [" ++ (rName) ++ "] Room - Terminou  Vote   Round")
     putStrLn $ replicate 50 '-'

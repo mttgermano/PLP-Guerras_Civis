@@ -142,6 +142,19 @@ getRoleIdx roleName = do
 
     return result
 
+
+getPlayerKnowledgeList :: String -> IO [String]
+getPlayerKnowledgeList pUUID = do
+    conn <- getDbConnection
+
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "SELECT who_is_known FROM RoleKnowledge WHERE who_knows = ?"
+    results <- query conn sqlQuery (Only pUUID) :: IO [Only String]
+    ----------------------------------------------
+    close conn
+
+    return (map (\(Only str) -> str) results)
+
 -- Get the player UUID - using its roleIdx
 getPlayerUUIDFromRoleIdx :: Int -> IO String
 getPlayerUUIDFromRoleIdx roleIdx = do

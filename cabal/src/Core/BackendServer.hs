@@ -279,3 +279,17 @@ main = do
             
             status status200
             json $ object ["rState" .= (roomData :: String)] 
+
+
+        get "/api/get_player_knowledge/:pName" $ do
+            liftIO $ putStrLn $ replicate 50 '-'
+            liftIO $ putStrLn "> Api request for player knowledge"
+            pName <- param "pName"
+
+            knowledgeData <- liftIO $ getPlayerKnowledge pName 
+
+            let (players, roles) = foldr (\(KnowledgeData pList roleList) (accPlayers, accRoles) -> (pList ++ accPlayers, roleList ++ accRoles)) ([], []) knowledgeData
+            let knowledgeInfo = object ["player" .= (players :: [String]), "role" .= (roles :: [String])]
+
+            status status200
+            json knowledgeInfo
