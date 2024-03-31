@@ -20,8 +20,9 @@ sendMessage pName msg = do
     pUUID   <- getUUIDFromPlayerName pName
     rName   <- getPlayerRoomName pUUID
     rState  <- getRoomRoundState rName
+    allowed <- isAllowed pName "vote"
 
-    if rState == "voteRound"
+    if allowed
         then do
             conn    <- getDbConnection
 
@@ -34,7 +35,7 @@ sendMessage pName msg = do
             -- send a request to the react server    
             putStrLn $ "> [" ++ rName ++ "] Room - recebeu mensagem [" ++ msg ++ "]"
         else do
-            putStrLn $ "> [" ++ rName ++ "] Room - não está num round de votação"
+            putStrLn $ "> [" ++ pName ++ "] Player está silenciado"
 
 
 -- Get the last message idx

@@ -14,7 +14,7 @@ voteRound rName = do
     putStrLn $ ("> [" ++ (rName) ++ "] Room - Começando Vote   Round ")
     updateRoundState rName "voteRound"
 
-    --sleep 1
+    sleep 5
 
     putStrLn $ ("> [" ++ (rName) ++ "] Room - Terminou  Vote   Round")
     putStrLn $ replicate 50 '-'
@@ -22,6 +22,7 @@ voteRound rName = do
 -- Run all the sequence of rounds
 runRound :: String -> IO ()
 runRound rName = do
+    updateRoundState rName "actionRound"
     roundDefaultSettings    rName
     actionRound             rName
     voteRound               rName
@@ -33,4 +34,3 @@ roundDefaultSettings rName = do
     updateRoundState                rName "startRound"
     resetRoundMessages              rName   
     resetRoomPlayersAtributes       rName
-

@@ -129,6 +129,45 @@ getRoleName roleIdx = do
 
     return result
 
+-- Get the role idx - using the its name
+getRoleIdx :: String -> IO Int
+getRoleIdx roleName = do
+    conn <- getDbConnection
+
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "SELECT role_idx FROM Roles WHERE role = ?"
+    [Only result] <- query conn sqlQuery (Only roleName) :: IO [Only Int]
+    ----------------------------------------------
+    close conn
+
+    return result
+
+
+getPlayerKnowledgeList :: String -> IO [String]
+getPlayerKnowledgeList pUUID = do
+    conn <- getDbConnection
+
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "SELECT who_is_known FROM RoleKnowledge WHERE who_knows = ?"
+    results <- query conn sqlQuery (Only pUUID) :: IO [Only String]
+    ----------------------------------------------
+    close conn
+
+    return (map (\(Only str) -> str) results)
+
+-- Get the player UUID - using its roleIdx
+getPlayerUUIDFromRoleIdx :: Int -> IO String
+getPlayerUUIDFromRoleIdx roleIdx = do
+    conn <- getDbConnection
+
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "SELECT player_uuid FROM UserGameData WHERE role_idx = ?"
+    [Only result] <- query conn sqlQuery (Only roleIdx) :: IO [Only String]
+    ----------------------------------------------
+    close conn
+
+    return result
+
 
 -- Get the Room Name of a player, using its uuid
 getPlayerRoomName :: String -> IO String
@@ -213,3 +252,70 @@ deletePLayerKnowledge pUUID = do
     _ <- execute conn sqlQuery (Only pUUID)
     ----------------------------------------------
     close conn
+
+isRoleAlive :: [String] -> Int -> IO Bool
+isRoleAlive [] _ = return False
+isRoleAlive (playerId:rest) role = do
+    isAlive     <- isPlayerAlive playerId
+    playerRole  <- getRole playerId
+
+    if isAlive && playerRole == role
+        then return True
+        else isRoleAlive rest role
+
+-- Check if the player can do the action
+isAllowed :: String -> String -> IO Bool
+isAllowed pName actionType = do
+    pUUID   <- getUUIDFromPlayerName pName
+    pRoom   <- getPlayerRoomName pUUID
+    rState  <- getRoomRoundState pRoom
+
+    paralized   <- isParalized  pUUID
+    silenced    <- isSilenced   pUUID
+
+    if silenced > 0
+        then return False 
+    else if paralized > 0
+        then return (not (actionType == "action"))
+    else        -- default
+        return False
+
+
+-- Get a int representing if the player is silenced 
+isSilenced :: String -> IO Int
+isSilenced pUUID = do
+    conn <- getDbConnection
+
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "SELECT is_silenced FROM UserGameData WHERE player_uuid = ?"    
+    [Only result] <- query conn sqlQuery (Only pUUID)
+    ----------------------------------------------
+    close conn
+    return result
+
+
+-- Get a int representing if the player is paralized
+isParalized :: String -> IO Int
+isParalized pUUID = do
+    conn <- getDbConnection
+
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "SELECT is_paralized FROM UserGameData WHERE player_uuid = ?"    
+    [Only result] <- query conn sqlQuery (Only pUUID)
+    ----------------------------------------------
+    close conn
+    return result
+
+
+-- Get a Bool telling if the player is alive - using its UUID
+isPlayerAlive ::  String -> IO Bool
+isPlayerAlive pUUID = do
+    conn <- getDbConnection
+
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "SELECT is_alive FROM UserGameData WHERE player_uuid = ?"    
+    [Only result] <- query conn sqlQuery (Only pUUID)
+    ----------------------------------------------
+    close conn
+
+    return result

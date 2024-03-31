@@ -2,7 +2,6 @@
 CREATE TABLE Room (
     room_uuid       VARCHAR(36) PRIMARY KEY,
     room_name       VARCHAR(50),
-    room_password   VARCHAR(50),
     room_master     VARCHAR(36),
     is_up           BOOLEAN,
     cursed_word     VARCHAR(50),
@@ -57,6 +56,5 @@ CREATE TABLE RoleKnowledge (
     who_knows       VARCHAR(36),
     who_is_known    VARCHAR(36),
     FOREIGN KEY (who_knows)     REFERENCES Player(player_uuid),
-    FOREIGN KEY (who_is_known)  REFERENCES Player(player_uuid),
-    PRIMARY KEY (who_knows, who_is_known)
+    FOREIGN KEY (who_is_known)  REFERENCES Player(player_uuid)
 );

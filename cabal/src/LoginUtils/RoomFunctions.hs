@@ -19,7 +19,6 @@ import Database.PostgreSQL.Simple.Types (Query(Query))
 data Room = Room{ 
     rId             :: String,
     rName           :: String,
-    rPassword       :: String,
     rMaster         :: String,
     isUp            :: Bool,
     cursedWord      :: Maybe String,
@@ -32,7 +31,6 @@ instance ToRow Room where
     toRow room = [ 
         toField (rId room), 
         toField (rName room), 
-        toField (rPassword room), 
         toField (rMaster room), 
         toField (isUp room), 
         toField (cursedWord room),
@@ -41,8 +39,8 @@ instance ToRow Room where
 
 -- Create a room in the database
 data CreateRoomResult = RoomCreated | RoomAlreadyExist String
-createRoom :: String -> String -> String -> IO CreateRoomResult
-createRoom player_name room_name room_password = do
+createRoom :: String -> String -> IO CreateRoomResult
+createRoom player_name room_name = do
     conn <- getDbConnection
 
     alreadyExist  <- checkRoomExist room_name 
@@ -59,7 +57,6 @@ createRoom player_name room_name room_password = do
             let newRoom = Room { 
                 rId             = uuid, 
                 rName           = room_name,
-                rPassword       = room_password, 
                 rMaster         = player_name,
                 isUp            = False,
                 cursedWord      = Nothing,
@@ -68,14 +65,14 @@ createRoom player_name room_name room_password = do
             }
 
             -- DB Query ----------------------------------
-            let sqlQuery1 = Query $ BS2.pack "INSERT INTO Room (room_uuid, room_name, room_password, room_master, is_up, cursed_word, round_messages, round_state) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+            let sqlQuery1 = Query $ BS2.pack "INSERT INTO Room (room_uuid, room_name, room_master, is_up, cursed_word, round_messages, round_state) VALUES (?, ?, ?, ?, ?, ?, ?)"
             _ <- execute conn sqlQuery1 newRoom 
             ----------------------------------------------
             close conn
             putStrLn $ ("> Room created: " ++ show newRoom)
 
             -- auto Login the RoomMaster
-            loginRoom player_name room_name room_password
+            loginRoom player_name room_name
 
             return RoomCreated
 
@@ -93,19 +90,19 @@ checkRoomExist room_name = do
 
 -- Log in a room
 data LoginRoomResult = RoomLoggedIn | IncorrectRoomData String
-loginRoom :: String -> String -> String -> IO LoginRoomResult
-loginRoom player_name room_name room_password = do
+loginRoom :: String -> String -> IO LoginRoomResult
+loginRoom player_name room_name = do
     conn <- getDbConnection
 
     -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "SELECT room_uuid FROM Room WHERE room_name = ? AND room_password = ?"
-    result <- query conn sqlQuery (room_name, room_password) :: IO [Only String]
+    let sqlQuery = Query $ BS2.pack "SELECT room_uuid FROM Room WHERE room_name = ?"
+    result <- query conn sqlQuery (Only room_name) :: IO [Only String]
     ----------------------------------------------
 
     -- Check if the query returned any rows
     if null result
         then do
-            let errMsg = "> Invalid room name or password."
+            let errMsg = "> Invalid room name."
             putStrLn errMsg
             return (IncorrectRoomData errMsg)
 

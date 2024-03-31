@@ -29,6 +29,11 @@ data RoomData = RoomData {
     rIsUp   :: Bool
 }
 
+data KnowledgeData = KnowledgeData {
+    pList       :: [String],
+    roleList    :: [String]
+}
+
 -- Get the room infos
 getRoomData :: String -> IO [RoomData]
 getRoomData rName = do
@@ -88,3 +93,16 @@ getRoomMessages rName lastIdxPlayer = do
             return lastMessages
         else
             return [""]
+
+
+getPlayerKnowledge :: String -> IO [KnowledgeData]
+getPlayerKnowledge pName = do
+    pUUID           <- getUUIDFromPlayerName pName
+    pKnowUUIDList   <- getPlayerKnowledgeList pUUID
+
+    pNameList       <- mapM getPlayerNameFromUUID pKnowUUIDList
+    pRoleIdxList    <- mapM getRole     pKnowUUIDList
+    pRoleNameList   <- mapM getRoleName pRoleIdxList
+    
+    let knowledgeDataList = zipWith (\pName pRoleName -> KnowledgeData { pList = [pName], roleList = [pRoleName] }) pNameList pRoleNameList
+    return knowledgeDataList

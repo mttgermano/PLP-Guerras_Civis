@@ -1,9 +1,6 @@
 module Game.RoleFunctions where
 
 import Core.DbFunctions
-import Game.RoundFunctions
-import Game.GameFunctions
-import Game.StartFunctions
 import Utils.Utils
 
 
@@ -16,19 +13,16 @@ import Database.PostgreSQL.Simple.Types (Query(Query))
 
 
 errPermissionMessage :: String -> IO ()
-errPermissionMessage pName = putStrLn $ ("> [" ++ (pName)  ++ "] User - doesn't have permission to execute the action")
+errPermissionMessage pName = putStrLn $ ("> [" ++ (pName)  ++ "] Player está silenciado ou paralizado")
 
 -- Kill a player 
 kill :: String -> String -> IO ()     
 kill agent action_reciever = do
-    allowed <- isAllowed agent
+    allowed <- isAllowed agent "action"
     
-
     if allowed
         then do
-            
             conn    <- getDbConnection
-
             -- DB Query ----------------------------------
             let sqlQuery = Query $ BS2.pack "UPDATE UserGameData SET kill_vote = kill_vote + 1 WHERE player_uuid = ?"
             _ <- execute conn sqlQuery (Only agent)
@@ -47,12 +41,10 @@ kill agent action_reciever = do
 -- aprentice logic
 aprentice :: String -> String -> IO ()     
 aprentice agent action_reciever = do
-    allowed <- isAllowed agent
-    rName <- getPlayerRoomName agent
-    players <- getRoomPlayersUUIDList rName
-    isAssassinAlive <- isRoleAlive players 1
-
-    
+    allowed         <- isAllowed agent "action"
+    rName           <- getPlayerRoomName agent
+    pList           <- getRoomPlayersUUIDList rName
+    isAssassinAlive <- isRoleAlive pList 1
 
     if allowed && isAssassinAlive
         then do
@@ -69,10 +61,10 @@ aprentice agent action_reciever = do
 -- aprentice logic
 police :: String -> String -> IO ()     
 police agent action_reciever = do
-    allowed <- isAllowed agent
-    rName <- getPlayerRoomName agent
-    players <- getRoomPlayersUUIDList rName
-    isJudgeAlive <- isRoleAlive players 8
+    allowed         <- isAllowed agent "action"
+    rName           <- getPlayerRoomName agent
+    pList           <- getRoomPlayersUUIDList rName
+    isJudgeAlive    <- isRoleAlive pList 8
 
 
     if allowed && not isJudgeAlive
@@ -85,7 +77,7 @@ police agent action_reciever = do
 -- Save a player of being killed
 save :: String -> String -> IO ()
 save agent action_reciever = do
-    allowed <- isAllowed agent
+    allowed <- isAllowed agent "action"
 
     if allowed
         then do
@@ -108,7 +100,7 @@ save agent action_reciever = do
 -- See the identity of a player
 search :: String -> String -> IO ()
 search agent action_reciever = do
-    allowed <- isAllowed agent
+    allowed <- isAllowed agent "action"
 
     -- TODO
     if allowed
@@ -122,17 +114,18 @@ search agent action_reciever = do
         else
             errPermissionMessage agent
 
+
 -- Reveal the indetity of a player to all the other ones
 reveal :: String -> String -> IO ()
 reveal agent action_reciever = do
-    allowed <- isAllowed agent
-    rName <- getPlayerRoomName agent
-    players <- getRoomPlayersUUIDList rName
+    allowed <- isAllowed agent "action"
+    rName   <- getPlayerRoomName agent
+    pList   <- getRoomPlayersUUIDList rName
 
     -- TODO
     if allowed
         then do
-            revealToAll players action_reciever
+            revealToAll pList action_reciever
             role <- getRole action_reciever
 
             if role == 1
@@ -145,12 +138,11 @@ reveal agent action_reciever = do
 -- Silence a player
 silence :: String -> String -> IO ()
 silence agent action_reciever = do
-    allowed <- isAllowed agent
+    allowed <- isAllowed agent "action"
 
     if allowed
         then do
             conn    <- getDbConnection
-
             -- DB Query ----------------------------------
             let sqlQuery = Query $ BS2.pack "UPDATE UserGameData SET is_silenced = 1 WHERE player_uuid = ?"
             result <- execute conn sqlQuery (Only agent)
@@ -169,12 +161,11 @@ silence agent action_reciever = do
 -- Paralize a player
 paralize :: String -> String -> IO ()
 paralize agent action_reciever = do
-    allowed <- isAllowed agent
+    allowed <- isAllowed agent "action"
 
     if allowed
         then do
             conn    <- getDbConnection
-
             -- DB Query ----------------------------------
             let sqlQuery = Query $ BS2.pack "UPDATE UserGameData SET is_paralized = 1 WHERE player_uuid = ?"
             result <- execute conn sqlQuery (Only agent)
@@ -193,12 +184,11 @@ paralize agent action_reciever = do
 -- Set the Cursed word for a Room
 setCursedWord :: String -> String -> IO ()
 setCursedWord agent cursedWord = do
-    allowed <- isAllowed agent
+    allowed <- isAllowed agent "action"
 
     if allowed
         then do
             conn    <- getDbConnection
-
             -- DB Query ----------------------------------
             let sqlQuery = Query $ BS2.pack "UPDATE Room SET cursed_word = ? WHERE room_uuid = (SELECT current_room FROM Player WHERE player_name = ?)"
             result <- execute conn sqlQuery (cursedWord, agent)
@@ -210,8 +200,8 @@ setCursedWord agent cursedWord = do
 -- The revenge of a spirit
 revenge :: String -> String -> IO ()
 revenge agent action_reciever = do
-    allowed <- isAllowed agent
     conn    <- getDbConnection
+    allowed <- isAllowed agent "action"
 
     -- DB Query ----------------------------------
     let sqlQuery = Query $ BS2.pack "SELECT kill_vote FROM UserGameData WHERE player_uuid = ?"
@@ -228,3 +218,17 @@ revenge agent action_reciever = do
 fbiIsWatching :: String -> String -> IO()
 fbiIsWatching police actionMaker = do
     revealPlayerRole police actionMaker
+
+
+revealPlayerRole :: String -> String -> IO ()
+revealPlayerRole agent agent_reciever = do
+    conn <- getDbConnection
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "INSERT INTO RoleKnowledge (who_knows, who_is_known) VALUES (?, ?)"
+    _ <- execute conn sqlQuery (agent, agent_reciever)
+    ----------------------------------------------
+    close conn
+
+
+revealToAll :: [String] -> String -> IO ()
+revealToAll players action_receiver = mapM_ (\id -> revealPlayerRole id action_receiver) players
