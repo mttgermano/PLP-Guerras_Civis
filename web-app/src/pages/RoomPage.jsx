@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from 'react';
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 
 import { UserContext } from '../contexts/userContext';
 
@@ -11,13 +11,18 @@ const RoomPage = () => {
     const [players, setPlayers] = useState([]);
     const { currentUser } = useContext(UserContext);
 
-    // useEffect(() => {
-    //     const fetchPlayers = async () => {
-    //         api.get('room/home')
-    //             .then(response => setPlayers(response.data.players));
-    //     }
-    //     fetchPlayers();
-    // });
+    const { rName } = useParams();
+
+    useEffect(() => {
+        const getPlayersByRoomName = async () => {
+            const { data } = await api.get(`api/get_room_players/${rName}`);
+
+            console.log(data);
+
+            setPlayers(data);
+        }
+        getPlayersByRoomName();
+    }, []);
 
     // return (
     //     <div className="container">

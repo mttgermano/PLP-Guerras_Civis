@@ -26,8 +26,8 @@ function App() {
             <Route path="/room/login_room" element={<LoginPage />} />
             <Route path="/room/home" element={<RoomHome />} />
             <Route path="/room/create_room" element={<CreateRoom />} />
-            <Route path="/room/waiting" element={<RoomWaiting />} />
-            <Route path="/room/game" element={<RoomPage />} />
+            <Route path="/room/:rName" element={<RoomWaiting />} />
+            <Route path="/room/:rName/game" element={<RoomPage />} />
           </Routes>
         </UserContextProvider>
       </div>
