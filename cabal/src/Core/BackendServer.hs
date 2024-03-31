@@ -28,17 +28,16 @@ instance ToJSON PlayerJson where
 -- Room ---------------------------------------------------------
 data RoomJson = RoomJson{ 
     rpjName     :: String,
-    rjName      :: String,
-    rjPassword  :: String
+    rjName      :: String
 } deriving (Show)
 
 instance FromJSON RoomJson where
     parseJSON = withObject "room" $ \v ->
-        RoomJson <$> v .: "pName" <*> v .: "rName" <*> v .: "rPassword"
+        RoomJson <$> v .: "pName" <*> v .: "rName"
 
 instance ToJSON RoomJson where
-    toJSON (RoomJson player_name room_name room_password) =
-        object ["pName" .= player_name, "rName" .= room_name, "rPassword" .= room_password]
+    toJSON (RoomJson player_name room_name ) =
+        object ["pName" .= player_name, "rName" .= room_name]
 
 -- Game ---------------------------------------------------------
 data GameJson = GameJson{
@@ -84,18 +83,6 @@ instance ToJSON MessageJson where
     toJSON (MessageJson pmName message) =
         object ["pmName" .= pmName, "message" .= message]
 
--- API Room JSON------------------------------------------------
-data ApiRoomJson = ApiRoomJson{
-    apiRName :: String
-} deriving (Show)
-
-instance FromJSON ApiRoomJson where
-    parseJSON = withObject "api" $ \v ->
-        ApiRoomJson <$> v .: "apiRName"
-
-instance ToJSON ApiRoomJson where
-    toJSON (ApiRoomJson apiRName) =
-        object ["apiRName" .= apiRName]
 
 -- Main ---------------------------------------------------------
 main :: IO ()
@@ -171,7 +158,7 @@ main = do
             case decode requestBody of
                 Just (roomObj :: RoomJson) -> do
                     -- Call createRoom from LoginFunctions
-                    result <- liftIO $ createRoom (rpjName roomObj) (rjName roomObj) (rjPassword roomObj)
+                    result <- liftIO $ createRoom (rpjName roomObj) (rjName roomObj)
                     case result of
                         RoomCreated               -> return ()
                         RoomAlreadyExist  errMsg  -> do
@@ -189,7 +176,7 @@ main = do
             case decode requestBody of
                 Just (roomObj :: RoomJson) -> do
                     -- Call createRoom from LoginFunctions
-                    result <- liftIO $ loginRoom (rpjName roomObj) (rjName roomObj) (rjPassword roomObj)
+                    result <- liftIO $ loginRoom (rpjName roomObj) (rjName roomObj)
                     case result of
                         RoomLoggedIn                -> return ()
                         IncorrectRoomData errMsg    -> do
