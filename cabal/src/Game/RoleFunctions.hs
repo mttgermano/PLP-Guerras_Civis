@@ -13,12 +13,12 @@ import Database.PostgreSQL.Simple.Types (Query(Query))
 
 
 errPermissionMessage :: String -> IO ()
-errPermissionMessage pName = putStrLn $ ("> [" ++ (pName)  ++ "] User - doesn't have permission to execute the action")
+errPermissionMessage pName = putStrLn $ ("> [" ++ (pName)  ++ "] Player está silenciado ou paralizado")
 
 -- Kill a player 
 kill :: String -> String -> IO ()     
 kill agent action_reciever = do
-    allowed <- isAllowed agent
+    allowed <- isAllowed agent "action"
     
     if allowed
         then do
@@ -41,7 +41,7 @@ kill agent action_reciever = do
 -- aprentice logic
 aprentice :: String -> String -> IO ()     
 aprentice agent action_reciever = do
-    allowed         <- isAllowed agent
+    allowed         <- isAllowed agent "action"
     rName           <- getPlayerRoomName agent
     pList           <- getRoomPlayersUUIDList rName
     isAssassinAlive <- isRoleAlive pList 1
@@ -61,7 +61,7 @@ aprentice agent action_reciever = do
 -- aprentice logic
 police :: String -> String -> IO ()     
 police agent action_reciever = do
-    allowed         <- isAllowed agent
+    allowed         <- isAllowed agent "action"
     rName           <- getPlayerRoomName agent
     pList           <- getRoomPlayersUUIDList rName
     isJudgeAlive    <- isRoleAlive pList 8
@@ -77,7 +77,7 @@ police agent action_reciever = do
 -- Save a player of being killed
 save :: String -> String -> IO ()
 save agent action_reciever = do
-    allowed <- isAllowed agent
+    allowed <- isAllowed agent "action"
 
     if allowed
         then do
@@ -100,7 +100,7 @@ save agent action_reciever = do
 -- See the identity of a player
 search :: String -> String -> IO ()
 search agent action_reciever = do
-    allowed <- isAllowed agent
+    allowed <- isAllowed agent "action"
 
     -- TODO
     if allowed
@@ -118,7 +118,7 @@ search agent action_reciever = do
 -- Reveal the indetity of a player to all the other ones
 reveal :: String -> String -> IO ()
 reveal agent action_reciever = do
-    allowed <- isAllowed agent
+    allowed <- isAllowed agent "action"
     rName   <- getPlayerRoomName agent
     pList   <- getRoomPlayersUUIDList rName
 
@@ -138,7 +138,7 @@ reveal agent action_reciever = do
 -- Silence a player
 silence :: String -> String -> IO ()
 silence agent action_reciever = do
-    allowed <- isAllowed agent
+    allowed <- isAllowed agent "action"
 
     if allowed
         then do
@@ -161,7 +161,7 @@ silence agent action_reciever = do
 -- Paralize a player
 paralize :: String -> String -> IO ()
 paralize agent action_reciever = do
-    allowed <- isAllowed agent
+    allowed <- isAllowed agent "action"
 
     if allowed
         then do
@@ -184,7 +184,7 @@ paralize agent action_reciever = do
 -- Set the Cursed word for a Room
 setCursedWord :: String -> String -> IO ()
 setCursedWord agent cursedWord = do
-    allowed <- isAllowed agent
+    allowed <- isAllowed agent "action"
 
     if allowed
         then do
@@ -201,7 +201,7 @@ setCursedWord agent cursedWord = do
 revenge :: String -> String -> IO ()
 revenge agent action_reciever = do
     conn    <- getDbConnection
-    allowed <- isAllowed agent
+    allowed <- isAllowed agent "action"
 
     -- DB Query ----------------------------------
     let sqlQuery = Query $ BS2.pack "SELECT kill_vote FROM UserGameData WHERE player_uuid = ?"

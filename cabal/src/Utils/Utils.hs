@@ -256,20 +256,55 @@ deletePLayerKnowledge pUUID = do
 isRoleAlive :: [String] -> Int -> IO Bool
 isRoleAlive [] _ = return False
 isRoleAlive (playerId:rest) role = do
-    isAlive <- isPlayerAlive playerId
-    playerRole <- getRole playerId
+    isAlive     <- isPlayerAlive playerId
+    playerRole  <- getRole playerId
+
     if isAlive && playerRole == role
         then return True
         else isRoleAlive rest role
 
 -- Check if the player can do the action
-isAllowed :: String ->  IO Bool
-isAllowed pName = do
+isAllowed :: String -> String -> IO Bool
+isAllowed pName actionType = do
     pUUID   <- getUUIDFromPlayerName pName
     pRoom   <- getPlayerRoomName pUUID
     rState  <- getRoomRoundState pRoom
 
-    return $ (rState == "actionRound")
+    paralized   <- isParalized  pUUID
+    silenced    <- isSilenced   pUUID
+
+    if silenced > 0
+        then return False 
+    else if paralized > 0
+        then return (not (actionType == "action"))
+    else        -- default
+        return False
+
+
+-- Get a int representing if the player is silenced 
+isSilenced :: String -> IO Int
+isSilenced pUUID = do
+    conn <- getDbConnection
+
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "SELECT is_silenced FROM UserGameData WHERE player_uuid = ?"    
+    [Only result] <- query conn sqlQuery (Only pUUID)
+    ----------------------------------------------
+    close conn
+    return result
+
+
+-- Get a int representing if the player is paralized
+isParalized :: String -> IO Int
+isParalized pUUID = do
+    conn <- getDbConnection
+
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "SELECT is_paralized FROM UserGameData WHERE player_uuid = ?"    
+    [Only result] <- query conn sqlQuery (Only pUUID)
+    ----------------------------------------------
+    close conn
+    return result
 
 
 -- Get a Bool telling if the player is alive - using its UUID
@@ -279,9 +314,8 @@ isPlayerAlive pUUID = do
 
     -- DB Query ----------------------------------
     let sqlQuery = Query $ BS2.pack "SELECT is_alive FROM UserGameData WHERE player_uuid = ?"    
-    result <- query conn sqlQuery (Only pUUID)
+    [Only result] <- query conn sqlQuery (Only pUUID)
     ----------------------------------------------
     close conn
-    case result of
-        [Only alive] -> return alive
-        _            -> return False
+
+    return result

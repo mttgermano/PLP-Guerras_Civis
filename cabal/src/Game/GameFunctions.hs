@@ -34,12 +34,17 @@ sleep minutes = do
 -- Increment the vote for a user in the db
 incrementVote :: String -> String -> IO ()   
 incrementVote pName pName_voted = do
-    conn    <- getDbConnection
-    pUUID   <- getUUIDFromPlayerName pName_voted
+    allowed <- isAllowed pName "vote"
+    if allowed 
+        then do
+            conn    <- getDbConnection
+            pUUID   <- getUUIDFromPlayerName pName_voted
 
-    -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "UPDATE UserGameData SET votes = votes + 1 WHERE player_uuid = ?"
-    _ <- execute conn sqlQuery (Only pUUID)
-    ----------------------------------------------
-    putStrLn $ ("> Voto incrementado para user [" ++ (pName_voted) ++ "]")
-    close conn
+            -- DB Query ----------------------------------
+            let sqlQuery = Query $ BS2.pack "UPDATE UserGameData SET votes = votes + 1 WHERE player_uuid = ?"
+            _ <- execute conn sqlQuery (Only pUUID)
+            ----------------------------------------------
+            putStrLn $ ("> Voto incrementado para user [" ++ (pName_voted) ++ "]")
+            close conn
+        else
+            putStrLn $ ("> [" ++ pName ++ "] is silenced")
