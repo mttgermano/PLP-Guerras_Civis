@@ -19,7 +19,6 @@ errPermissionMessage pName = putStrLn $ ("> [" ++ (pName)  ++ "] Player está si
 kill :: String -> String -> IO ()     
 kill agent action_reciever = do
     allowed <- isAllowed agent "action"
-    
     if allowed
         then do
             conn    <- getDbConnection
@@ -41,8 +40,10 @@ kill agent action_reciever = do
 -- apprentice logic
 apprentice :: String -> String -> IO ()     
 apprentice agent action_reciever = do
+
+    agentUuid <- getUUIDFromPlayerName agent
     allowed         <- isAllowed agent "action"
-    rName           <- getPlayerRoomName agent
+    rName           <- getPlayerRoomName agentUuid
     pList           <- getRoomPlayersUUIDList rName
     isAssassinAlive <- isRoleAlive pList 1
 
@@ -61,8 +62,11 @@ apprentice agent action_reciever = do
 -- police logic
 police :: String -> String -> IO ()     
 police agent action_reciever = do
+    print $ agent
+    print action_reciever
+    agentUuid       <- getUUIDFromPlayerName agent
     allowed         <- isAllowed agent "action"
-    rName           <- getPlayerRoomName agent
+    rName           <- getPlayerRoomName agentUuid
     pList           <- getRoomPlayersUUIDList rName
     isJudgeAlive    <- isRoleAlive pList 8
 
@@ -78,7 +82,6 @@ police agent action_reciever = do
 save :: String -> String -> IO ()
 save agent action_reciever = do
     allowed <- isAllowed agent "action"
-
     if allowed
         then do
             conn    <- getDbConnection
@@ -101,7 +104,6 @@ save agent action_reciever = do
 search :: String -> String -> IO ()
 search agent action_reciever = do
     allowed <- isAllowed agent "action"
-
     -- TODO
     if allowed
         then do
@@ -119,9 +121,9 @@ search agent action_reciever = do
 reveal :: String -> String -> IO ()
 reveal agent action_reciever = do
     allowed <- isAllowed agent "action"
-    rName   <- getPlayerRoomName agent
+    agentUuid <- getUUIDFromPlayerName agent
+    rName   <- getPlayerRoomName agentUuid
     pList   <- getRoomPlayersUUIDList rName
-
     -- TODO
     if allowed
         then do
@@ -139,7 +141,6 @@ reveal agent action_reciever = do
 silence :: String -> String -> IO ()
 silence agent action_reciever = do
     allowed <- isAllowed agent "action"
-
     if allowed
         then do
             conn    <- getDbConnection
@@ -162,7 +163,6 @@ silence agent action_reciever = do
 paralize :: String -> String -> IO ()
 paralize agent action_reciever = do
     allowed <- isAllowed agent "action"
-
     if allowed
         then do
             conn    <- getDbConnection
@@ -202,12 +202,13 @@ revenge :: String -> String -> IO ()
 revenge agent action_reciever = do
     conn    <- getDbConnection
     allowed <- isAllowed agent "action"
-
+    agentUuid <- getUUIDFromPlayerName agent
+    print $ agentUuid
     -- DB Query ----------------------------------
     let sqlQuery = Query $ BS2.pack "SELECT kill_vote FROM UserGameData WHERE player_uuid = ?"
-    result <- execute conn sqlQuery (Only agent)
+    [Only result] <- execute conn sqlQuery (Only agent) :: [Only String]    
     ----------------------------------------------
-
+    print result
     if allowed && result > 0
         then do
             kill agent action_reciever
@@ -221,11 +222,11 @@ fbiIsWatching police actionMaker = do
 
 
 revealPlayerRole :: String -> String -> IO ()
-revealPlayerRole agent agent_reciever = do
+revealPlayerRole agent action_reciever = do
     conn <- getDbConnection
     -- DB Query ----------------------------------
     let sqlQuery = Query $ BS2.pack "INSERT INTO RoleKnowledge (who_knows, who_is_known) VALUES (?, ?)"
-    _ <- execute conn sqlQuery (agent, agent_reciever)
+    _ <- execute conn sqlQuery (agent, action_reciever)
     ----------------------------------------------
     close conn
 

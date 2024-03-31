@@ -156,29 +156,36 @@ botAction :: String -> String -> IO ()
 botAction botId rName = do
     botRole        <- getRole botId
     playerId       <- botActionChoice rName
-    choiceWord <- randomWord
-
+    choiceWord     <- randomWord
+    playerName     <- getPlayerNameFromUUID playerId
+    botName     <- getPlayerNameFromUUID botId
     case botRole of
-        1 -> kill botId playerId
-        2 -> apprentice botId playerId
-        3 -> reveal botId playerId
-        4 -> paralize botId playerId
-        5 -> silence botId playerId
-        6 -> setCursedWord botId choiceWord
-        7 -> search botId playerId
-        8 -> kill botId playerId
-        9 -> police botId playerId
-        10 -> save botId playerId
-        12 -> revenge botId playerId
+        1 -> kill botName playerName
+        2 -> apprentice botName playerName
+        3 -> reveal botName playerName
+        4 -> paralize botName playerName
+        5 -> silence botName playerName
+        6 -> setCursedWord botName choiceWord
+        7 -> search botName playerName
+        8 -> kill botName playerName
+        9 -> police botName playerName
+        10 -> save botName playerName
+        12 -> revenge botName playerName
+        _ -> print "aldeao"
 
 -- Call botAction for every bot
 callBots :: [String] -> String -> IO ()
-callBots arr rName = mapM_ (\botId -> botAction botId rName) arr
+callBots [] _ = return ()
+callBots (botId:rest) rName = do
+    botAction botId rName
+    callBots rest rName
 
 -- Take the bots of the room and call the actions
 botsRound :: String -> IO ()
 botsRound rName = do
     bots <- getRoomBots rName
+    print $ "Comecando Bot Round"
+    print bots
     callBots bots rName
 
 

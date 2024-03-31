@@ -37,7 +37,6 @@ getPlayerNameFromUUID pUUID = do
 getUUIDFromPlayerName :: String -> IO String
 getUUIDFromPlayerName pName = do
     conn <- getDbConnection
-
     -- DB Query ----------------------------------
     let sqlQuery = Query $ BS2.pack "SELECT player_uuid FROM Player WHERE player_name = ?"
     [Only pUUID] <- query conn sqlQuery [pName]
@@ -272,8 +271,7 @@ isAllowed pName actionType = do
 
     paralized   <- isParalized  pUUID
     silenced    <- isSilenced   pUUID
-    isAlive     <- isPlayerAlive pName
-
+    isAlive     <- isPlayerAlive pUUID
     if silenced > 0 || not isAlive
         then return False 
     else if paralized > 0
