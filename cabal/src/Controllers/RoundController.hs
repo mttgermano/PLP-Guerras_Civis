@@ -21,6 +21,7 @@ voteRound rName = do
 -- Run all the sequence of rounds
 runRound :: String -> IO ()
 runRound rName = do
+    updateRoundState rName "actionRound"
     roundDefaultSettings    rName
     actionRound             rName
     voteRound               rName
