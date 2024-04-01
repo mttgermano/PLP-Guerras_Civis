@@ -21,8 +21,10 @@ voteRound rName = do
 -- The Round where players can execute an action
 actionRound :: String -> IO ()
 actionRound rName = do
-    putStrLn $ ("> [" ++ (rName) ++ "] Room - Começando Action Round ")
     updateRoundState rName "action"
+    putStrLn $ ("> [" ++ (rName) ++ "] Room - Começando Action Round ")
+    sleep 1
+    putStrLn $ ("> [" ++ (rName) ++ "] Room - Acabando Action Round ")
 
 
 

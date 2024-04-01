@@ -53,7 +53,6 @@ startGame rName pName = do
 -- Run Action Round
 runActionRound :: String -> Int -> IO ()
 runActionRound rName roundNum = do
-    sleep             1
     actionRound       rName
     botsRound         rName
     roundResult       rName
