@@ -50,11 +50,12 @@ startGame rName pName = do
             return (NotRoomMaster errMsg)
 
 -- Run Action Round
-runActionRound :: String -> IO ()
-runActionRound rName = do
+runActionRound :: String -> Int -> IO ()
+runActionRound rName roundNum = do
     actionRound       rName
     botsRound         rName
     roundResult       rName
+    checkEndGame      rName roundNum
 
 -- Run Vote Round
 runVoteRound :: String -> Int -> IO ()

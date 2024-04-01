@@ -86,7 +86,7 @@ instance ToJSON MessageJson where
 
 
 
--- Vote Action ------------------------------------------------
+-- Vote Round ------------------------------------------------
 data VoteJson = VoteJson{
     vrName      :: String,
     vrCount     :: Int
@@ -101,6 +101,19 @@ instance ToJSON VoteJson where
         object ["vrName" .= vrName, "vrCount" .= vrCount]
 
 
+-- Action Round -------------------------------------------------
+data ActionRoundJson = ActionRoundJson{
+    arName      :: String,
+    arCount     :: Int
+} deriving (Show)
+
+instance FromJSON ActionRoundJson where
+    parseJSON = withObject "arName" $ \v ->
+        ActionRoundJson <$> v .:"arName" <*> v .: "arCount"
+
+instance ToJSON ActionRoundJson where
+    toJSON (ActionRoundJson arName arCount) =
+        object ["arName" .= arName, "arCount" .= arCount]
 
 -- Main ---------------------------------------------------------
 main :: IO ()
@@ -235,9 +248,9 @@ main = do
             requestBody <- body
 
             case decode requestBody of
-                Just (gameObj :: GameJson) -> do
+                Just (gameObj :: ActionRoundJson) -> do
                     -- Call createRoom from LoginFunctions
-                    result <- liftIO $ runActionRound (grjName gameObj)
+                    result <- liftIO $ runActionRound (arName gameObj) (arCount gameObj)
                     return ()
                 _ -> do
                     status status400 -- Set HTTP status code to 400 (Bad Request)
