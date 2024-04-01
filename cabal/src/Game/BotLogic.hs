@@ -86,12 +86,12 @@ botBrain rName botUuid = do
             bName <- getPlayerNameFromUUID botUuid
             let playerToIncrement = playersNames !! ind
             incrementVote bName playerToIncrement
-            botRole        <- getRole botId
+            botRole        <- getRole botUuid
             if botRole == 11
                 then do
                     incrementVote bName playerToIncrement
                     incrementVote bName playerToIncrement
-                else Nothing
+                else return ()
 
 -- Verify whether someone is on the opposite team of the bot and whether they are alive.
 compareIsGoodIsAlive :: String -> [String] -> String -> IO Int
