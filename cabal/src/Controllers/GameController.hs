@@ -56,6 +56,7 @@ runActionRound rName = do
     botsRound         rName
     roundResult       rName
 
+<<<<<<< HEAD
 -- Run Vote Round
 runVoteRound :: String -> Int -> IO ()
 runVoteRound rName roundNum = do
@@ -64,6 +65,22 @@ runVoteRound rName roundNum = do
     computeVote         rName
     clearRound          rName
     checkEndGame        rName roundNum
+=======
+-- Finish the game
+endGame :: String -> String -> IO ()
+endGame rName reason = do
+    putStrLn $ ("> [" ++ (rName) ++ "] Room - o jogo  acabou!" ++ reason)
+    updateRoundState rName reason
+    deleteUserGameData          rName
+    deleteRoomPlayersKnowledge  rName
+    deleteRoomBots              rName
+    resetPlayersCurrentRoom     rName
+    deleteRoom                  rName
+
+-- Make the Game Rounds
+makeRound :: String -> IO ()
+makeRound rName = runRound rName
+>>>>>>> 868e75111f0ef5a2119eb584a622e201e1f62b11
 
 -- Vote for a player
 vote :: String -> String -> IO ()
