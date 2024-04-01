@@ -7,20 +7,20 @@ import Game.GameFunctions
 import Game.Interface
 import Game.RoundFunctions
 import Game.StartFunctions
+import Game.StopFunctions
 import Utils.Utils
 
 
 -- Run the Round which the users can vote
 voteRound :: String -> IO ()
 voteRound rName = do
-  putStrLn $ ("> [" ++ (rName) ++ "] Room - Começando Vote   Round ")
-  updateRoundState rName "vote"
+    putStrLn $ ("> [" ++ (rName) ++ "] Room - Começando Vote   Round ")
 
-  sleep 1
+    updateRoundState rName "vote"
 
-  putStrLn $ ("> [" ++ (rName) ++ "] Room - Terminou  Vote   Round")
-  putStrLn $ replicate 50 '-'
+    putStrLn $ replicate 50 '-'
 
+<<<<<<< HEAD
 -- Run all the sequence of rounds
 runRound :: String -> IO ()
 runRound rName = do
@@ -36,11 +36,42 @@ runRound rName = do
   voteBotsRound rName
   computeVote
   clearRound rName
+=======
+-- The Round where players can execute an action
+actionRound :: String -> IO ()
+actionRound rName = do
+    updateRoundState rName "action"
+    putStrLn $ ("> [" ++ (rName) ++ "] Room - Começando Action Round ")
+    sleep 1
+    putStrLn $ ("> [" ++ (rName) ++ "] Room - Acabando Action Round ")
+>>>>>>> b4f6f7a33d03b135835472d7fd74ec28b08b78d9
 
--- Reset all the setting of a Room
--- roundDefaultSettings :: String -> IO ()
--- roundDefaultSettings rName = do
---   updateRoundState rName "startRound"
 
--- -- resetRoundMessages              rName
--- -- resetRoomPlayersAtributes       rName
+
+checkEndGame :: String -> Int -> IO ()
+checkEndGame rName roundNum = do
+    cTeamEvil <- getPlayerRolesCount rName False
+    cTeamGood <- getPlayerRolesCount rName True
+
+    if cTeamGood == 0 
+        then do 
+            endGame rName "evilWins"
+        else if cTeamEvil == 0
+            then do
+                endGame rName "goodWins"
+            else if roundNum == 5   
+                then do
+                    endGame rName "roundLimit"
+                else
+                    return () 
+
+-- Finish the game
+endGame :: String -> String -> IO ()
+endGame rName reason = do
+    putStrLn $ ("> [" ++ (rName) ++ "] Room - o jogo  acabou!" ++ reason)
+    updateRoundState rName reason
+    deleteUserGameData          rName
+    deleteRoomPlayersKnowledge  rName
+    deleteRoomBots              rName
+    resetPlayersCurrentRoom     rName
+    deleteRoom                  rName

@@ -78,15 +78,21 @@ getRoomPlayersCount rName = do
 -- Count the number of live players of a role
 getPlayerRolesCount :: String -> Bool -> IO Int
 getPlayerRolesCount rName isGood = do
-    rPlayers    <- getRoomPlayersUUIDList rName
+    rPlayers <- getRoomPlayersUUIDList rName
 
     -- DB Query ----------------------------------
-    total       <- mapM getIsGood rPlayers
-    let count   = length $ filter id total 
+    let queryFunction puuid = do
+            isAlive <- isPlayerAlive puuid -- Assuming getPlayerIsAlive returns a boolean indicating whether a player is alive or not
+            if isAlive
+                then do
+                    isGoodValue <- getIsGood puuid
+                    return (isGoodValue == isGood)
+                else return False
+    total <- mapM queryFunction rPlayers
+    let count = length $ filter id total
     ----------------------------------------------
-    if isGood
-        then return count
-        else return (12 - count)
+
+    return count
 
 
 -- Get a Bool telling if the Player is good or not, using its UUID
@@ -351,6 +357,16 @@ admSendMessage rName msg = do
 
     -- send a request to the react server    
     putStrLn $ "> [" ++ rName ++ "] Room - recebeu mensagem [" ++ msg ++ "] de " ++ pName ++ "]"
+
+
+getRoomAlivePlayers :: String -> IO [Only String]
+getRoomAlivePlayers rName = do
+    pListUUID   <- getRoomPlayersUUIDList rName
+    aliveStatus <- mapM isPlayerAlive pListUUID
+
+    let alive = map fst $ filter snd $ zip (map Only pListUUID) aliveStatus
+    return alive
+
 
 -- getRoomActionsResults :: String -> IO ()
 -- getRoomActionsResults rName = do

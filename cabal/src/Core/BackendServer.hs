@@ -85,6 +85,36 @@ instance ToJSON MessageJson where
         object ["pmName" .= pmName, "message" .= message]
 
 
+
+-- Vote Round ------------------------------------------------
+data VoteJson = VoteJson{
+    vrName      :: String,
+    vrCount     :: Int
+} deriving (Show)
+
+instance FromJSON VoteJson where
+    parseJSON = withObject "vrCount" $ \v ->
+        VoteJson <$> v .:"vrName" <*> v .:"vrCount"
+
+instance ToJSON VoteJson where
+    toJSON (VoteJson vrName vrCount) =
+        object ["vrName" .= vrName, "vrCount" .= vrCount]
+
+
+-- Action Round -------------------------------------------------
+data ActionRoundJson = ActionRoundJson{
+    arName      :: String,
+    arCount     :: Int
+} deriving (Show)
+
+instance FromJSON ActionRoundJson where
+    parseJSON = withObject "arName" $ \v ->
+        ActionRoundJson <$> v .:"arName" <*> v .: "arCount"
+
+instance ToJSON ActionRoundJson where
+    toJSON (ActionRoundJson arName arCount) =
+        object ["arName" .= arName, "arCount" .= arCount]
+
 -- Main ---------------------------------------------------------
 main :: IO ()
 main = do
@@ -199,7 +229,8 @@ main = do
                     -- Call createRoom from LoginFunctions
                     result <- liftIO $ startGame (grjName gameObj) (gpjName gameObj)
                     case result of
-                        GameStarted             -> return ()
+                        GameStarted             -> do
+                            return ()
                         NotRoomMaster errMsg    -> do  
                             status status400
                             json $ object ["error" .= (errMsg :: String)]
@@ -207,6 +238,34 @@ main = do
                             status status400
                             json $ object ["error" .= (errMsg :: String)]
                         
+                _ -> do
+                    status status400 -- Set HTTP status code to 400 (Bad Request)
+                    json $ object ["error" .= ("Invalid game JSON" :: String)]
+
+
+        post "/game/run/action" $ do
+            liftIO $ putStrLn $ replicate 50 '-'
+            requestBody <- body
+
+            case decode requestBody of
+                Just (gameObj :: ActionRoundJson) -> do
+                    -- Call createRoom from LoginFunctions
+                    result <- liftIO $ runActionRound (arName gameObj) (arCount gameObj)
+                    return ()
+                _ -> do
+                    status status400 -- Set HTTP status code to 400 (Bad Request)
+                    json $ object ["error" .= ("Invalid game JSON" :: String)]
+
+
+        post "/game/run/vote" $ do
+            liftIO $ putStrLn $ replicate 50 '-'
+            requestBody <- body
+
+            case decode requestBody of
+                Just (gameObj :: VoteJson) -> do
+                    -- Call createRoom from LoginFunctions
+                    result <- liftIO $ runVoteRound (vrName gameObj) (vrCount gameObj)
+                    return ()
                 _ -> do
                     status status400 -- Set HTTP status code to 400 (Bad Request)
                     json $ object ["error" .= ("Invalid game JSON" :: String)]

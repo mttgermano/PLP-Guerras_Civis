@@ -1,7 +1,9 @@
+{-# LANGUAGE DeriveGeneric #-}
+
 module Game.Interface where
 
 import qualified Data.ByteString.Char8 as BS2
-
+import LoginUtils.PlayerFunctions as PlayerFuncs
 import Data.UUID.V4 (nextRandom)
 import Data.UUID (toString)
 import Control.Monad (forM)
@@ -46,19 +48,27 @@ drawInterface = do
     drawVerticalLine 84 "[2] Loggar" 14
     drawHorizontalLine 84
     setSGR [Reset]
+
 -- Function to create a user with validation
 createUser :: String -> IO ()
 createUser nome = do
+    drawCreateUserInterface
     putStrLn "Insira a senha:"
     senha1 <- getLine
     putStrLn "Confirme a senha:"
     senha2 <- getLine
     if senha1 == senha2
-        then putStrLn $ "Usuário '" ++ nome ++ "' criado com sucesso"
+        then do
+            result <- PlayerFuncs.createPlayer nome senha1
+            case result of
+                PlayerFuncs.PlayerCreated [player] -> do
+                    putStrLn $ "Usuário '" ++ nome ++ "' criado com sucesso"
+                    -- Salvar o jogador criado
+                    savePlayer player
+                PlayerFuncs.PlayerAlreadyExist errMsg -> putStrLn errMsg
         else do
             putStrLn "Senhas devem conferir, tente novamente."
             createUser nome
-
 
 -- Function to draw the create user interface
 drawCreateUserInterface :: IO ()
@@ -77,7 +87,6 @@ drawCreateUserInterface = do
     drawHorizontalLine 84
     setSGR [Reset]
 
-
 -- Function to login an user
 loginUser :: IO ()
 loginUser = do
@@ -86,8 +95,12 @@ loginUser = do
     username <- getLine
     putStrLn "Insira a senha:"
     password <- getLine
-    --  So exibe 'Usario criado com sucesso' - falta integrar o login
-    putStrLn $ "Logado com'" ++ username ++ "'"
+    result <- PlayerFuncs.loginPlayer username password
+    case result of
+        PlayerFuncs.PlayerLoggedIn [player] -> do
+            putStrLn $ "Logado como '" ++ username ++ "'"
+            -- Executar ações após o login
+        PlayerFuncs.IncorrectPlayerData errMsg -> putStrLn errMsg
 
 -- Function to draw the login interface
 drawLoginInterface :: IO ()
@@ -103,8 +116,7 @@ drawLoginInterface = do
     drawHorizontalLine 84
     setSGR [Reset]
 
-
-    -- Function to create a room 
+-- Function to create a room 
 createRoom :: String -> IO ()
 createRoom roomName = do
     putStrLn "Insira a senha da sala:"
@@ -142,10 +154,10 @@ joinRoom = do
     roomName <- getLine
     putStrLn "Insira a senha da sala:"
     roomPassword <- getLine
-    --  Integrar logica de entrar na sala 
+    --  Integrar lógica de entrar na sala 
     putStrLn $ "Usuario entrou na sala '" ++ roomName ++ "'"
 
--- draw the join room interface
+-- Draw the join room interface
 drawJoinRoomInterface :: IO ()
 drawJoinRoomInterface = do
     clear
@@ -158,7 +170,3 @@ drawJoinRoomInterface = do
     drawVerticalLine 84 "Senha da sala:" 10
     drawHorizontalLine 84
     setSGR [Reset]
-
-
-
-
