@@ -267,10 +267,22 @@ main = do
             apiRName <- param "rName"    
 
             -- Call createRoom from LoginFunctions
-            rPlayers <- liftIO $ getRoomPlayers apiRName
+            rPlayers <- liftIO $ getRoomPlayersPlaying apiRName
             
             status status200
             json $ object ["rPlayers" .= (rPlayers:: [(String, String, Bool)])]
+
+        get "/api/get_room_players_waiting/:rName" $ do
+            liftIO $ putStrLn $ replicate 50 '-'
+            liftIO $ putStrLn "> Api request for room_players"
+            apiRName <- param "rName"    
+
+            -- Call createRoom from LoginFunctions
+            rPlayers <- liftIO $ getRoomPlayersWaiting apiRName
+            
+            status status200
+            json $ object ["rPlayers" .= (rPlayers:: [(String, String)])]
+
 
         get "/api/get_room_state/:rName" $ do
             liftIO $ putStrLn $ replicate 50 '-'
