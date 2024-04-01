@@ -103,6 +103,10 @@
     }
 }
 
+.player-card-dead {
+    background-color: #ff5555;
+}
+
 
 .player-name {
     font-size: 20px;
