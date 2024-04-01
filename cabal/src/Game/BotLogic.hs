@@ -78,14 +78,11 @@ botBrain rName botUuid = do
             messages <- getMessagesListFromRoom rName 0
             let allWords = splitBySpaces messages
             let references = countReferencesForAll allWords playersNames
-
             players <- getPlayerKnowledgeList botUuid
-
             let comparation = compareIsGoodList botUuid playersUuid players
             comp <- comparation
             let results = listSom comp references
             let ind = biggestVote results
-
             bName <- getPlayerNameFromUUID botUuid
             let playerToIncrement = playersNames !! ind
             incrementVote bName playerToIncrement
