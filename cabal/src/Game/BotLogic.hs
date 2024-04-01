@@ -153,7 +153,7 @@ botAction botId rName = do
             case botRole of
                 1 -> kill botName playerName
                 2 -> apprentice botName playerName
-                3 -> reveal botName playerName
+                3 -> revealPaparazi botName playerName
                 4 -> paralize botName playerName
                 5 -> silence botName playerName
                 6 -> setCursedWord botName choiceWord

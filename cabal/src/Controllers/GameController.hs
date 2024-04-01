@@ -6,6 +6,7 @@ import Game.StopFunctions
 import Game.GameFunctions
 import Game.RoleFunctions
 import Game.ChatFunctions
+import Game.RoundFunctions
 import Game.BotLogic
 import Utils.Utils
 
@@ -94,17 +95,17 @@ makeAction agent action_reciever = do
             vote          agent action_reciever
         else do
             case role of
-                1  -> kill          agent action_reciever
-                2  -> apprentice    agent action_reciever
-                3  -> reveal        agent action_reciever
-                4  -> paralize      agent action_reciever
-                5  -> silence       agent action_reciever
-                6  -> setCursedWord agent action_reciever
-                7  -> search        agent action_reciever
-                8  -> kill          agent action_reciever
-                9  -> police        agent action_reciever
-                10 -> save          agent action_reciever
-                12 -> revenge       agent action_reciever
+                1  -> kill              agent action_reciever
+                2  -> apprentice        agent action_reciever
+                3  -> revealPaparazi    agent action_reciever
+                4  -> paralize          agent action_reciever
+                5  -> silence           agent action_reciever
+                6  -> setCursedWord     agent action_reciever
+                7  -> search            agent action_reciever
+                8  -> kill              agent action_reciever
+                9  -> police            agent action_reciever
+                10 -> save              agent action_reciever
+                12 -> revenge           agent action_reciever
                 _  -> putStrLn $ "Invalid Action"
 
 

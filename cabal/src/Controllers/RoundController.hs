@@ -29,7 +29,7 @@ runRound rName = do
   -- getRoomActionsResults   rName
   roundResult rName -- --> se X ta com kill_vote 1, print: User morreu y, coloca is_alive pra 0, ...
   voteRound rName
-  sendMessage "john" "o culpado e john"
+  --sendMessage "john" "o culpado e john"
   voteBotsRound rName
   computeVote
   clearRound rName
