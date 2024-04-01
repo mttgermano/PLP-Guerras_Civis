@@ -47,6 +47,7 @@ startGame rName pName = do
                     distributeRoles                     rName
                     distributePlayersInitialKnowledge   rName
                     setRoomUpState                      rName True
+                    updateRoundState rName "action"
                     let message = "> [" ++ rName ++ "] Room - jogo começou!"
                     admSendMessage rName message
                     putStrLn $ "> [" ++ rName ++ "] Room - jogo começou!"
