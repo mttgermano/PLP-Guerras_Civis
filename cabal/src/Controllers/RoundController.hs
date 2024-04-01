@@ -22,8 +22,8 @@ voteRound rName = do
 actionRound :: String -> IO ()
 actionRound rName = do
     putStrLn $ ("> [" ++ (rName) ++ "] Room - Começando Action Round ")
-
     updateRoundState rName "action"
+    sleep 1
 
 
 
