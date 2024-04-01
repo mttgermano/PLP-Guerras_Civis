@@ -162,7 +162,7 @@ botAction botId rName = do
                 9 -> police botName playerName
                 10 -> save botName playerName
                 12 -> revenge botName playerName
-                _ -> putStrLn $ ("Aldeao")
+                _ -> putStrLn $ (".")
 
 -- Call botAction for every bot
 callBots :: [String] -> String -> IO ()

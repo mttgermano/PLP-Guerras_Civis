@@ -81,25 +81,30 @@ vote :: String -> String -> IO ()
 vote pName pName_voted = incrementVote pName pName_voted
 
 -- Make an Round Action
-makeAction :: String -> String -> String -> IO ()
-makeAction agent action action_reciever 
-    | action == "vote"          = vote      agent action_reciever 
-    | otherwise = do
-        agentID <- getUUIDFromPlayerName agent
-        role <- getRole agentID
-        case role of
-            1  -> kill agent action_reciever
-            2  -> apprentice agent action_reciever
-            3  -> reveal agent action_reciever
-            4  -> paralize agent action_reciever
-            5  -> silence agent action_reciever
-            6  -> setCursedWord agent action_reciever
-            7  -> search agent action_reciever
-            8  -> kill agent action_reciever
-            9  -> police agent action_reciever
-            10 -> save agent action_reciever
-            12 -> revenge agent action_reciever
-            _  -> putStrLn $ "Invalid Action"
+makeAction :: String -> String -> IO ()
+makeAction agent action_reciever = do
+    agentID <- getUUIDFromPlayerName agent
+    role    <- getRole agentID
+    rName   <- getPlayerRoomName agentID
+    rState  <- getRoomRoundState rName
+
+    if rState == "voteRound"
+        then do
+            vote          agent action_reciever
+        else do
+            case role of
+                1  -> kill          agent action_reciever
+                2  -> apprentice    agent action_reciever
+                3  -> reveal        agent action_reciever
+                4  -> paralize      agent action_reciever
+                5  -> silence       agent action_reciever
+                6  -> setCursedWord agent action_reciever
+                7  -> search        agent action_reciever
+                8  -> kill          agent action_reciever
+                9  -> police        agent action_reciever
+                10 -> save          agent action_reciever
+                12 -> revenge       agent action_reciever
+                _  -> putStrLn $ "Invalid Action"
 
 
 -- Sebnd a message to a chat

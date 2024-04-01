@@ -58,17 +58,16 @@ instance ToJSON GameJson where
 -- Game Action --------------------------------------------------
 data ActionJson = ActionJson{
     paName      :: String,
-    action      :: String,
     aReciever   :: String
 } deriving (Show)
 
 instance FromJSON ActionJson where
     parseJSON = withObject "action" $ \v ->
-        ActionJson <$> v .: "paName" <*> v .:"action" <*> v .:"aReciever"
+        ActionJson <$> v .: "paName" <*> v .:"aReciever"
 
 instance ToJSON ActionJson where
-    toJSON (ActionJson pName action aReciever) =
-        object ["pName" .= pName, "action" .= action, "aReciever" .= aReciever]
+    toJSON (ActionJson pName aReciever) =
+        object ["pName" .= pName, "aReciever" .= aReciever]
 
 
 -- Game Chat --------------------------------------------------
@@ -220,7 +219,7 @@ main = do
             case decode requestBody of
                 Just (actionObj :: ActionJson) -> do
                     -- Call createRoom from LoginFunctions
-                    liftIO $ makeAction (paName actionObj) (action actionObj) (aReciever actionObj)
+                    liftIO $ makeAction (paName actionObj) (aReciever actionObj)
                 _ -> do
                     status status400 -- Set HTTP status code to 400 (Bad Request)
                     json $ object ["error" .= ("Invalid game action JSON" :: String)]
