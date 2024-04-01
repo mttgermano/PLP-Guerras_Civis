@@ -107,7 +107,7 @@ search agent action_reciever = do
     -- TODO
     if allowed
         then do
-            revealPaparazi agent action_reciever
+            revealUuid agent action_reciever
             role <- getRole action_reciever
             putStrLn $ ("> [" ++ agent ++ "] User - Searched [" ++ action_reciever ++ "]")
             if role == 1
@@ -121,13 +121,14 @@ search agent action_reciever = do
 reveal :: String -> String -> IO ()
 reveal agent action_reciever = do
     allowed     <- isAllowed agent "action"
-    agentUuid   <- getUUIDFromPlayerName agent
+    agentUuid <- getUUIDFromPlayerName agent
+    action_reciever_Uuid <- getUUIDFromPlayerName action_reciever
     rName       <- getPlayerRoomName agentUuid
     pList       <- getRoomPlayersUUIDList rName
 
     if allowed
         then do
-            revealToAll pList agentUuid
+            revealToAll pList action_reciever_Uuid
             role <- getRole action_reciever
             putStrLn $ ("> [" ++ agent ++ "] User - Reveal [" ++ action_reciever ++ "]")
             if role == 1
@@ -233,10 +234,10 @@ revenge agent action_reciever = do
 -- Reveal who took action in the police.
 fbiIsWatching :: String -> String -> IO()
 fbiIsWatching police actionMaker = do
-    revealPaparazi police actionMaker
+    revealPlayerRole police actionMaker
 
-revealPaparazi:: String -> String -> IO ()
-revealPaparazi agent action_reciever = do
+revealUuid:: String -> String -> IO ()
+revealUuid agent action_reciever = do
     agentUuid <- getUUIDFromPlayerName agent
     action_reciever_Uuid <- getUUIDFromPlayerName action_reciever
     revealPlayerRole agentUuid action_reciever_Uuid

@@ -36,6 +36,7 @@ startGame rName pName = do
                     setRoomUpState                      rName True
 
                     let message = "> [" ++ rName ++ "] Room - jogo começou!"
+                    putStrLn $ "> [" ++ rName ++ "] Room - jogo começou!"
                     admSendMessage rName message
 
                     return GameStarted
@@ -97,7 +98,7 @@ makeAction agent action_reciever = do
             case role of
                 1  -> kill              agent action_reciever
                 2  -> apprentice        agent action_reciever
-                3  -> revealPaparazi    agent action_reciever
+                3  -> reveal            agent action_reciever
                 4  -> paralize          agent action_reciever
                 5  -> silence           agent action_reciever
                 6  -> setCursedWord     agent action_reciever
