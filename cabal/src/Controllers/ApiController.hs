@@ -39,6 +39,12 @@ data ActionsData = ActionsData {
     actionsList :: [String]
 }
 
+data MessagesData = MessagesData {
+    pmList      :: [String],
+    pMessages   :: [String]
+}
+
+
 -- Get the room infos
 getRoomData :: String -> IO [RoomData]
 getRoomData rName = do
@@ -89,16 +95,23 @@ getRoomState rName = getRoomRoundState rName
 
 
 -- Get the Room messages 
-getRoomMessages :: String -> Int -> IO [String] 
-getRoomMessages rName lastIdxPlayer = do
-    lastIdxServer <- getLastMessageIdx rName
+getRoomMessages :: String -> Int -> IO [MessagesData] 
+getRoomMessages pName lastIdxPlayer = do
+    pUUID           <- getUUIDFromPlayerName    pName
+    rName           <- getPlayerRoomName        pUUID
+    lastIdxServer   <- getLastMessageIdx        rName
+
 
     if lastIdxPlayer /= lastIdxServer
         then do
-            lastMessages <- getMessagesListFromRoom rName lastIdxPlayer
-            return lastMessages
+            lastMessages    <- getMessagesListFromRoom rName lastIdxPlayer
+            senderName      <- getMessagesUserListFromRoom rName lastIdxPlayer
+
+            let messageDataList = zipWith (\pName pMessage -> MessagesData { pmList = [pName], pMessages = [pMessage] }) senderName lastMessages
+
+            return messageDataList
         else
-            return [""]
+            return []
 
 
 getPlayerKnowledge :: String -> IO [KnowledgeData]
