@@ -266,13 +266,14 @@ isRoleAlive (playerId:rest) role = do
 -- Check if the player can do the action
 isAllowed :: String -> String -> IO Bool
 isAllowed pName actionType = do
-    pUUID   <- getUUIDFromPlayerName pName
-    pRoom   <- getPlayerRoomName pUUID
-    rState  <- getRoomRoundState pRoom
-    paralized   <- isParalized  pUUID
-    silenced    <- isSilenced   pUUID
-    isAlive     <- isPlayerAlive pUUID
-    if silenced > 0 || not isAlive || paralized > 0 || (actionType /= rState)
+    pUUID       <- getUUIDFromPlayerName    pName
+    pRoom       <- getPlayerRoomName        pUUID
+    rState      <- getRoomRoundState        pRoom
+    paralized   <- isParalized              pUUID
+    silenced    <- isSilenced               pUUID
+    isAlive     <- isPlayerAlive            pUUID
+
+    if (silenced > 0) || (not isAlive) || (paralized > 0) || (actionType /= rState)
         then return False 
     else        -- default
         return True
