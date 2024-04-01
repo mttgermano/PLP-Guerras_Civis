@@ -58,11 +58,11 @@ resetRoomPlayersAtributes rName = do
 
 roundResult :: String -> IO()
 roundResult rName = do
-    killMostVoted rName
+    killedPlayers rName
 
 
-killMostVoted :: String -> IO()
-killMostVoted rName = do
+killedPlayers :: String -> IO()
+killedPlayers rName = do
     conn    <- getDbConnection
     -- DB Query ----------------------------------
     let sqlQuery = Query $ BS2.pack $ "SELECT player_uuid FROM UserGameData WHERE kill_vote > 0 AND is_alive = True"
@@ -82,6 +82,10 @@ killPlayer playerUUID = do
     _ <- execute conn sqlQuery (Only playerUUID)
     ----------------------------------------------
     putStrLn $ "User " ++ playerUUID ++ " morreu."
+    rName           <- getPlayerRoomName playerUUID
+    pName           <- getPlayerNameFromUUID playerUUID
+    let message = "User " ++ playerUUID ++ " morreu."
+    admSendMessage rName message
 
 
 computeVote ::  IO()

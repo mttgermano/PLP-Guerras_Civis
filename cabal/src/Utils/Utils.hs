@@ -334,3 +334,19 @@ getCursedWord rName = do
     return $ case results of
         [Only cursedWord] -> Just cursedWord
         _                 -> Nothing
+
+
+admSendMessage :: String -> String -> IO ()
+admSendMessage rName msg = do
+    rState  <- getRoomRoundState rName
+    conn    <- getDbConnection
+    let pName = "Sistema"
+
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "UPDATE Room SET round_messages = round_messages || ARRAY[(?, ?)::message_pair] WHERE room_name = ?"
+    _ <- execute conn sqlQuery (pName, msg, rName)
+    ----------------------------------------------
+    close conn
+
+    -- send a request to the react server    
+    putStrLn $ "> [" ++ rName ++ "] Room - recebeu mensagem [" ++ msg ++ "] de " ++ pName ++ "]"

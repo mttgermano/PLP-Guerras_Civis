@@ -174,7 +174,7 @@ resetRoundMessages rName = do
     conn <- getDbConnection
 
     -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "UPDATE Room SET round_messages = ARRAY[]::varchar[] WHERE room_name = ?"
+    let sqlQuery = Query $ BS2.pack "UPDATE Room SET round_messages = '{}' WHERE room_name = ?"
     _ <- execute conn sqlQuery (Only rName)
     ----------------------------------------------
     close conn
