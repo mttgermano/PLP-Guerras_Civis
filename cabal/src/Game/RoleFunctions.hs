@@ -151,6 +151,10 @@ silence agent action_reciever = do
             close conn
 
             role <- getRole action_reciever
+            agentUuid   <- getUUIDFromPlayerName agent
+            rName           <- getPlayerRoomName agentUuid
+            let message = "User " ++ action_reciever ++ " foi silenciado."
+            admSendMessage rName message
             if role == 1
                 then fbiIsWatching action_reciever agent
                 else return ()
@@ -173,6 +177,10 @@ paralize agent action_reciever = do
             close conn
 
             role <- getRole action_reciever
+            agentUuid   <- getUUIDFromPlayerName agent
+            rName           <- getPlayerRoomName agentUuid
+            let message = "User " ++ action_reciever ++ " foi paralisado."
+            admSendMessage rName message
             if role == 1
                 then fbiIsWatching action_reciever agent
                 else return ()

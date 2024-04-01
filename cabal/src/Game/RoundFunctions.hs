@@ -84,7 +84,7 @@ killPlayer playerUUID = do
     putStrLn $ "User " ++ playerUUID ++ " morreu."
     rName           <- getPlayerRoomName playerUUID
     pName           <- getPlayerNameFromUUID playerUUID
-    let message = "User " ++ playerUUID ++ " morreu."
+    let message = "User " ++ pName ++ " morreu."
     admSendMessage rName message
 
 

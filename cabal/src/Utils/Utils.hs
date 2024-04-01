@@ -350,3 +350,36 @@ admSendMessage rName msg = do
 
     -- send a request to the react server    
     putStrLn $ "> [" ++ rName ++ "] Room - recebeu mensagem [" ++ msg ++ "] de " ++ pName ++ "]"
+
+-- getRoomActionsResults :: String -> IO ()
+-- getRoomActionsResults rName = do
+--     pListUUID   <- getRoomPlayersUUIDList       rName
+--     pListNames  <- mapM getPlayerNameFromUUID   pListUUID
+--     pAliveList  <- mapM isPlayerAlive           pListUUID
+
+--     silencedPlayers     <- getRoundPlayersRecieved "is_silenced"
+--     paralizedPlayers    <- getRoundPlayersRecieved "is_paralized"
+--     killedPlayers       <- getRoundPlayersRecieved "kill_vote"
+
+--     silencedPlayersNames  <- mapM getPlayerNameFromUUID   silencedPlayers
+--     paralizedPlayersNames  <- mapM getPlayerNameFromUUID   paralizedPlayers
+--     killedPlayersNames  <- mapM getPlayerNameFromUUID   killedPlayers
+
+--     mapM_ (admSendMessage rName) $ map (\player -> player ++ " foi silenciado") silencedPlayersNames
+--     mapM_ (admSendMessage rName) $ map (\player -> player ++ " foi paralizado") paralizedPlayersNames
+--     mapM_ (admSendMessage rName) $ map (\player -> player ++ " foi morto") killedPlayersNames
+
+
+-- getRoundPlayersRecieved :: String -> IO [String]
+-- getRoundPlayersRecieved action = do
+--     conn <- getDbConnection
+
+--     -- DB Query ----------------------------------
+--     let sqlQuery = Query $ BS2.pack ("SELECT player_uuid FROM UserGameData WHERE " ++ action ++ " > 0")
+--     results <- query_ conn sqlQuery :: IO [Only String]
+--     ----------------------------------------------
+--     close conn
+
+--     -- Extracting values from results
+--     let players = map (\(Only player) -> player) results
+--     return players
