@@ -81,8 +81,6 @@ killPlayer playerUUID = do
     _ <- execute conn sqlQuery (Only playerUUID)
     ----------------------------------------------
     putStrLn $ "User " ++ playerUUID ++ " morreu."
-<<<<<<< HEAD
-=======
 
 
 computeVote ::  IO()
@@ -105,9 +103,6 @@ computeVote = do
         else let (Only maxPlayer, _):_ = maxVotePlayers in killPlayer maxPlayer
 
 
-
-
-
 countVotes :: String -> IO Int
 countVotes pUuid = do
     conn <- getDbConnection
@@ -116,4 +111,3 @@ countVotes pUuid = do
     [Only votes]  <- query conn sqlQuery (Only pUuid) :: IO [Only Int]
     close conn
     return votes
->>>>>>> 771103e6e5b4a5cbb1f4b4772fca15c9fb109480

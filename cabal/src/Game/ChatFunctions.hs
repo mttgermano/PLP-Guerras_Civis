@@ -59,9 +59,12 @@ getLastMessageIdx rName = do
 
 -- Get the messages 
 getMessagesListFromRoom :: String -> Int -> IO [String]
-getMessagesListFromRoom rName lastIdxPlayer = do
+getMessagesListFromRoom rName lastIdxPlayerReceived = do
     conn <- getDbConnection
-    let sqlQuery = Query $ BS2.pack "SELECT unnest(round_messages) FROM Room WHERE room_name = ?"
-    result <- query conn sqlQuery (Only rName) :: IO [Only String]
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "SELECT round_messages[? + 1: array_length(round_messages, 1)] FROM Room WHERE room_name = ?"
+    [Only result] <- query conn sqlQuery (lastIdxPlayerReceived, rName) :: IO [Only String]
+    ----------------------------------------------
     close conn
-    return $ map fromOnly result
+
+    return [result]

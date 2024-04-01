@@ -307,3 +307,17 @@ main = do
 
             status status200
             json resultsInfo
+
+
+        get "/api/get_last_messages/:pName/:last_message_idx" $ do
+            liftIO $ putStrLn $ replicate 50 '-'
+            liftIO $ putStrLn "> Api request for actions results"
+            pName   <- param "pName"
+            lmi     <- param "last_message_idx"
+
+            resultsData <- liftIO $ getRoomMessages pName lmi
+
+            let msgData = object ["new_messages" .= (resultsData :: [String])]
+
+            status status200
+            json msgData
