@@ -53,10 +53,13 @@ startGame rName pName = do
 -- Run Action Round
 runActionRound :: String -> Int -> IO ()
 runActionRound rName roundNum = do
-    actionRound       rName
-    botsRound         rName
-    roundResult       rName
-    checkEndGame      rName roundNum
+    if roundNum > -1
+        then do
+            actionRound       rName
+            botsRound         rName
+            roundResult       rName
+            checkEndGame      rName roundNum
+        else return ()
 
 -- Run Vote Round
 runVoteRound :: String -> Int -> IO ()
