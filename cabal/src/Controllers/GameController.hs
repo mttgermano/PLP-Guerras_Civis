@@ -9,6 +9,7 @@ import Game.ChatFunctions
 import Game.RoundFunctions
 import Game.BotLogic
 import Utils.Utils
+import Game.GameFunctions
 
 
 
@@ -52,6 +53,7 @@ startGame rName pName = do
 -- Run Action Round
 runActionRound :: String -> Int -> IO ()
 runActionRound rName roundNum = do
+    sleep             1
     actionRound       rName
     botsRound         rName
     roundResult       rName

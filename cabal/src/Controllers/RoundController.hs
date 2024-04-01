@@ -16,7 +16,6 @@ voteRound rName = do
 
     updateRoundState rName "vote"
 
-    putStrLn $ ("> [" ++ (rName) ++ "] Room - Terminou  Vote   Round")
     putStrLn $ replicate 50 '-'
 
 -- The Round where players can execute an action
@@ -26,7 +25,6 @@ actionRound rName = do
 
     updateRoundState rName "action"
 
-    putStrLn $ ("> [" ++ (rName) ++ "] Room - Terminou  Action Round")
 
 
 checkEndGame :: String -> Int -> IO ()
@@ -49,7 +47,7 @@ checkEndGame rName roundNum = do
 -- Finish the game
 endGame :: String -> String -> IO ()
 endGame rName reason = do
-    putStrLn $ ("> [" ++ (rName) ++ "] Room - o jogo  acabou!")
+    putStrLn $ ("> [" ++ (rName) ++ "] Room - o jogo  acabou!" ++ reason)
     updateRoundState rName reason
     deleteUserGameData          rName
     deleteRoomPlayersKnowledge  rName
