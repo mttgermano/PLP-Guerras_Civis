@@ -14,6 +14,8 @@ import qualified Data.ByteString.Char8 as BS2
 import Data.UUID.V4 (nextRandom)
 import Data.UUID (toString)
 import Control.Monad (forM)
+import Data.List (maximumBy)
+import Data.Ord (comparing)
 
 import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.Types (Query(Query))
@@ -22,18 +24,16 @@ import System.Random
 import GHC.Base (IO)
 
 -- Randomly choose a player who is alive to perform the action.
-botActionChoice :: String -> IO String
-botActionChoice rName = do
+botActionChoice :: String -> String -> IO String
+botActionChoice botUuid rName = do
     players <- getRoomPlayersUUIDList rName
-
     posicao <- randomRIO (0, length players - 1)
     let player_uuid = players !! posicao
     alive <- isPlayerAlive player_uuid 
     
-    if alive
+    if alive && botUuid /= player_uuid
         then return player_uuid
-
-        else botActionChoice rName
+    else botActionChoice botUuid rName
 
 -- Create the bots in a room
 createBots :: Int -> String -> IO ()
@@ -68,31 +68,21 @@ splitBySpaces = concatMap words
 -- Choose the most mentioned player in the chat and vote for him.
 botBrain :: String -> String -> IO ()
 botBrain rName botUuid = do
-    players <- getRoomPlayersUUIDList rName
-    playersNames <- getPlayersNames players
+    playersUuid   <- getRoomPlayersUUIDList rName
+    playersNames  <- mapM getPlayerNameFromUUID playersUuid
     messages <- getMessagesListFromRoom rName 0
-
     let allWords = splitBySpaces messages
-        references = countReferencesForAll allWords playersNames
+    let references = countReferencesForAll allWords playersNames
 
-    conn <- getDbConnection
-    -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "SELECT who_is_known FROM RoleKnowledge WHERE who_knows = ?"
-    roles <- forM players $ \player -> do
-        [Only role] <- query conn sqlQuery (Only botUuid)
-        return role
-    ----------------------------------------------
+    players <- getPlayerKnowledgeList botUuid
 
-    let comparation = compareIsGoodList botUuid players roles
+    let comparation = compareIsGoodList botUuid playersUuid players
     comp <- comparation
     let results = listSom comp references
-
     let ind = biggestVote results
 
-    close conn
-
     bName <- getPlayerNameFromUUID botUuid
-    let playerToIncrement = players !! ind
+    let playerToIncrement = playersNames !! ind
     incrementVote bName playerToIncrement
 
 -- Verify whether someone is on the opposite team of the bot and whether they are alive.
@@ -102,7 +92,7 @@ compareIsGoodIsAlive botId players playerId = do
     playerIsGood    <- getIsGood playerId
     playerAlive     <- isPlayerAlive playerId
 
-    if (botIsGood /= playerIsGood) && (playerId `elem` players) && playerAlive
+    if ((botIsGood /= playerIsGood) && (playerId `elem` players)) && playerAlive
         then    return 1000000
     else if ((botIsGood == playerIsGood) && (playerId `elem` players)) || not playerAlive
         then    return (-100000)
@@ -114,13 +104,7 @@ compareIsGoodList botId playerIds players = mapM (compareIsGoodIsAlive botId pla
 
 -- Take the biggest voted player
 biggestVote :: Ord a => [a] -> Int
-biggestVote []      = 0
-biggestVote list    = biggestIdxAux list 0 0
-  where
-    biggestIdxAux [] _ _ = 0
-    biggestIdxAux (x:xs) idx maiorIndiceAtual
-      | x > (list !! maiorIndiceAtual)  = biggestIdxAux xs (idx + 1) idx
-      | otherwise                       = biggestIdxAux xs (idx + 1) maiorIndiceAtual
+biggestVote xs = snd $ maximumBy (comparing fst) $ zip xs [0..]
 
 -- Call nameCountReferences for every player
 countReferencesForAll :: [String] -> [String] -> [Int]
@@ -155,7 +139,7 @@ randomWord = do
 botAction :: String -> String -> IO ()
 botAction botId rName = do
     botRole        <- getRole botId
-    playerId       <- botActionChoice rName
+    playerId       <- botActionChoice botId rName
     choiceWord     <- randomWord
     playerName     <- getPlayerNameFromUUID playerId
     botName     <- getPlayerNameFromUUID botId
@@ -171,7 +155,7 @@ botAction botId rName = do
         9 -> police botName playerName
         10 -> save botName playerName
         12 -> revenge botName playerName
-        _ -> print "aldeao"
+        _ -> putStrLn $ ("Aldeao")
 
 -- Call botAction for every bot
 callBots :: [String] -> String -> IO ()
@@ -184,9 +168,25 @@ callBots (botId:rest) rName = do
 botsRound :: String -> IO ()
 botsRound rName = do
     bots <- getRoomBots rName
-    print $ "Comecando Bot Round"
-    print bots
+    putStrLn $ ("> [" ++ (rName) ++ "] Room - Comecou  Bot Round")
     callBots bots rName
+    putStrLn $ ("> [" ++ (rName) ++ "] Room - Terminou  Bot Round")
+
+-- Call botAction for every bot
+callBotsVote :: [String] -> String -> IO ()
+callBotsVote [] _ = return ()
+callBotsVote (botId:rest) rName = do
+    botBrain rName botId
+    callBotsVote rest rName
+
+
+-- Take the bots of thee room and call the vote
+voteBotsRound :: String -> IO ()
+voteBotsRound rName = do
+    bots <- getRoomBots rName
+    putStrLn $ ("> [" ++ (rName) ++ "] Room - Comecou  Bot Vote")
+    callBotsVote bots rName
+    putStrLn $ ("> [" ++ (rName) ++ "] Room - Terminou  Bot Vote")
 
 
 -- Deletes all bots, after the game ended
