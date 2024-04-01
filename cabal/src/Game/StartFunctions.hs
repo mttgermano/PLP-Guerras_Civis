@@ -155,6 +155,13 @@ distributePlayersInitialKnowledge rName = do
     revealPlayerRole juiz medico
     revealPlayerRole policial juiz
 
+    -- Set self Knowledge
+    revealPlayerRole juiz           juiz
+    revealPlayerRole medico         medico 
+    revealPlayerRole assassino      assassino
+    revealPlayerRole aprendiz       aprendiz
+    revealPlayerRole silenciador    silenciador 
+    revealPlayerRole policial       policial
 
 -- Check if the player is the room master
 isRoomMaster :: String -> String -> IO Bool

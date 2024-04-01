@@ -273,7 +273,7 @@ isAllowed pName actionType = do
     silenced    <- isSilenced               pUUID
     isAlive     <- isPlayerAlive            pUUID
 
-    if (silenced > 0) || (not isAlive) || (paralized > 0) || (actionType /= rState)
+    if silenced > 0 || not isAlive || paralized > 0 || (actionType /= rState)
         then return False 
     else        -- default
         return True
