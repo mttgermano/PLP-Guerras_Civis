@@ -24,16 +24,18 @@ voteRound rName = do
 -- Run all the sequence of rounds
 runRound :: String -> IO ()
 runRound rName = do
-    updateRoundState rName "action"
-    roundDefaultSettings    rName
-    actionRound             rName
-    botsRound               rName
-    roundResult             rName -- --> se X ta com kill_vote 1, print: User morreu y, coloca is_alive pra 0, ...
-    voteRound               rName
+    -- updateRoundState rName "action"
+    -- roundDefaultSettings    rName
+    -- actionRound             rName
+    -- botsRound               rName
+    -- roundResult             rName -- --> se X ta com kill_vote 1, print: User morreu y, coloca is_alive pra 0, ...
+    -- voteRound               rName
+    -- sendMessage "john" "o culpado e john"
+    -- voteBotsRound           rName
+    -- computeVote
+    -- clearRound              rName
     sendMessage "john" "o culpado e john"
-    voteBotsRound           rName
-    computeVote
-    clearRound              rName
+    sleep 1
     
 
 -- Reset all the setting of a Room

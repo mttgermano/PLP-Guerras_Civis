@@ -93,7 +93,7 @@ getRoomMessages :: String -> Int -> IO [String]
 getRoomMessages rName lastIdxPlayer = do
     lastIdxServer <- getLastMessageIdx rName
 
-    if lastIdxPlayer /= lastIdxPlayer
+    if lastIdxPlayer /= lastIdxServer
         then do
             lastMessages <- getMessagesListFromRoom rName lastIdxPlayer
             return lastMessages

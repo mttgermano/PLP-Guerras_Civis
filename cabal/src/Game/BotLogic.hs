@@ -68,22 +68,27 @@ splitBySpaces = concatMap words
 -- Choose the most mentioned player in the chat and vote for him.
 botBrain :: String -> String -> IO ()
 botBrain rName botUuid = do
-    playersUuid   <- getRoomPlayersUUIDList rName
-    playersNames  <- mapM getPlayerNameFromUUID playersUuid
-    messages <- getMessagesListFromRoom rName 0
-    let allWords = splitBySpaces messages
-    let references = countReferencesForAll allWords playersNames
+    botAlive <- isPlayerAlive botUuid
+    if not botAlive
+        then do
+            return ()
+        else do
+            playersUuid   <- getRoomPlayersUUIDList rName
+            playersNames  <- mapM getPlayerNameFromUUID playersUuid
+            messages <- getMessagesListFromRoom rName 0
+            let allWords = splitBySpaces messages
+            let references = countReferencesForAll allWords playersNames
 
-    players <- getPlayerKnowledgeList botUuid
+            players <- getPlayerKnowledgeList botUuid
 
-    let comparation = compareIsGoodList botUuid playersUuid players
-    comp <- comparation
-    let results = listSom comp references
-    let ind = biggestVote results
+            let comparation = compareIsGoodList botUuid playersUuid players
+            comp <- comparation
+            let results = listSom comp references
+            let ind = biggestVote results
 
-    bName <- getPlayerNameFromUUID botUuid
-    let playerToIncrement = playersNames !! ind
-    incrementVote bName playerToIncrement
+            bName <- getPlayerNameFromUUID botUuid
+            let playerToIncrement = playersNames !! ind
+            incrementVote bName playerToIncrement
 
 -- Verify whether someone is on the opposite team of the bot and whether they are alive.
 compareIsGoodIsAlive :: String -> [String] -> String -> IO Int
@@ -143,19 +148,24 @@ botAction botId rName = do
     choiceWord     <- randomWord
     playerName     <- getPlayerNameFromUUID playerId
     botName     <- getPlayerNameFromUUID botId
-    case botRole of
-        1 -> kill botName playerName
-        2 -> apprentice botName playerName
-        3 -> reveal botName playerName
-        4 -> paralize botName playerName
-        5 -> silence botName playerName
-        6 -> setCursedWord botName choiceWord
-        7 -> search botName playerName
-        8 -> kill botName playerName
-        9 -> police botName playerName
-        10 -> save botName playerName
-        12 -> revenge botName playerName
-        _ -> putStrLn $ ("Aldeao")
+    botAlive <- isPlayerAlive botId
+    if not botAlive
+        then do
+            return ()
+        else
+            case botRole of
+                1 -> kill botName playerName
+                2 -> apprentice botName playerName
+                3 -> reveal botName playerName
+                4 -> paralize botName playerName
+                5 -> silence botName playerName
+                6 -> setCursedWord botName choiceWord
+                7 -> search botName playerName
+                8 -> kill botName playerName
+                9 -> police botName playerName
+                10 -> save botName playerName
+                12 -> revenge botName playerName
+                _ -> putStrLn $ ("Aldeao")
 
 -- Call botAction for every bot
 callBots :: [String] -> String -> IO ()
