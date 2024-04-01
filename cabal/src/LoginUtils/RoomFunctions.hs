@@ -21,7 +21,7 @@ data Room = Room{
     rName           :: String,
     rMaster         :: String,
     isUp            :: Bool,
-    cursedWord      :: Maybe String,
+    cursedWord      :: String,
     roundMessages   :: Maybe String,
     roundState      :: String
 }deriving (Show, Generic)
@@ -59,7 +59,7 @@ createRoom player_name room_name = do
                 rName           = room_name,
                 rMaster         = player_name,
                 isUp            = False,
-                cursedWord      = Nothing,
+                cursedWord      = "a",
                 roundMessages   = Nothing,
                 roundState      = "notStarted"
             }

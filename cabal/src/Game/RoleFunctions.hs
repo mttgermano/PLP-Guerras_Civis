@@ -108,7 +108,7 @@ search agent action_reciever = do
         then do
             revealPaparazi agent action_reciever
             role <- getRole action_reciever
-
+            putStrLn $ ("> [" ++ agent ++ "] User - Searched [" ++ action_reciever ++ "]")
             if role == 1
                 then fbiIsWatching action_reciever agent
                 else return ()
@@ -128,7 +128,7 @@ reveal agent action_reciever = do
         then do
             revealToAll pList agentUuid
             role <- getRole action_reciever
-
+            putStrLn $ ("> [" ++ agent ++ "] User - Reveal [" ++ action_reciever ++ "]")
             if role == 1
                 then fbiIsWatching action_reciever agent
                 else return ()
@@ -184,18 +184,23 @@ paralize agent action_reciever = do
 setCursedWord :: String -> String -> IO ()
 setCursedWord agent cursedWord = do
     allowed <- isAllowed agent "action"
-    
+    agentUuid   <- getUUIDFromPlayerName agent
+    rName <- getPlayerRoomName agentUuid
 
-    if allowed
+    cursedWordExist <- hasCursedWord rName
+    if cursedWordExist
         then do
-            conn    <- getDbConnection
-            -- DB Query ----------------------------------
-            let sqlQuery = Query $ BS2.pack "UPDATE Room SET cursed_word = ? WHERE room_uuid = (SELECT current_room FROM Player WHERE player_name = ?)"
-            result <- execute conn sqlQuery (cursedWord, agent)
-            ----------------------------------------------
-            putStrLn $ ("> [" ++ agent ++ "] User - setted Cursed Word for [" ++ "] rName")
-        else
-            errPermissionMessage agent
+            putStrLn $ ("> [" ++ rName ++ "] Already has cursed word")
+        else if allowed
+            then do
+                conn    <- getDbConnection
+                -- DB Query ----------------------------------
+                let sqlQuery = Query $ BS2.pack "UPDATE Room SET cursed_word = ? WHERE room_uuid = (SELECT current_room FROM Player WHERE player_name = ?)"
+                result <- execute conn sqlQuery (cursedWord, agent)
+                ----------------------------------------------
+                putStrLn $ ("> [" ++ agent ++ "] User - setted Cursed Word for [" ++ "] rName")
+            else
+                errPermissionMessage agent
 
 -- The revenge of a spirit
 revenge :: String -> String -> IO ()

@@ -3,6 +3,8 @@ module Utils.Utils where
 import Core.DbFunctions
 
 import qualified Data.ByteString.Char8 as BS2
+import Data.Maybe (isJust)
+
 
 import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.Types (Query(Query))
@@ -314,3 +316,21 @@ isPlayerAlive pUUID = do
     close conn
 
     return result
+
+
+hasCursedWord :: String -> IO Bool
+hasCursedWord pName = do
+    maybeCursedWord <- getCursedWord pName
+    return $ case maybeCursedWord of
+        Just word -> word /= "a"
+        _         -> False
+
+getCursedWord :: String -> IO (Maybe String)
+getCursedWord rName = do
+    conn <- getDbConnection
+    let sqlQuery = Query $ BS2.pack "SELECT cursed_word FROM Room WHERE room_name = ?"
+    results <- query conn sqlQuery (Only rName) :: IO [Only String]
+    close conn
+    return $ case results of
+        [Only cursedWord] -> Just cursedWord
+        _                 -> Nothing

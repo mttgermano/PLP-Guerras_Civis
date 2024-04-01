@@ -12,6 +12,7 @@ import Data.Function (on)
 import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.Types (Query(Query))
 import Control.Monad (forM_)
+import GHC.Base (IO)
 
 
 
@@ -111,3 +112,31 @@ countVotes pUuid = do
     [Only votes]  <- query conn sqlQuery (Only pUuid) :: IO [Only Int]
     close conn
     return votes
+
+
+clearRound :: String -> IO ()
+clearRound rName = do
+    playersUuid   <- getRoomPlayersUUIDList rName
+    forM_ playersUuid clearPlayer
+
+
+clearPlayer :: String -> IO ()
+clearPlayer pUuid = do
+    conn    <- getDbConnection
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "UPDATE UserGameData SET kill_vote = 0 WHERE player_uuid = ?"
+    _ <- execute conn sqlQuery (Only pUuid)
+    ---------------------------------------------
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "UPDATE UserGameData SET votes = 0 WHERE player_uuid = ?"
+    _ <- execute conn sqlQuery (Only pUuid)
+    ---------------------------------------------
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "UPDATE UserGameData SET is_paralized = 0 WHERE player_uuid = ?"
+    _ <- execute conn sqlQuery (Only pUuid)
+    ---------------------------------------------
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "UPDATE UserGameData SET is_silenced = 0 WHERE player_uuid = ?"
+    _ <- execute conn sqlQuery (Only pUuid)
+    ---------------------------------------------
+    close conn
