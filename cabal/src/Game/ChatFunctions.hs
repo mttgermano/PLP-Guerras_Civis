@@ -52,11 +52,11 @@ getLastMessageIdx rName = do
 
     -- DB Query ----------------------------------
     let sqlQuery = Query $ BS2.pack "SELECT array_length(round_messages, 1) FROM Room WHERE room_name = ? "
-    result <- query conn sqlQuery (Only rName) :: IO [Only Int]
+    [Only result] <- query conn sqlQuery (Only rName) :: IO [Only Int]
     ----------------------------------------------
     close conn
 
-    return $ fromOnly (head result)
+    return result
 
 
 -- Get the messages 
@@ -67,9 +67,22 @@ getMessagesListFromRoom rName lastIdxPlayerReceived = do
     let sqlQuery = Query $ BS2.pack "SELECT (unnest(round_messages)).message FROM Room WHERE room_name = ?"
     result <- query conn sqlQuery (Only rName) :: IO [Only String]
     ----------------------------------------------
-
     close conn
-    return $ map fromOnly result
+
+    let messages = map fromOnly result
+    return $ drop lastIdxPlayerReceived messages 
+
+getMessagesUserListFromRoom :: String -> Int -> IO [String]
+getMessagesUserListFromRoom rName lastIdxPlayerReceived = do
+    conn <- getDbConnection
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack "SELECT (unnest(round_messages)).sender FROM Room WHERE room_name = ?"
+    result <- query conn sqlQuery (Only rName) :: IO [Only String]
+    ----------------------------------------------
+    close conn
+
+    let senders = map fromOnly result
+    return $ drop lastIdxPlayerReceived senders
 
 
 canSendMessage :: String -> String -> IO Bool
