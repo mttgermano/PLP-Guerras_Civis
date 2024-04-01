@@ -41,5 +41,5 @@ runRound rName = do
 roundDefaultSettings :: String -> IO ()
 roundDefaultSettings rName = do
     updateRoundState                rName "startRound"
-    resetRoundMessages              rName   
-    resetRoomPlayersAtributes       rName
+    --resetRoundMessages              rName   
+    --resetRoomPlayersAtributes       rName
