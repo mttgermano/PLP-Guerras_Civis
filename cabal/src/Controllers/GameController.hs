@@ -90,7 +90,7 @@ makeAction agent action_reciever = do
     rName   <- getPlayerRoomName agentID
     rState  <- getRoomRoundState rName
 
-    if rState == "voteRound"
+    if rState == "vote"
         then do
             vote          agent action_reciever
         else do

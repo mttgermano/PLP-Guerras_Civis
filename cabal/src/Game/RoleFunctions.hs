@@ -48,7 +48,7 @@ apprentice agent action_reciever = do
     pList           <- getRoomPlayersUUIDList rName
     isAssassinAlive <- isRoleAlive pList 1
 
-    if allowed && isAssassinAlive
+    if allowed && not isAssassinAlive
         then do
             kill agent action_reciever
 
