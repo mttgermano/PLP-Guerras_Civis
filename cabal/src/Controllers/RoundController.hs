@@ -28,6 +28,7 @@ runRound rName = do
     roundDefaultSettings    rName
     actionRound             rName
     botsRound               rName
+    --getRoomActionsResults   rName
     roundResult             rName -- --> se X ta com kill_vote 1, print: User morreu y, coloca is_alive pra 0, ...
     voteRound               rName
     sendMessage "john" "o culpado e john"
