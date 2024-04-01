@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from 'react';
-import { useLocation, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
 
 import { UserContext } from '../contexts/userContext';
@@ -24,6 +24,7 @@ const RoomPage = () => {
 
     const { rName } = useParams();
 
+    const navigate = useNavigate();
 
     useEffect(() => {
         const getRoomState = async () => {
@@ -31,11 +32,18 @@ const RoomPage = () => {
 
             const { data } = await api.get(`api/get_room_state/${rName}`);
 
+
             if (data.rState === "actionRound") {
                 setDayCounter(state => state + 1);
             }
 
             setRoomState(data);
+            // if (data.rState === "goodWins") {
+            //     navigate.push(`/room/${rName}/winner/goodWins`);
+            // } else if (data.rState === "evilWins") {
+            //     navigate.push(`/room/${rName}/winner/evilWins`);
+            // }
+
             setReadyForAction(true);
             setIsPlayersLoading(false);
         }
@@ -64,7 +72,7 @@ const RoomPage = () => {
     //     const getMessages = async () => {
     //         setIsChatLoading(true);
 
-    //         if (roomState !== "endGame") {
+    //         if (roomState.rState !== "evilWins" && roomState.rState !== "goodWins") {
     //             // possível problema de travar a aplicação pela espera da requisição ser feita
     //             console.log("CHAT MEESSAGES:" + chatMessages.length)
     //             const { data } = await api.get(`api/get_last_messages/${currentUser.pName}/${chatMessages.length}`);
@@ -149,6 +157,7 @@ const RoomPage = () => {
                     <div className='infos-data'>
                         <span className='infos-data-subtitle'>Round:</span>
                         <strong className='infos-data-title'>{dayCounter}</strong>
+                        <button onClick={() => console.log(rName)}>daslçkdajdlksajdklsa</button>
                     </div>
                     <div className='infos-data'>
                         <span className='infos-data-subtitle'>Period:</span>

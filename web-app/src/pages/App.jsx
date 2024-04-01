@@ -9,6 +9,8 @@ import RoomPage from './RoomPage.jsx';
 import CreateRoom from './CreateRoom.jsx';
 import RoomHome from './RoomHome.jsx';
 import RoomWaiting from './RoomWaiting.jsx';
+import WinnerPage from './WinnerPage.jsx';
+
 import { UserContextProvider } from '../contexts/userContext.jsx';
 
 function App() {
@@ -28,6 +30,7 @@ function App() {
             <Route path="/room/create_room" element={<CreateRoom />} />
             <Route path="/room/:rName" element={<RoomWaiting />} />
             <Route path="/room/:rName/game" element={<RoomPage />} />
+            <Route path="/room/:rName/winner/:winner" element={<WinnerPage />} />
           </Routes>
         </UserContextProvider>
       </div>
