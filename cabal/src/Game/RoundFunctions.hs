@@ -23,34 +23,6 @@ updateRoundState room_name state = do
     ----------------------------------------------
     close conn
 
--- Run the evil guys round
-actionRound :: String -> IO ()
-actionRound rName = do
-    putStrLn $ ("> [" ++ (rName) ++ "] Room - Começando Action Round ")
-    updateRoundState rName "action"
-
-    evilList <- getRoomPlayersGoodness rName False
-    goodList <- getRoomPlayersGoodness rName True
-
-    sleep 1
-
-    putStrLn $ ("> [" ++ (rName) ++ "] Room - Terminou  Action Round")
-
--- -- Reset all room players atributes
--- resetRoomPlayersAtributes :: String -> IO ()
--- resetRoomPlayersAtributes rName = do
---     conn    <- getDbConnection
---     pList   <- getRoomPlayersUUIDList rName
---     let atributes = ["votes", "kill_vote", "is_paralized", "is_silenced"]
---
---     -- For each pUUID and attribute, execute the SQL query
---     forM_ pList $ \pUUID ->
---         forM_ atributes $ \atribute -> do
---             let sqlQuery = Query $ BS2.pack $ "UPDATE UserGameData SET " ++ atribute ++ " = 0 WHERE player_uuid = ?"
---             _ <- execute conn sqlQuery (Only pUUID)
---             return ()
---     close conn
-
 roundResult :: String -> IO ()
 roundResult rName = do
     putStrLn $ ("> [" ++ (rName) ++ "] Room - Começando Result Round ")
@@ -76,25 +48,22 @@ killPlayer playerUUID = do
     _ <- execute conn sqlQuery (Only playerUUID)
     ----------------------------------------------
     putStrLn $ "User " ++ playerUUID ++ " morreu."
-    rName <- getPlayerRoomName playerUUID
-    pName <- getPlayerNameFromUUID playerUUID
+    rName <- getPlayerRoomName      playerUUID
+    pName <- getPlayerNameFromUUID  playerUUID
+
     let message = "User " ++ pName ++ " morreu."
     admSendMessage rName message
 
-computeVote :: IO ()
-computeVote = do
-    conn <- getDbConnection
-    -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack $ "SELECT player_uuid FROM UserGameData WHERE is_alive = ?"
-    players <- query conn sqlQuery (Only True) :: IO [Only String]
-    ----------------------------------------------
-    close conn
+computeVote :: String -> IO ()
+computeVote rName = do
+    players <- getRoomAlivePlayers rName
     -- Calculate votes for each player
     votes <- mapM (\(Only pUuid) -> countVotes pUuid) players
 
     -- Find the player with the most votes
     let maxVotes = maximum votes
-        maxVotePlayers = filter (\(p, v) -> v == maxVotes) (zip players votes)
+        maxVotePlayers = filter (\(_, v) -> v == maxVotes) (zip players votes)
+
     -- If everyone has 0 votes or multiple players have the same maximum votes, do nothing
     if maxVotes == 0 || length maxVotePlayers /= 1
         then return ()
@@ -107,6 +76,7 @@ countVotes pUuid = do
     let sqlQuery = Query $ BS2.pack $ "SELECT votes FROM UserGameDAta WHERE player_uuid = ?"
     [Only votes] <- query conn sqlQuery (Only pUuid) :: IO [Only Int]
     close conn
+
     return votes
 
 clearRound :: String -> IO ()

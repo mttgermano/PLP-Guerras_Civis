@@ -12,21 +12,6 @@ import Utils.Utils
 
 
 
--- Game Logic
-game :: String -> Int -> Int -> Int -> IO ()
-game rName roundNum teamEvil teamGood
-    | teamGood == 0         = endGame rName "evilWins"
-    | teamEvil == 0         = endGame rName "goodWins"
-    | roundNum == 5         = endGame rName "roundLimit"
-    | otherwise = do
-        makeRound rName
-        -- DB Query ----------------------------------
-        cTeamEvil <- getPlayerRolesCount rName False
-        cTeamGood <- getPlayerRolesCount rName True
-        ----------------------------------------------
-        -- make request to the front, saying that need to fresh the data
-        game rName (roundNum + 1) cTeamEvil cTeamGood
-
 -- Start the game
 data StartGameResult = GameStarted | NotRoomMaster String | RoomAlreadyUp String
 startGame :: String -> String -> IO StartGameResult
@@ -42,16 +27,17 @@ startGame rName pName = do
                     roomPlayers     <- getRoomPlayersCount rName
                     let nPlayers    = 12 - roomPlayers
 
+                    updateRoundState                    rName "action"
                     createBots                          nPlayers rName 
                     addPlayersToGame                    rName
                     distributeRoles                     rName
                     distributePlayersInitialKnowledge   rName
                     setRoomUpState                      rName True
-                    updateRoundState rName "action"
+
                     let message = "> [" ++ rName ++ "] Room - jogo começou!"
-                    admSendMessage rName message
                     putStrLn $ "> [" ++ rName ++ "] Room - jogo começou!"
-                    game rName 0 6 6
+                    admSendMessage rName message
+
                     return GameStarted
                 else do
                     let errMsg = "[" ++ (rName) ++ "] Room - jogo já começou"
@@ -63,21 +49,21 @@ startGame rName pName = do
             putStrLn errMsg
             return (NotRoomMaster errMsg)
 
+-- Run Action Round
+runActionRound :: String -> IO ()
+runActionRound rName = do
+    actionRound       rName
+    botsRound         rName
+    roundResult       rName
 
--- Finish the game
-endGame :: String -> String -> IO ()
-endGame rName reason = do
-    putStrLn $ ("> [" ++ (rName) ++ "] Room - o jogo  acabou!")
-    updateRoundState rName reason
-    deleteUserGameData          rName
-    deleteRoomPlayersKnowledge  rName
-    deleteRoomBots              rName
-    resetPlayersCurrentRoom     rName
-    deleteRoom                  rName
-
--- Make the Game Rounds
-makeRound :: String -> IO ()
-makeRound rName = runRound rName
+-- Run Vote Round
+runVoteRound :: String -> Int -> IO ()
+runVoteRound rName roundNum = do
+    voteRound           rName
+    voteBotsRound       rName
+    computeVote         rName
+    clearRound          rName
+    checkEndGame        rName roundNum
 
 -- Vote for a player
 vote :: String -> String -> IO ()
@@ -86,10 +72,10 @@ vote pName pName_voted = incrementVote pName pName_voted
 -- Make an Round Action
 makeAction :: String -> String -> IO ()
 makeAction agent action_reciever = do
-    agentID <- getUUIDFromPlayerName agent
-    role    <- getRole agentID
-    rName   <- getPlayerRoomName agentID
-    rState  <- getRoomRoundState rName
+    agentID <- getUUIDFromPlayerName    agent
+    role    <- getRole                  agentID
+    rName   <- getPlayerRoomName        agentID
+    rState  <- getRoomRoundState        rName
 
     if rState == "vote"
         then do

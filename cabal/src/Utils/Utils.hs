@@ -352,6 +352,16 @@ admSendMessage rName msg = do
     -- send a request to the react server    
     putStrLn $ "> [" ++ rName ++ "] Room - recebeu mensagem [" ++ msg ++ "] de " ++ pName ++ "]"
 
+
+getRoomAlivePlayers :: String -> IO [Only String]
+getRoomAlivePlayers rName = do
+    pListUUID   <- getRoomPlayersUUIDList rName
+    aliveStatus <- mapM isPlayerAlive pListUUID
+
+    let alive = map fst $ filter snd $ zip (map Only pListUUID) aliveStatus
+    return alive
+
+
 -- getRoomActionsResults :: String -> IO ()
 -- getRoomActionsResults rName = do
 --     pListUUID   <- getRoomPlayersUUIDList       rName
