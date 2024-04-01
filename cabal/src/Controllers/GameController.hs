@@ -36,7 +36,6 @@ startGame rName pName = do
                     setRoomUpState                      rName True
 
                     let message = "> [" ++ rName ++ "] Room - jogo começou!"
-                    putStrLn $ "> [" ++ rName ++ "] Room - jogo começou!"
                     admSendMessage rName message
 
                     return GameStarted
