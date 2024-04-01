@@ -108,7 +108,7 @@ search agent action_reciever = do
         then do
             revealPaparazi agent action_reciever
             role <- getRole action_reciever
-
+            putStrLn $ ("> [" ++ agent ++ "] User - Searched [" ++ action_reciever ++ "]")
             if role == 1
                 then fbiIsWatching action_reciever agent
                 else return ()
@@ -128,7 +128,7 @@ reveal agent action_reciever = do
         then do
             revealToAll pList agentUuid
             role <- getRole action_reciever
-
+            putStrLn $ ("> [" ++ agent ++ "] User - Reveal [" ++ action_reciever ++ "]")
             if role == 1
                 then fbiIsWatching action_reciever agent
                 else return ()
