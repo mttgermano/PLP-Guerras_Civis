@@ -9,6 +9,7 @@ import { api } from '../services/api';
 import '../css/room-game.css';
 
 const RoomPage = () => {
+    const [startGame, setStartGame] = useState();
     const [players, setPlayers] = useState({});
     const [isPlayersLoading, setIsPlayersLoading] = useState(true);
     const [isChatLoading, setIsChatLoading] = useState(true);
@@ -16,6 +17,7 @@ const RoomPage = () => {
     const [dayCounter, setDayCounter] = useState(0);
     const [playerKnowledge, setPlayerKnowledge] = useState([]);
     const [readyForAction, setReadyForAction] = useState(false);
+    const [currentUserIsAlive, setCurrentUserIsAlive] = useState(true);
 
     const [message, setMessage] = useState('');
     const [chatMessages, setChatMessages] = useState([]);
@@ -26,6 +28,55 @@ const RoomPage = () => {
 
     const navigate = useNavigate();
 
+    const checkGameOver = () => {
+        var list = roomState.rState.split('');
+
+        if (list[0] === "endGame") {
+            navigate('/Winner');
+        }
+    }
+
+    useEffect(() => {
+        let vrCount = -1;
+        let arCount = -1;
+        const rounds = async () => {
+            // Rodada de ação
+            const req1 = await api.post('game/run/action/', {
+                arName: rName,
+                arCount: arCount
+            });
+            arCount++;
+
+
+            const { data } = await api.get(`api/get_room_state/${rName}`);
+            setRoomState(data.rState);
+
+            checkGameOver();
+
+
+            // Rodada de votação
+            const req2 = await api.post('game/run/vote', {
+                vrName: rName,
+                vrCount: vrCount
+            });
+            vrCount++;
+
+            const { data2 } = await api.get(`api/get_room_state/${rName}`);
+            setRoomState(data2.rState);
+
+            checkGameOver();
+        };
+
+        // Iniciar os rounds imediatamente quando o componente montar
+        setTimeout(rounds, 10000);
+
+        // Iniciar os rounds a cada 1 minuto após o componente montar
+        const intervalId = setInterval(rounds, 120000); // 60000 milissegundos = 1 minutos
+
+        // Limpar o intervalo quando o componente desmontar
+        return () => clearInterval(intervalId);
+    }, []);
+
     useEffect(() => {
         const getRoomState = async () => {
             setIsPlayersLoading(true);
@@ -33,7 +84,7 @@ const RoomPage = () => {
             const { data } = await api.get(`api/get_room_state/${rName}`);
 
 
-            if (data.rState === "actionRound") {
+            if (data.rState === "action") {
                 setDayCounter(state => state + 1);
             }
 
@@ -53,6 +104,7 @@ const RoomPage = () => {
         return () => clearInterval(getRoomStateInterval);
     }, []);
 
+
     useEffect(() => {
         const getPlayersByRoomName = async () => {
             setIsPlayersLoading(true);
@@ -62,6 +114,8 @@ const RoomPage = () => {
             console.log("PLAYERS: " + JSON.stringify(data));
 
             setPlayers(data);
+            setCurrentUserIsAlive(data.rPlayers.find(element => element[1] === currentUser.pName)[2]);
+
             setIsPlayersLoading(false);
         }
 
@@ -154,19 +208,29 @@ const RoomPage = () => {
         <div className='room-game-container'>
             <div className="left-container">
                 <div className='infos'>
-                    <div className='infos-data'>
-                        <span className='infos-data-subtitle'>Round:</span>
-                        <strong className='infos-data-title'>{dayCounter}</strong>
-                        <button onClick={() => console.log(rName)}>daslçkdajdlksajdklsa</button>
-                    </div>
-                    <div className='infos-data'>
-                        <span className='infos-data-subtitle'>Period:</span>
-                        <strong className='infos-data-title'>{roomState.rState === "actionRound" ? "Night" : "Day"}</strong>
-                    </div>
-                    <div className='infos-data'>
-                        <span className='infos-data-subtitle'>Players alive:</span>
-                        <strong className='infos-data-title'>12</strong>
-                    </div>
+                    {isPlayersLoading ? <ClipLoader
+                        color={"#FFF"}
+                        loading={isPlayersLoading}
+                        size={100}
+                        aria-label="Loading Spinner"
+                        data-testid="loader"
+                    /> : (
+                        <>
+                            <div className='infos-data'>
+                                <span className='infos-data-subtitle'>Round:</span>
+                                {/* <strong className='infos-data-title'>{dayCounter}</strong> */}
+                                <button onClick={() => console.log(roomState.rState)}>daslçkdajdlksajdklsa</button>
+                            </div>
+                            <div className='infos-data'>
+                                <span className='infos-data-subtitle'>Period:</span>
+                                <strong className='infos-data-title'>{roomState.rState === "action" ? "Night" : "Day"}</strong>
+                            </div>
+                            <div className='infos-data'>
+                                <span className='infos-data-subtitle'>Players alive:</span>
+                                <strong className='infos-data-title'>{players.rPlayers.reduce((acc, currentValue) => { if (currentValue[2]) { acc++ } return acc; }, 0)}</strong>
+                            </div>
+                        </>
+                    )}
                 </div>
                 <div className="chat-container">
                     <h1 className='chat-title'>Global chat</h1>
@@ -220,11 +284,13 @@ const RoomPage = () => {
                                         return ""
                                     }
                                 }) : ""}
-                                <div className="buttons">
-                                    {currentUser.pName === player[1] ? "" : (
-                                        <button className='player-button' onClick={() => handleAction(player[1])}>Action</button>
-                                    )}
-                                </div>
+                                {currentUserIsAlive ? (
+                                    <div className="buttons">
+                                        {currentUser.pName === player[1] || !player[2] ? "" : (
+                                            <button className='player-button' onClick={() => handleAction(player[1])}>Action</button>
+                                        )}
+                                    </div>
+                                ) : ""}
                             </div>
                         ))}
                     </>
