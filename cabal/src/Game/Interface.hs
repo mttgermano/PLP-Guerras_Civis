@@ -98,9 +98,67 @@ drawLoginInterface = do
     drawVerticalLine 84 "Loggar" 32
     drawHorizontalLine 84
     putStrLn "|                                                                               |"
-    drawVerticalLine 84 "Username:" 10
-    drawVerticalLine 84 "Password:" 10
+    drawVerticalLine 84 "Usuario:" 10
+    drawVerticalLine 84 "Senha:" 10
     drawHorizontalLine 84
     setSGR [Reset]
+
+
+    -- Function to create a room 
+createRoom :: String -> IO ()
+createRoom roomName = do
+    putStrLn "Insira a senha da sala:"
+    roomSenha1 <- getLine
+    putStrLn "Confirme a senha da sala:"
+    roomSenha2 <- getLine
+    if roomSenha1 == roomSenha2
+        then putStrLn $ "Sala '" ++ roomName ++ "' criada com sucesso"
+        else do
+            putStrLn "Senhas devem conferir, tente novamente."
+            createRoom roomName
+
+-- Function to draw the create room interface
+drawCreateRoomInterface :: IO ()
+drawCreateRoomInterface = do
+    clear
+    setSGR [SetColor Foreground Vivid White]
+    drawHorizontalLine 84
+    drawVerticalLine 84 "Criar sala" 32
+    drawHorizontalLine 84
+    putStrLn "|                                                                               |"
+    putStrLn "|                                                                               |"
+    putStrLn "|                                                                               |"
+    drawVerticalLine 84 "Nome da sala:" 10
+    drawVerticalLine 84 "Senha da sala:" 10
+    drawVerticalLine 84 "Confirme a senha:" 10
+    drawHorizontalLine 84
+    setSGR [Reset]
+
+-- Function to join a room
+joinRoom :: IO ()
+joinRoom = do
+    drawJoinRoomInterface
+    putStrLn "Insira o nome da sala:"
+    roomName <- getLine
+    putStrLn "Insira a senha da sala:"
+    roomPassword <- getLine
+    --  Integrar logica de entrar na sala 
+    putStrLn $ "Usuario entrou na sala '" ++ roomName ++ "'"
+
+-- draw the join room interface
+drawJoinRoomInterface :: IO ()
+drawJoinRoomInterface = do
+    clear
+    setSGR [SetColor Foreground Vivid White]
+    drawHorizontalLine 84
+    drawVerticalLine 84 "Entrar na sala" 32
+    drawHorizontalLine 84
+    putStrLn "|                                                                               |"
+    drawVerticalLine 84 "Nome da sala:" 10
+    drawVerticalLine 84 "Senha da sala:" 10
+    drawHorizontalLine 84
+    setSGR [Reset]
+
+
 
 
