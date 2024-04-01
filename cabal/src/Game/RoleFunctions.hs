@@ -244,3 +244,4 @@ revealPlayerRole agent action_reciever = do
 
 revealToAll :: [String] -> String -> IO ()
 revealToAll players action_receiver = mapM_ (\id -> revealPlayerRole id action_receiver) players
+

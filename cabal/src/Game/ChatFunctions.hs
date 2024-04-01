@@ -34,13 +34,13 @@ sendMessage pName msg = do
             conn    <- getDbConnection
 
             -- DB Query ----------------------------------
-            let sqlQuery = Query $ BS2.pack "UPDATE Room SET round_messages = round_messages || ARRAY[?] WHERE room_name = ?"
-            _ <- execute conn sqlQuery (msg, rName)
+            let sqlQuery = Query $ BS2.pack "UPDATE Room SET round_messages = round_messages || ARRAY[(?, ?)::message_pair]::message_pair[] WHERE room_name = ?"
+            _ <- execute conn sqlQuery (pName, msg, rName)
             ----------------------------------------------
             close conn
 
             -- send a request to the react server    
-            putStrLn $ "> [" ++ rName ++ "] Room - recebeu mensagem [" ++ msg ++ "]"
+            putStrLn $ "> [" ++ rName ++ "] Room - recebeu mensagem [" ++ msg ++ "] de " ++ pName ++ "]"
         else do
             putStrLn $ "> [" ++ pName ++ "] Player está silenciado"
 
@@ -64,11 +64,12 @@ getMessagesListFromRoom :: String -> Int -> IO [String]
 getMessagesListFromRoom rName lastIdxPlayerReceived = do
     conn <- getDbConnection
     -- DB Query ----------------------------------
-    let sqlQuery = Query $ BS2.pack "SELECT round_messages[? + 1: array_length(round_messages, 1)] FROM Room WHERE room_name = ?"
-    [Only result] <- query conn sqlQuery (lastIdxPlayerReceived, rName) :: IO [Only String]
+    let sqlQuery = Query $ BS2.pack "SELECT (unnest(round_messages)).message FROM Room WHERE room_name = ?"
+    result <- query conn sqlQuery (Only rName) :: IO [Only String]
     ----------------------------------------------
+
     close conn
-    return [result]
+    return $ map fromOnly result
 
 
 canSendMessage :: String -> String -> IO Bool
@@ -106,3 +107,4 @@ isPrefix _ [] = False
 isPrefix (x:xs) (y:ys)
     | x == y    = isPrefix xs ys
     | otherwise = False
+

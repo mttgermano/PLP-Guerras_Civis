@@ -93,7 +93,7 @@ getRoomMessages :: String -> Int -> IO [String]
 getRoomMessages rName lastIdxPlayer = do
     lastIdxServer <- getLastMessageIdx rName
 
-    if lastIdxPlayer /= lastIdxPlayer
+    if lastIdxPlayer /= lastIdxServer
         then do
             lastMessages <- getMessagesListFromRoom rName lastIdxPlayer
             return lastMessages
@@ -123,9 +123,9 @@ getRoomActionsResults rName = do
     pListNames  <- mapM getPlayerNameFromUUID   pListUUID
     pAliveList  <- mapM isPlayerAlive           pListUUID
 
-    silencedPlayers     <- getRoundPlayersRecieved rName "is_silenced"
-    paralizedPlayers    <- getRoundPlayersRecieved rName "is_paralized"
-    killedPlayers       <- getRoundPlayersRecieved rName "kill_vote"
+    silencedPlayers     <- getRoundPlayersRecieved "is_silenced"
+    paralizedPlayers    <- getRoundPlayersRecieved "is_paralized"
+    killedPlayers       <- getRoundPlayersRecieved "kill_vote"
      
     let playerDataList  = silencedPlayers ++ paralizedPlayers ++ killedPlayers
     let actionDataList  = (createListWithWord silencedPlayers "silenciado") ++ (createListWithWord paralizedPlayers "paralizado") ++ (createListWithWord killedPlayers "morreu")
@@ -134,13 +134,13 @@ getRoomActionsResults rName = do
     return actionsData
 
 
-getRoundPlayersRecieved :: String -> String -> IO [String]
-getRoundPlayersRecieved rName action = do
+getRoundPlayersRecieved :: String -> IO [String]
+getRoundPlayersRecieved action = do
     conn <- getDbConnection
 
     -- DB Query ----------------------------------
     let sqlQuery = Query $ BS2.pack ("SELECT player_uuid FROM UserGameData WHERE " ++ action ++ " > 0")
-    [Only result] <- query conn sqlQuery (Only rName) :: IO [Only String]
+    [Only result] <- query_ conn sqlQuery :: IO [Only String]
     ----------------------------------------------
     close conn
 

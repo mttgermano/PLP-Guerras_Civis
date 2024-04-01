@@ -1,3 +1,8 @@
+CREATE TYPE message_pair AS (
+    sender VARCHAR,
+    message VARCHAR
+);
+
 -- Create Rooms Table
 CREATE TABLE Room (
     room_uuid       VARCHAR(36) PRIMARY KEY,
@@ -5,7 +10,7 @@ CREATE TABLE Room (
     room_master     VARCHAR(36),
     is_up           BOOLEAN,
     cursed_word     VARCHAR(50),
-    round_messages  VARCHAR[],
+    round_messages  message_pair[],
     round_state     VARCHAR(36)
 );
 
