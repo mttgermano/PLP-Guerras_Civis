@@ -4,9 +4,11 @@ import GHC.Generics (Constructor (conFixity))
 import Game.BotLogic
 import Game.ChatFunctions
 import Game.GameFunctions
+import Game.Interface
 import Game.RoundFunctions
 import Game.StartFunctions
 import Utils.Utils
+
 
 -- Run the Round which the users can vote
 voteRound :: String -> IO ()
@@ -23,6 +25,7 @@ voteRound rName = do
 runRound :: String -> IO ()
 runRound rName = do
   updateRoundState rName "action"
+  drawInterface
   -- roundDefaultSettings rName
   actionRound rName
   botsRound rName

@@ -50,7 +50,8 @@ executable PLP-Guerras-Civis
         random,
         wai-extra,
         http-types,
-        wai-cors
+        wai-cors,
+        ansi-terminal
 
     -- Base language which the package is written in.
     default-language: GHC2021
