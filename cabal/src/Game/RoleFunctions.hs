@@ -14,7 +14,7 @@ import Database.PostgreSQL.Simple.Types (Query(Query))
 
 
 errPermissionMessage :: String -> IO ()
-errPermissionMessage pName = putStrLn $ ("> [" ++ (pName)  ++ "] Player está silenciado ou paralizado")
+errPermissionMessage pName = putStrLn $ ("> [" ++ (pName)  ++ "] Player está silenciado, paralizado ou morto")
 
 -- Kill a player 
 kill :: String -> String -> IO ()     
@@ -22,10 +22,11 @@ kill agent action_reciever = do
     allowed <- isAllowed agent "action"
     if allowed
         then do
+            action_reciever_Uuid <- getUUIDFromPlayerName action_reciever
             conn    <- getDbConnection
             -- DB Query ----------------------------------
             let sqlQuery = Query $ BS2.pack "UPDATE UserGameData SET kill_vote = kill_vote + 1 WHERE player_uuid = ?"
-            _ <- execute conn sqlQuery (Only agent)
+            _ <- execute conn sqlQuery (Only action_reciever_Uuid)
             ----------------------------------------------
             putStrLn $ ("> [" ++ agent ++ "] User - Kill Vote for [" ++ action_reciever ++ "]")
             close conn
