@@ -114,11 +114,34 @@ getPlayerKnowledge pName = do
     return knowledgeDataList
 
 
+createListWithWord :: [String] -> String -> [String]
+createListWithWord listt word = replicate (length listt) word
 
--- getRoomActionsResults :: String -> IO [ActionsData]
--- getRoomActionsResults rName = do
+getRoomActionsResults :: String -> IO [ActionsData]
+getRoomActionsResults rName = do
+    pListUUID   <- getRoomPlayersUUIDList       rName
+    pListNames  <- mapM getPlayerNameFromUUID   pListUUID
+    pAliveList  <- mapM isPlayerAlive           pListUUID
+
+    silencedPlayers     <- getRoundPlayersRecieved rName "is_silenced"
+    paralizedPlayers    <- getRoundPlayersRecieved rName "is_paralized"
+    killedPlayers       <- getRoundPlayersRecieved rName "kill_vote"
      
+    let playerDataList  = silencedPlayers ++ paralizedPlayers ++ killedPlayers
+    let actionDataList  = (createListWithWord silencedPlayers "silenciado") ++ (createListWithWord paralizedPlayers "paralizado") ++ (createListWithWord killedPlayers "morreu")
+    
+    let actionsData = zipWith (\players actions -> ActionsData { paList = [players], actionsList = [actions] }) playerDataList actionDataList
+    return actionsData
 
-    -- let actionsDataList = []
 
-    -- return actionsDataList
+getRoundPlayersRecieved :: String -> String -> IO [String]
+getRoundPlayersRecieved rName action = do
+    conn <- getDbConnection
+
+    -- DB Query ----------------------------------
+    let sqlQuery = Query $ BS2.pack ("SELECT player_uuid FROM UserGameData WHERE " ++ action ++ " > 0")
+    [Only result] <- query conn sqlQuery (Only rName) :: IO [Only String]
+    ----------------------------------------------
+    close conn
+
+    return [result]

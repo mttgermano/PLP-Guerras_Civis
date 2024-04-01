@@ -295,15 +295,15 @@ main = do
             json knowledgeInfo
 
 
-        -- get "/api/get_actions_results/:rName" $ do
-        --     liftIO $ putStrLn $ replicate 50 '-'
-        --     liftIO $ putStrLn "> Api request for actions results"
-        --     rName <- param "rName"
+        get "/api/get_actions_results/:rName" $ do
+            liftIO $ putStrLn $ replicate 50 '-'
+            liftIO $ putStrLn "> Api request for actions results"
+            rName <- param "rName"
 
-        --     resultsData <- liftIO $ getRoomActionsResults rName
+            resultsData <- liftIO $ getRoomActionsResults rName
 
-        --     let (players, actions) = foldr (\(ActionsData pList roleList) (accPlayers, accActions) -> (pList ++ accPlayers, roleList ++ accActions)) ([], []) resultsData
-        --     let resultsInfo = object ["player" .= (players :: [String]), "actions" .= (actions :: [String])]
+            let (players, actions) = foldr (\(ActionsData pList roleList) (accPlayers, accActions) -> (pList ++ accPlayers, roleList ++ accActions)) ([], []) resultsData
+            let resultsInfo = object ["player" .= (players :: [String]), "actions" .= (actions :: [String])]
 
-        --     status status200
-        --     json resultsInfo
+            status status200
+            json resultsInfo

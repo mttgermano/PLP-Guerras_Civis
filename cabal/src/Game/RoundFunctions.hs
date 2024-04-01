@@ -31,11 +31,8 @@ actionRound rName = do
 
     evilList <- getRoomPlayersGoodness rName False
     goodList <- getRoomPlayersGoodness rName True
-    --sleep 1
 
-    -- send a request to the front, so it will allert that the user can make an action
-    -- deixa rodar por 2 min
-    -- desfaz a acao
+    --sleep 1
 
     putStrLn $ ("> [" ++ (rName) ++ "] Room - Terminou  Action Round")
 
@@ -57,21 +54,27 @@ resetRoomPlayersAtributes rName = do
 
 roundResult :: String -> IO()
 roundResult rName = do
+    killMostVoted rName
+
+
+killMostVoted :: String -> IO()
+killMostVoted rName = do
     conn    <- getDbConnection
     -- DB Query ----------------------------------
     let sqlQuery = Query $ BS2.pack $ "SELECT player_uuid FROM UserGameData WHERE kill_vote > 0 AND is_alive = True"
     players <- query_ conn sqlQuery :: IO [Only String]
     ----------------------------------------------
-
+    
     -- Processing each player with kill_vote > 0 --
     mapM_ (\(Only playerUUID) -> killPlayer playerUUID) players
     close conn
 
+
 killPlayer :: String -> IO ()
 killPlayer playerUUID = do
-    -- Actions for each player with kill_vote > 0, e.g., print, update database, etc.
     conn    <- getDbConnection
+    -- DB Query ----------------------------------
     let sqlQuery = Query $ BS2.pack $ "UPDATE UserGameData SET is_alive = False WHERE player_uuid = ?"
     _ <- execute conn sqlQuery (Only playerUUID)
+    ----------------------------------------------
     putStrLn $ "User " ++ playerUUID ++ " morreu."
-    
