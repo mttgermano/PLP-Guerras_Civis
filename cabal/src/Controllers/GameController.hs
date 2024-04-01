@@ -67,7 +67,7 @@ startGame rName pName = do
 -- Finish the game
 endGame :: String -> String -> IO ()
 endGame rName reason = do
-    putStrLn $ ("> [" ++ (rName) ++ "] Room - o jogo  acabou!")
+    putStrLn $ ("> [" ++ (rName) ++ "] Room - o jogo  acabou!" ++ reason)
     updateRoundState rName reason
     deleteUserGameData          rName
     deleteRoomPlayersKnowledge  rName
