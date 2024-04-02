@@ -12,11 +12,10 @@ import Utils.Utils
 -- Run the Round which the users can vote
 voteRound :: String -> IO ()
 voteRound rName = do
-    putStrLn $ ("> [" ++ (rName) ++ "] Room - Começando Vote   Round ")
-
     updateRoundState rName "vote"
-
-    putStrLn $ replicate 50 '-'
+    putStrLn $ ("> [" ++ (rName) ++ "] Room - Começando Vote   Round ")
+    sleep 1
+    putStrLn $ ("> [" ++ (rName) ++ "] Room - Acabando  Vote   Round ")
 
 -- The Round where players can execute an action
 actionRound :: String -> IO ()
@@ -24,7 +23,7 @@ actionRound rName = do
     updateRoundState rName "action"
     putStrLn $ ("> [" ++ (rName) ++ "] Room - Começando Action Round ")
     sleep 1
-    putStrLn $ ("> [" ++ (rName) ++ "] Room - Acabando Action Round ")
+    putStrLn $ ("> [" ++ (rName) ++ "] Room - Acabando  Action Round ")
 
 
 
