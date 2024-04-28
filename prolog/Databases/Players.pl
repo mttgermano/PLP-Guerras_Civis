@@ -25,3 +25,7 @@ bots_in_room(Room, Bots) :-
 
 player_room(Name, Room) :-
     player(Name, _, Room, _).
+
+change_player_room(PlayerName, CurrentRoom, NewRoom) :-
+    retract(player(PlayerName, ID, CurrentRoom, Status)),
+    assertz(player(PlayerName, ID, NewRoom, Status)).
