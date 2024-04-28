@@ -29,3 +29,6 @@ player_room(Name, Room) :-
 change_player_room(PlayerName, CurrentRoom, NewRoom) :-
     retract(player(PlayerName, ID, CurrentRoom, Status)),
     assertz(player(PlayerName, ID, NewRoom, Status)).
+
+login(Name, Password) :-
+    player(Name, Password, _, _).
