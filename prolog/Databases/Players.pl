@@ -20,5 +20,14 @@ delete_player(Name) :-
 players_in_room(Room, Players) :-
     findall(X, player(X, _, Room, true), Players).
 
+alive_players_in_room(Room, alive, Players) :-
+    findall(X, player(X, _, Room, true), Players).
+
 bots_in_room(Room, Bots) :-
     findall(X, player(X, _, Room, false), Bots).
+
+player_room(Name, Room) :-
+    player(Name, _, Room, _).
+
+player_alive(Name, Alive) :-
+    player(Name, _, _, Alive).
