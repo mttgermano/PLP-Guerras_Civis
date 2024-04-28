@@ -3,15 +3,15 @@ botActionChoice(BotName, RName, PlayerName) :-
     length(Players, Length),
     random(0, Length, Posicao),
     nth0(Posicao, Players, PlayerName),
-    isPlayerAlive(PlayerName, Alive),
+    is_player_alive(PlayerName, Alive),
     Alive == true,
     BotName \= PlayerName.
 
 createBots(Quant, RName) :-
-    Quant > 0,
     random_uuid(UUID),
     atomic_list_concat(['bot-', UUID], BotName),
     add_player(BotName, "", RName, true),
+    add_user_game_data(BotName),
     NewQuant is Quant - 1,
     createBots(NewQuant, RName).
 
@@ -26,13 +26,13 @@ splitBySpaces([String|Rest], Result) :-
     append(StringList, RestResult, Result).
 
 botBrain(RName, BotName) :-
-    isPlayerAlive(BotName, BotAlive),
+    is_player_alive(BotName, BotAlive),
     (
         BotAlive = false
     ;
         BotAlive = true,
-        players_in_room(RName, PlayersNames),
-        get_room_messages(RName, Messages),
+        get_alive_players(RName, PlayersNames),
+        get_room_messages(PlayersNames, Messages),
         splitBySpaces(Messages, AllWords),
         countReferencesForAll(AllWords, PlayersNames, References),
         getPlayerKnowledgeList(BotName, Players),
