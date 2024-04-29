@@ -85,56 +85,7 @@ menu_template("RoomCreate",
 
 
 
-%%main:-
-%%   open('text.txt', read, Str),
-%%   read_houses(Str, Houses),
-%%   close(Str),
-%%   write(Houses), nl,
-%%   write_file(Houses).
-%%
 
-write_file([X|L]) :-
-	write(X),nl,write_file(L).
-
-write_file([X]) :- 
-	write(X),nl.
-
-read_houses(Stream, []):-
-  at_end_of_stream(Stream).
-
-read_houses(Stream, [X|L]):-
-  \+ at_end_of_stream(Stream),
-  read(Stream, X),
-  read_houses(Stream, L).
-
-prepend_pipe_to_strings([], []).
-prepend_pipe_to_strings([String|Rest], ['|' + String|ModifiedRest]) :-
-    prepend_pipe_to_strings(Rest, ModifiedRest).
-
-
-menu_template("RoomChat", MenuTemplate) :-
-   open('text.txt', read, Str),
-   read_houses(Str, Houses),
-   close(Str),
-   %% write(Houses), nl,
-   %%write_file(Houses),
-   prepend_pipe_to_strings(Houses,ModifiedList),
-    append(["┌───────────────────────────── Guerrras Civis ─────────────────────────────┐"], Houses, MenuWithHeader),
-    append(MenuWithHeader, ["└──────────────────────────────────────────────────────────────────────────┘"], MenuTemplate).
-
-% Predicate to read N lines from a file
-read_file_lines(_, 0, []) :- !.
-read_file_lines(Stream, N, [Line|Lines]) :-
-    N > 0,
-    read_line_to_string(Stream, Line),
-    N1 is N - 1,
-    read_file_lines(Stream, N1, Lines).
-
-open_file_read(File, Stream) :-
-    open(File, read, Stream).
-
-close_file(Stream) :-
-    close(Stream).
 
 menu_template("RoomLogin",
     [
@@ -168,6 +119,18 @@ menu_template("RoomWait",
     "│                                                                          │",
     "└──────────────────────────────────────────────────────────────────────────┘"]).
 
+
+
+menu_template("RoomChat", MenuTemplate) :-
+   open('text.txt', read, Str),
+   read_houses(Str, Houses),
+   close(Str),
+   prepend_pipe_to_strings(Houses,ModifiedList),
+   append(["┌───────────────────────────── Guerrras Civis ─────────────────────────────┐"], ModifiedList, MenuWithHeader),
+   append(MenuWithHeader, ["└──────────────────────────────────────────────────────────────────────────┘"], MenuTemplate).
+
+
+
 % Utils ---------------------------------------------------------
 print_menu([]).
 print_menu([X|Xs]) :-
@@ -175,6 +138,20 @@ print_menu([X|Xs]) :-
     print_menu(Xs).
 
 cl :- (current_prolog_flag(windows, true) -> shell('cls'); shell('clear')).
+
+read_houses(Stream, []):-
+  at_end_of_stream(Stream).
+
+read_houses(Stream, [X|L]):-
+  \+ at_end_of_stream(Stream),
+  read(Stream, X),
+  read_houses(Stream, L).
+
+prepend_pipe_to_strings([], []).
+prepend_pipe_to_strings([String|Rest], [ModifiedString|ModifiedRest]) :-
+    atom_concat('│', String, ModifiedString),
+    prepend_pipe_to_strings(Rest, ModifiedRest).
+
 
 
 
@@ -241,6 +218,7 @@ switch_menu_room("1") :-
 switch_menu_room("2") :- 
     menu_template("RoomLogin", Menu),
     menu_room_action("RoomLogin", Menu).
+
 
 
 % Menu Room Action ----------------------------------------------
