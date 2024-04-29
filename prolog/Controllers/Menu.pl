@@ -1,5 +1,3 @@
-%:- include('Login/Player.pl').
-
 % Menu Template -------------------------------------------------
 menu_template("Start",
     [
