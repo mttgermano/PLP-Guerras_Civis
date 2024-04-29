@@ -13,14 +13,12 @@ delete_player(Name) :-
 get_role(Name, Role) :-
     user_game_data(Name, Role, _, _, _, _, _, _).
 
-get_player_by_role(Role, Name) :-
-    user_game_data(Name, Role, _, _, _, _, _, _).
-
 is_player_alive(Name, Alive) :-
     user_game_data(Name, _, Alive, _, _, _, _, _).
 
-is_role_alive(Role, Alive) :-
-    user_game_data(_, Role, Alive, _, _, _, _, _).
+is_role_alive(Role, Names) :-
+    member(Name, Names),
+    user_game_data(Name, Role, true, _, _, _, _, _).
 
 get_alive_players([], []).
 get_alive_players([Player|Rest], AlivePlayers) :-
@@ -105,3 +103,7 @@ assign_roles_to_players([], _, _).
 assign_roles_to_players([Player|Rest], [Role|RemainingRoles]) :-
     assertz(user_game_data(Player, Role, true, 0, 0, 0, 0, false)),
     assign_roles_to_players(Rest, RemainingRoles).
+
+reset_values(Name) :-
+    retract(user_game_data(Name, Role, Status, _, _, _, _, IsDeleted)),
+    assertz(user_game_data(Name, Role, Status, 0, 0, 0, 0, IsDeleted)).
