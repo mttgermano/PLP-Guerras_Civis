@@ -15,6 +15,7 @@ menu_template("Start",
     "│                                                                          │",
     "│ [1]  Create Player                                                       │",
     "│ [2]  Login  Player                                                       │",
+    "│ [3]  Chat   Room                                                         │",
     "└──────────────────────────────────────────────────────────────────────────┘"]).
 
 menu_template("PlayerCreate",
@@ -81,6 +82,60 @@ menu_template("RoomCreate",
     "│                                                                          │",
     "└──────────────────────────────────────────────────────────────────────────┘"]).
 
+
+
+
+%%main:-
+%%   open('text.txt', read, Str),
+%%   read_houses(Str, Houses),
+%%   close(Str),
+%%   write(Houses), nl,
+%%   write_file(Houses).
+%%
+
+write_file([X|L]) :-
+	write(X),nl,write_file(L).
+
+write_file([X]) :- 
+	write(X),nl.
+
+read_houses(Stream, []):-
+  at_end_of_stream(Stream).
+
+read_houses(Stream, [X|L]):-
+  \+ at_end_of_stream(Stream),
+  read(Stream, X),
+  read_houses(Stream, L).
+
+prepend_pipe_to_strings([], []).
+prepend_pipe_to_strings([String|Rest], ['|' + String|ModifiedRest]) :-
+    prepend_pipe_to_strings(Rest, ModifiedRest).
+
+
+menu_template("RoomChat", MenuTemplate) :-
+   open('text.txt', read, Str),
+   read_houses(Str, Houses),
+   close(Str),
+   %% write(Houses), nl,
+   %%write_file(Houses),
+   prepend_pipe_to_strings(Houses,ModifiedList),
+    append(["┌───────────────────────────── Guerrras Civis ─────────────────────────────┐"], Houses, MenuWithHeader),
+    append(MenuWithHeader, ["└──────────────────────────────────────────────────────────────────────────┘"], MenuTemplate).
+
+% Predicate to read N lines from a file
+read_file_lines(_, 0, []) :- !.
+read_file_lines(Stream, N, [Line|Lines]) :-
+    N > 0,
+    read_line_to_string(Stream, Line),
+    N1 is N - 1,
+    read_file_lines(Stream, N1, Lines).
+
+open_file_read(File, Stream) :-
+    open(File, read, Stream).
+
+close_file(Stream) :-
+    close(Stream).
+
 menu_template("RoomLogin",
     [
     "┌───────────────────────────── Guerrras Civis ─────────────────────────────┐",
@@ -138,6 +193,12 @@ switch_menu_main("1") :-
 switch_menu_main("2") :- 
     menu_template("PlayerLogin", Menu),
     menu_action("PlayerLogin", Menu).
+
+
+switch_menu_main("3") :- 
+    menu_template("RoomChat", Menu),
+    print_menu(Menu).
+
 
 
 % Menu Action ---------------------------------------------------
