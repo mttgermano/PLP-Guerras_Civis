@@ -1,6 +1,9 @@
 :- dynamic room/6.
-room(room123, "PEDRO", false, "MATAR", [], "VOTE").
 
+% Test
+% room(room123, "PEDRO", false, "MATAR", [], "VOTE").
+
+% Room Actions --------------------------------------------------
 add_room(Name, Master, CursedWord) :-
     \+ room(Name, _, _, _, _, _),
     assertz(room(Name, Master, true, CursedWord, [], "VOTE")).
@@ -8,10 +11,17 @@ add_room(Name, Master, CursedWord) :-
 delete_room(Name) :-
     retract(room(Name, _, _, _, _, _)).
 
+add_message_to_room(RoomName, Message) :-
+    retract(room(RoomName, Master, Up, ForbiddenWord, Messages, State)),
+    append(Messages, [Message], NewMessages),
+    assertz(room(RoomName, Master, Up, ForbiddenWord, NewMessages, State)).
+
+
+% Room Utils ----------------------------------------------------
 is_room_up(Name, Up) :-
     room(Name, _, Up, _, _, _).
 
-get_room_State(Name, State) :-
+get_room_state(Name, State) :-
     room(Name, _, _, _, _, State).
 
 room_exists(Name) :-
@@ -24,7 +34,7 @@ room_has_forbidden_word(RoomName, HasForbiddenWord) :-
 
 room_has_forbidden_word(_, false).
 
-room_master(RoomName, Master) :-
+get_room_master(RoomName, Master) :-
     room(RoomName, Master, _, _, _, _).
 
 get_room_messages(Name, Messages) :-
@@ -32,8 +42,3 @@ get_room_messages(Name, Messages) :-
 
 get_room_forbidden_word(Name, ForbiddenWord) :-
     room(Name, _, _, ForbiddenWord, _, _).
-
-add_message_to_room(RoomName, Message) :-
-    retract(room(RoomName, Master, Up, ForbiddenWord, Messages, State)),
-    append(Messages, [Message], NewMessages),
-    assertz(room(RoomName, Master, Up, ForbiddenWord, NewMessages, State)).
