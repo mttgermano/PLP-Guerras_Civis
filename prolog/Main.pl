@@ -1,10 +1,9 @@
 :- initialization main, halt.
 
 :- include('Controllers/Menu.pl').
-:- include('Login/Player.pl').
-:- include('Database/Players.pl').
-:- include('Database/PlayersKnowledge.pl').
-:- include('Database/UserGameData.pl').
+:- include('Databases/Players.pl').
+:- include('Databases/PlayersKnowledge.pl').
+:- include('Databases/UserGameData.pl').
 % :- include('Game/BotLogic.pl').
 % :- include('Game/RoleFunctions.pl').
 

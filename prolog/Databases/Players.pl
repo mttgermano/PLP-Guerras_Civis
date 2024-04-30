@@ -6,9 +6,9 @@
 % player("Matheus", 12345, room123, false).
 
 % Player Actions ------------------------------------------------
-add_player(Name, ID, Room, Status) :-
+add_player(Name, Password, Status) :-
     \+ player(Name, _, _, _),
-    assertz(player(Name, ID, Room, Status)).
+    assertz(player(Name, Password, _, Status)).
 
 delete_player(Name) :-
     retract(player(Name, _, _, _)),

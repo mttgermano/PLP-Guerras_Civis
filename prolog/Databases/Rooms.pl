@@ -16,6 +16,11 @@ add_message_to_room(RoomName, Message) :-
     append(Messages, [Message], NewMessages),
     assertz(room(RoomName, Master, Up, ForbiddenWord, NewMessages, State)).
 
+room_login(Rname, Pname) :-
+    % TODO
+    % atualizar player
+    room(Rname, _, _, _, _, _).
+
 
 % Room Utils ----------------------------------------------------
 is_room_up(Name, Up) :-
