@@ -2,6 +2,7 @@
 
 :- include('Controllers/Menu.pl').
 :- include('Databases/Players.pl').
+:- include('Databases/Rooms.pl')
 :- include('Databases/PlayersKnowledge.pl').
 :- include('Databases/UserGameData.pl').
 % :- include('Game/BotLogic.pl').

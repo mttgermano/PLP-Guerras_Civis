@@ -1,9 +1,9 @@
 :- dynamic player/4.
 
 % Test 
-% player("PEDRO", 12, room123, true).
-% player("Djan", 12345, room123, true). 
-% player("Matheus", 12345, room123, false).
+% player("PEDRO", room123, true).
+% player("Djan", room123, true). 
+% player("Matheus", room123, false).
 
 % Player Actions ------------------------------------------------
 add_player(Name, Password, Status) :-

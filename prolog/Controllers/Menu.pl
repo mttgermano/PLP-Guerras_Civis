@@ -1,4 +1,4 @@
-%:- include('Login/Player.pl').
+:- include('./../Databases/Rooms.pl').
 
 % Menu Template -------------------------------------------------
 menu_template("Start",
@@ -99,7 +99,7 @@ menu_template("RoomLogin",
 
 menu_template("RoomWait", RName, Menu) :-
     format(string(MenuLine),
-            '│ > Room Wait (~w)',
+            '│ > Room Wait (~w)                                                        │',
             [RName]),
     Menu = [
         "┌───────────────────────────── Guerras Civis ──────────────────────────────┐",
@@ -112,27 +112,31 @@ menu_template("RoomWait", RName, Menu) :-
         "│                                                                          │",
         "│                                                                          │",
         "│                                                                          │",
-        "│  [1] Start Game                                                          │",
         "│                                                                          │",
+        "│  [1] Start Game                                                          │",
         "└──────────────────────────────────────────────────────────────────────────┘"
     ].
     
 
-% menu_template("RoomWait",
-%     [
-%     "┌───────────────────────────── Guerrras Civis ─────────────────────────────┐",
-%     "│ > Room Wait                                                              │",
-%     "│                                                                          │",
-%     "│                                                                          │",
-%     "│                                                                          │",
-%     "│                                                                          │",
-%     "│                                                                          │",
-%     "│                                                                          │",
-%     "│                                                                          │",
-%     "│                                                                          │",
-%     "│                                                                          │",
-%     "│                                                                          │",
-%     "└──────────────────────────────────────────────────────────────────────────┘"]).
+menu_template("RoomWaitNotRoomMaster", RName, Menu) :-
+    format(string(MenuLine),
+            '│ > Room Wait (~w)                                                        │',
+            [RName]),
+    Menu = [
+        "┌───────────────────────────── Guerras Civis ──────────────────────────────┐",
+        MenuLine,
+        "│                                                                          │",
+        "│                                                                          │",
+        "│                                                                          │",
+        "│                                                                          │",
+        "│                                                                          │",
+        "│                                                                          │",
+        "│                                                                          │",
+        "│                                                                          │",
+        "│                                                                          │",
+        "│  [1] Start Game                                                          │",
+        "└──────────────────────────────────────────────────────────────────────────┘"
+    ].
 
 % Utils ---------------------------------------------------------
 print_menu([]).
@@ -173,9 +177,9 @@ menu_action(MenuType, MenuTemplate) :-
 
 % Escolha das acoes
 switch_menu_action("PlayerCreate", Pname, Ppassword) :- 
-    add_player(Pname, Ppassword),
+    add_player(Pname, Ppassword, false),
     menu_template("Room", Menu),
-    menu_room(Menu).
+    menu_room(Menu, Pname).
 
 switch_menu_action("PlayerLogin",  Pname, Ppassword) :- 
     player_login(Pname, Ppassword),
@@ -184,44 +188,44 @@ switch_menu_action("PlayerLogin",  Pname, Ppassword) :-
 
 
 % Menu Room -----------------------------------------------------
-menu_room(MenuTemplate) :-
+menu_room(MenuTemplate, Cpname) :-  % Current Player Name
     cl,
     print_menu(MenuTemplate),
     read_line_to_string(user_input, Input),
-    switch_menu_room(Input).
+    switch_menu_room(Input, Cpname).
 
 % Escolha das acoes
-switch_menu_room("1") :- 
+switch_menu_room("1", Cpname) :- 
     menu_template("RoomCreate", Menu),
-    menu_room_action("RoomCreate", Menu).
+    menu_room_action("RoomCreate", Menu, Cpname).
 
 switch_menu_room("2") :- 
     menu_template("RoomLogin", Menu),
-    menu_room_action("RoomLogin", Menu).
+    menu_room_action("RoomLogin", Menu, Cpname).
 
 
 % Menu Room Action ----------------------------------------------
-menu_room_action(MenuType, MenuTemplate) :-
+menu_room_action(MenuType, MenuTemplate, Cpname) :-
     cl,
     print_menu(MenuTemplate),
     write("│ Room Name      $ "),
     read_line_to_string(user_input, Input1),
-    switch_menu_room_action(MenuType, Input1).
+    switch_menu_room_action(MenuType, Input1, Cpname).
 
 % Escolha das acoes
-switch_menu_room_action("RoomCreate", RName) :- 
-    room_add(RName),
-    menu_template("RoomWait", RName, Menu),
-    menu_room_wait(Menu).
+switch_menu_room_action("RoomCreate", Rname, Cpname) :- 
+    add_room(Rname, Cpname, "asd"),
+    menu_template("RoomWait", Rname, Menu),
+    menu_room_wait(Menu, Cpname).
 
 switch_menu_room_action("RoomLogin",  Rname) :- 
-    room_login(Rname),
+    room_login(Rname, Cpname),
     menu_template("RoomWait", Menu),
-    menu_room_wait(Menu).
+    menu_room_wait(Menu, Cpname).
 
 
 % Menu Room Wait ------------------------------------------------
-menu_room_wait(Menu) :-
+menu_room_wait(Menu, Cpname) :-
     cl,
     print_menu(Menu).
 %     read_line_to_string(user_input, Input),
