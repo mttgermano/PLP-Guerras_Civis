@@ -173,7 +173,7 @@ menu_action(MenuType, MenuTemplate) :-
 
 % Escolha das acoes
 switch_menu_action("PlayerCreate", Pname, Ppassword) :- 
-    player_create(Pname, Ppassword),
+    add_player(Pname, Ppassword),
     menu_template("Room", Menu),
     menu_room(Menu).
 
@@ -181,9 +181,6 @@ switch_menu_action("PlayerLogin",  Pname, Ppassword) :-
     player_login(Pname, Ppassword),
     menu_template("Room", Menu),
     menu_room(Menu).
-
-player_create(A,B)  :- writeln(5).
-player_login(A,B)   :- writeln(5).
 
 
 % Menu Room -----------------------------------------------------
@@ -213,7 +210,7 @@ menu_room_action(MenuType, MenuTemplate) :-
 
 % Escolha das acoes
 switch_menu_room_action("RoomCreate", RName) :- 
-    room_create(RName),
+    room_add(RName),
     menu_template("RoomWait", RName, Menu),
     menu_room_wait(Menu).
 
@@ -221,9 +218,6 @@ switch_menu_room_action("RoomLogin",  Rname) :-
     room_login(Rname),
     menu_template("RoomWait", Menu),
     menu_room_wait(Menu).
-
-room_create(A)    :- writeln(5).
-room_login(A)     :- writeln(5).
 
 
 % Menu Room Wait ------------------------------------------------
