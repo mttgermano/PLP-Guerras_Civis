@@ -89,3 +89,84 @@ listSom(Xs, [], Xs).
 listSom([X|Xs], [Y|Ys], [Z|Zs]) :-
     Z is X + Y,
     listSom(Xs, Ys, Zs).
+
+nameCountReferences(_, [], 0).
+nameCountReferences(Player, [Player|PlayerNames], Count) :-
+    nameCountReferences(Player, PlayerNames, SubCount),
+    Count is SubCount + 1.
+nameCountReferences(Player, [_|PlayerNames], Count) :-
+    nameCountReferences(Player, PlayerNames, Count).
+
+possibleWords(["sinto", "acho", "teste", "livro", "água", "banana", "futebol", "computador", "amor", "tempo", "cidade", "felicidade"]).
+
+randomWord(Word) :-
+    possibleWords(Words),
+    length(Words, Length),
+    random(0, Length, Index),
+    nth0(Index, Words, Word).
+
+botAction(BotId, RName) :-
+    getRole(BotId, BotRole),
+    botActionChoice(BotId, RName, PlayerId),
+    randomWord(ChoiceWord),
+    getPlayerNameFromUUID(PlayerId, PlayerName),
+    getPlayerNameFromUUID(BotId, BotName),
+    isPlayerAlive(BotId, BotAlive),
+    (
+        BotAlive = false -> true
+    ;
+        (
+            BotRole = 1 -> kill(BotName, PlayerName)
+        ;   BotRole = 2 -> apprentice(BotName, PlayerName)
+        ;   BotRole = 3 -> reveal(BotName, PlayerName)
+        ;   BotRole = 4 -> paralize(BotName, PlayerName)
+        ;   BotRole = 5 -> silence(BotName, PlayerName)
+        ;   BotRole = 6 -> setCursedWord(BotName, ChoiceWord)
+        ;   BotRole = 7 -> search(BotName, PlayerName)
+        ;   BotRole = 8 -> kill(BotName, PlayerName)
+        ;   BotRole = 9 -> police(BotName, PlayerName)
+        ;   BotRole = 10 -> save(BotName, PlayerName)
+        ;   BotRole = 12 -> revenge(BotName, PlayerName)
+        ;   true -> format(".")
+        )
+    ).
+callBots([], _).
+callBots([BotId|Rest], RName) :-
+    botAction(BotId, RName),
+    callBots(Rest, RName).
+
+botsRound(RName) :-
+    getRoomBots(RName, Bots),
+    format("> [~w] Room - Começou Bot Round", [RName]),
+    callBots(Bots, RName),
+    format("> [~w] Room - Terminou Bot Round", [RName]).
+
+callBotsVote([], _).
+callBotsVote([BotId|Rest], RName) :-
+    botBrain(RName, BotId),
+    callBotsVote(Rest, RName).
+
+voteBotsRound(RName) :-
+    getRoomBots(RName, Bots),
+    format("> [~w] Room - Começou Bot Vote", [RName]),
+    callBotsVote(Bots, RName),
+    format("> [~w] Room - Terminou Bot Vote", [RName]).
+
+deleteRoomBots(RName) :-
+    getRoomBots(RName, Bots),
+    maplist(deleteBot, Bots),
+    format("> [~w] Room - bots deletados", [RName]).
+
+deleteBot(BUUID) :-
+    getDbConnection(Connection),
+    SQLQuery = "DELETE FROM Player WHERE player_uuid = ?",
+    execute(Connection, SQLQuery, [BUUID]),
+    close(Connection).
+
+getDbConnection(Connection) :- db_connection(Connection).
+execute(Connection, SQLQuery, Values) :- db_execute(Connection, SQLQuery, Values).
+close(Connection) :- db_close(Connection).
+
+
+
+

@@ -34,11 +34,13 @@ executable PLP-Guerras-Civis
         Game.BotLogic,
         LoginUtils.PlayerFunctions,
         LoginUtils.RoomFunctions,
-        Utils.Utils
+        Utils.Utils,
+        -- Adicione os módulos necessários aqui
+        Game.Interface
 
-    -- Other library packages from which modules are imported.
+    -- Outras dependências necessárias
     build-depends:
-        base ^>=4.19.1.0,
+        base >= 4.14 && < 4.19,
         network,
         postgresql-simple,
         async,
@@ -50,7 +52,8 @@ executable PLP-Guerras-Civis
         random,
         wai-extra,
         http-types,
-        wai-cors
+        wai-cors,
+        ansi-terminal,
+        -- Adicione outras dependências necessárias aqui
 
-    -- Base language which the package is written in.
     default-language: GHC2021
