@@ -13,11 +13,11 @@ if &shortmess =~ 'A'
 else
   set shortmess=aoO
 endif
-badd +0 Main.pl
+badd +0 chat.txt
 argglobal
 %argdel
-$argadd Main.pl
-edit Main.pl
+$argadd chat.txt
+edit chat.txt
 argglobal
 setlocal fdm=manual
 setlocal fde=0
@@ -29,7 +29,7 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 1 - ((0 * winheight(0) + 25) / 50)
+let s:l = 1 - ((0 * winheight(0) + 20) / 41)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
