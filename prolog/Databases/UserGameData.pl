@@ -6,17 +6,17 @@
 % user_game_data("Djan", 6, true, 0, 0, 1, 0, false).
 % user_game_data("Matheus", 1, false, 0, 0, 0, 0, false).
 user_game_data("Pedro", 1, false, 0, 0, 0, 0, false).
-user_game_data("Djan", 10, true, 0, 0, 0, 0, true). 
-user_game_data("Matheus", 1, true, 0, 0, 0, 0, true).
-user_game_data("Pedro1", 1, false, 0, 0, 0, 0, false).
-user_game_data("Djan1", 1, true, 0, 0, 0, 0, true). 
-user_game_data("Matheus1", 1, true, 0, 0, 0, 0, true).
-user_game_data("Pedro2", 1, false, 0, 0, 0, 0, false).
-user_game_data("Djan2", 1, true, 0, 0, 0, 0, true). 
-user_game_data("Matheus2", 1, true, 0, 0, 0, 0, true).
-user_game_data("Pedro3", 1, false, 0, 0, 0, 0, false).
-user_game_data("Djan3", 1, true, 0, 0, 0, 0, true). 
-user_game_data("Matheus3", 1, true, 0, 0, 0, 0, true).
+user_game_data("Djan", 2, true, 0, 0, 0, 0, true). 
+user_game_data("Matheus", 3, true, 0, 0, 0, 0, true).
+user_game_data("Pedro1", 4, false, 0, 0, 0, 0, false).
+user_game_data("Djan1", 5, true, 0, 0, 0, 0, true). 
+user_game_data("Matheus1", 6, true, 0, 0, 0, 0, true).
+user_game_data("Pedro2", 7, false, 0, 0, 0, 0, false).
+user_game_data("Djan2", 8, true, 0, 0, 0, 0, true). 
+user_game_data("Matheus2", 9, true, 0, 0, 0, 0, true).
+user_game_data("Pedro3", 10, false, 0, 0, 0, 0, false).
+user_game_data("Djan3", 11, true, 0, 0, 0, 0, true). 
+user_game_data("Matheus3", 12, true, 0, 0, 0, 0, true).
 
 % User Game Data Actions ----------------------------------------
 add_user_game_data(Name) :-
@@ -56,9 +56,9 @@ get_role(Name, Role) :-
 is_player_alive(Name, Alive) :-
     user_game_data(Name, _, Alive, _, _, _, _, _).
 
-is_role_alive(Role, Names) :-
+is_role_alive(Role, Names, IsAlive) :-
     member(Name, Names),
-    user_game_data(Name, Role, true, _, _, _, _, _).
+    user_game_data(Name, Role, IsAlive, _, _, _, _, _).
 
 get_alive_players([], []).
 

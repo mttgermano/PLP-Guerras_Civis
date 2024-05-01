@@ -53,3 +53,7 @@ get_room_forbidden_word(Name, ForbiddenWord) :-
 get_alive_players_in_room(Room, AlivePlayers) :-
     get_all_in_room(Room, Players),
     get_alive_players(Players, AlivePlayers).
+
+is_role_alive_room(Room, Role) :-
+    get_all_in_room(Room, Players),
+    is_role_alive(Role, Players).
