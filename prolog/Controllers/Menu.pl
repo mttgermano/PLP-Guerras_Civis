@@ -15,6 +15,7 @@ menu_template("Start",
     "│                                                                          │",
     "│ [1]  Create Player                                                       │",
     "│ [2]  Login  Player                                                       │",
+    "│ [3]  Chat   Room                                                         │",
     "└──────────────────────────────────────────────────────────────────────────┘"]).
 
 menu_template("PlayerCreate",
@@ -81,6 +82,11 @@ menu_template("RoomCreate",
     "│                                                                          │",
     "└──────────────────────────────────────────────────────────────────────────┘"]).
 
+
+
+
+
+
 menu_template("RoomLogin",
     [
     "┌───────────────────────────── Guerras Civis ──────────────────────────────┐",
@@ -138,6 +144,18 @@ menu_template("RoomWaitNotRoomMaster", RName, Menu) :-
         "└──────────────────────────────────────────────────────────────────────────┘"
     ].
 
+
+
+menu_template("RoomChat", MenuTemplate) :-
+   open('text.txt', read, Str),
+   read_houses(Str, Houses),
+   close(Str),
+   prepend_pipe_to_strings(Houses,ModifiedList),
+   append(["┌───────────────────────────── Guerrras Civis ─────────────────────────────┐"], ModifiedList, MenuWithHeader),
+   append(MenuWithHeader, ["└──────────────────────────────────────────────────────────────────────────┘"], MenuTemplate).
+
+
+
 % Utils ---------------------------------------------------------
 print_menu([]).
 print_menu([X|Xs]) :-
@@ -145,6 +163,20 @@ print_menu([X|Xs]) :-
     print_menu(Xs).
 
 cl :- (current_prolog_flag(windows, true) -> shell('cls'); shell('clear')).
+
+read_houses(Stream, []):-
+  at_end_of_stream(Stream).
+
+read_houses(Stream, [X|L]):-
+  \+ at_end_of_stream(Stream),
+  read(Stream, X),
+  read_houses(Stream, L).
+
+prepend_pipe_to_strings([], []).
+prepend_pipe_to_strings([String|Rest], [ModifiedString|ModifiedRest]) :-
+    atom_concat('│', String, ModifiedString),
+    prepend_pipe_to_strings(Rest, ModifiedRest).
+
 
 
 
@@ -163,6 +195,12 @@ switch_menu_main("1") :-
 switch_menu_main("2") :- 
     menu_template("PlayerLogin", Menu),
     menu_action("PlayerLogin", Menu).
+
+
+switch_menu_main("3") :- 
+    menu_template("RoomChat", Menu),
+    print_menu(Menu).
+
 
 
 % Menu Action ---------------------------------------------------
@@ -202,6 +240,7 @@ switch_menu_room("1", Cpname) :-
 switch_menu_room("2") :- 
     menu_template("RoomLogin", Menu),
     menu_room_action("RoomLogin", Menu, Cpname).
+
 
 
 % Menu Room Action ----------------------------------------------
