@@ -154,16 +154,29 @@ menu_template("RoomChat", MenuTemplate) :-
    open('chat.txt', read, Str),
    stream_to_list(Str, ChatList),
    close(Str),
-   prepend_pipe_to_strings(ChatList,ModifiedList),
+   %reverse_chat(ChatList,4,ChatResult2)
+   %prepend_pipe_to_strings(ChatList,ModifiedList),
+   prepend_pipe_to_strings(ChatResult2,ModifiedList),
    append(["┌───────────────────────────── Guerrras Civis ─────────────────────────────┐"], ModifiedList, MenuWithHeader),
    append(MenuWithHeader, ["└──────────────────────────────────────────────────────────────────────────┘"], MenuChatEnd),
-   append(MenuChatEnd,["[1] Back Menu"], MenuSelect1),
+   append(MenuChatEnd,["[1] Back Menu"], MenuSelect1),%pode virar um template so.....
    append(MenuSelect1,["[2] Back Menu"], MenuSelect2),
    append(MenuSelect2,["[3] Update Chat"], MenuTemplate).
 
 
 
+%limit_list_by(limiter,[X | XS],Result) :- 
+
+
 % Utils ---------------------------------------------------------
+
+% reverse list
+reverse_chat(ChatList,Limiter,ResultList) :- reverse_chat(ChatList,[],Limiter,ResultList). 
+reverse_chat([],ResultList,0,ResultList).
+reverse_chat([X | XS],PartialResultList,Limiter,ResultList) :- Limiter2 is Limiter - 1,reverse_chat(XS,[H|PartialResultList],Limiter2,ResultList).
+
+
+
 print_menu([]).
 print_menu([X|Xs]) :-
     writeln(X),  
