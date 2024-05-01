@@ -147,10 +147,10 @@ menu_template("RoomWaitNotRoomMaster", RName, Menu) :-
 
 
 menu_template("RoomChat", MenuTemplate) :-
-   open('text.txt', read, Str),
-   read_houses(Str, Houses),
+   open('chat.txt', read, Str),
+   stream_to_list(Str, ChatList),
    close(Str),
-   prepend_pipe_to_strings(Houses,ModifiedList),
+   prepend_pipe_to_strings(ChatList,ModifiedList),
    append(["┌───────────────────────────── Guerrras Civis ─────────────────────────────┐"], ModifiedList, MenuWithHeader),
    append(MenuWithHeader, ["└──────────────────────────────────────────────────────────────────────────┘"], MenuTemplate).
 
@@ -164,13 +164,13 @@ print_menu([X|Xs]) :-
 
 cl :- (current_prolog_flag(windows, true) -> shell('cls'); shell('clear')).
 
-read_houses(Stream, []):-
+stream_to_list(Stream, []):-
   at_end_of_stream(Stream).
 
-read_houses(Stream, [X|L]):-
+stream_to_list(Stream, [X|L]):-
   \+ at_end_of_stream(Stream),
   read(Stream, X),
-  read_houses(Stream, L).
+  stream_to_list(Stream, L).
 
 prepend_pipe_to_strings([], []).
 prepend_pipe_to_strings([String|Rest], [ModifiedString|ModifiedRest]) :-
