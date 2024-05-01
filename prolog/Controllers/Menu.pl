@@ -146,6 +146,8 @@ menu_template("RoomWaitNotRoomMaster", RName, Menu) :-
 
 
 
+
+
 menu_template("RoomChat", MenuTemplate) :-
    %mostar numero n de linhas....
    %manter em loop?
@@ -154,10 +156,9 @@ menu_template("RoomChat", MenuTemplate) :-
    open('chat.txt', read, Str),
    stream_to_list(Str, ChatList),
    close(Str),
-   %reverse_chat(ChatList,4,ChatResult2)
-   %prepend_pipe_to_strings(ChatList,ModifiedList),
-   prepend_pipe_to_strings(ChatResult2,ModifiedList),
-   append(["┌───────────────────────────── Guerrras Civis ─────────────────────────────┐"], ModifiedList, MenuWithHeader),
+   prepend_pipe_to_strings(ChatList,ModifiedList),
+   reverse_chat(ModifiedList,4,ChatResult2),
+   append(["┌───────────────────────────── Guerrras Civis ─────────────────────────────┐"], ChatResult2, MenuWithHeader),
    append(MenuWithHeader, ["└──────────────────────────────────────────────────────────────────────────┘"], MenuChatEnd),
    append(MenuChatEnd,["[1] Back Menu"], MenuSelect1),%pode virar um template so.....
    append(MenuSelect1,["[2] Back Menu"], MenuSelect2),
@@ -170,13 +171,14 @@ menu_template("RoomChat", MenuTemplate) :-
 
 % Utils ---------------------------------------------------------
 
-% reverse list
+% reverse list, funcao que inverte linhas,e pega ultimas n linahs do chat ...
 reverse_chat(ChatList,Limiter,ResultList) :- reverse_chat(ChatList,[],Limiter,ResultList). 
-reverse_chat([],ResultList,0,ResultList).
-reverse_chat([X | XS],PartialResultList,Limiter,ResultList) :- Limiter2 is Limiter - 1,reverse_chat(XS,[H|PartialResultList],Limiter2,ResultList).
+reverse_chat(_,Lista,0,ResultList) :- reverse(Lista,ResultList).
+reverse_chat([X|XS],PartialResultList,Limiter,ResultList) :- Limiter2 is Limiter - 1,reverse_chat(XS,[X | PartialResultList],Limiter2,ResultList).
 
 
 
+% Utils ---------------------------------------------------------
 print_menu([]).
 print_menu([X|Xs]) :-
     writeln(X),  
