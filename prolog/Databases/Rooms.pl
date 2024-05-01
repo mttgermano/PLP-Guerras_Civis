@@ -1,4 +1,6 @@
 :- dynamic room/6.
+:- include('./../Databases/UserGameData.pl').
+:- include('./../Databases/Players.pl').
 
 % Test
 % room(room123, "PEDRO", false, "MATAR", [], "VOTE").
@@ -16,10 +18,10 @@ add_message_to_room(RoomName, Message) :-
     append(Messages, [Message], NewMessages),
     assertz(room(RoomName, Master, Up, ForbiddenWord, NewMessages, State)).
 
-room_login(Rname, Pname) :-
-    % TODO
-    % atualizar player
-    room(Rname, _, _, _, _, _).
+% room_login(Rname, Pname) :-
+%     % TODO
+%     % atualizar player
+%     room(Rname, _, _, _, _, _).
 
 
 % Room Utils ----------------------------------------------------
@@ -47,3 +49,7 @@ get_room_messages(Name, Messages) :-
 
 get_room_forbidden_word(Name, ForbiddenWord) :-
     room(Name, _, _, ForbiddenWord, _, _).
+
+get_alive_players_in_room(Room, AlivePlayers) :-
+    get_all_in_room(Room, Players),
+    get_alive_players(Players, AlivePlayers).

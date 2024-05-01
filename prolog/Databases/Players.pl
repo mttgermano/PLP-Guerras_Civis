@@ -1,9 +1,18 @@
 :- dynamic player/4.
 
 % Test 
-% player("PEDRO", room123, true).
-% player("Djan", room123, true). 
-% player("Matheus", room123, false).
+player("Pedro", teste, room123, true).
+player("Djan", teste, room123, true). 
+player("Matheus", teste, room123, false).
+player("Pedro1", teste, room123, true).
+player("Djan1", teste, room123, true). 
+player("Matheus1", teste, room123, false).
+player("Pedro2", teste, room123, true).
+player("Djan2", teste, room123, true). 
+player("Matheus2", teste, room123, false).
+player("Pedro3", teste, room123, true).
+player("Djan3", teste, room123, true). 
+player("Matheus3", teste, room123, false).
 
 % Player Actions ------------------------------------------------
 add_player(Name, Password, Status) :-
@@ -28,8 +37,11 @@ get_player_room(Name, Room) :-
 player_exists(Name) :-
     player(Name, _, _, _).
 
-is_players_in_room(Room, Players) :-
+get_all_in_room(RoomName, Players) :-
+    findall(Player, player(Player, _, RoomName, _), Players).
+
+get_players_in_room(Room, Players) :-
     findall(X, player(X, _, Room, true), Players).
 
-is_bots_in_room(Room, Bots) :-
+gey_bots_in_room(Room, Bots) :-
     findall(X, player(X, _, Room, false), Bots).

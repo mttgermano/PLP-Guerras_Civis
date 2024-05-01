@@ -108,6 +108,7 @@ revenge(Agent, ActionReceiver) :-
     Result > 0,
     % Execute kill action
     kill(Agent, ActionReceiver).
-revenge(Agent, _) :-
+
+revenge(Agent, _) :- 
     errPermissionMessage(Agent).
 

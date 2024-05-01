@@ -5,6 +5,18 @@
 % user_game_data("PEDRO", 10, true, 0, 0, 0, 0, false).
 % user_game_data("Djan", 6, true, 0, 0, 1, 0, false).
 % user_game_data("Matheus", 1, false, 0, 0, 0, 0, false).
+user_game_data("Pedro", 1, false, 0, 0, 0, 0, false).
+user_game_data("Djan", 10, true, 0, 0, 0, 0, true). 
+user_game_data("Matheus", 1, true, 0, 0, 0, 0, true).
+user_game_data("Pedro1", 1, false, 0, 0, 0, 0, false).
+user_game_data("Djan1", 1, true, 0, 0, 0, 0, true). 
+user_game_data("Matheus1", 1, true, 0, 0, 0, 0, true).
+user_game_data("Pedro2", 1, false, 0, 0, 0, 0, false).
+user_game_data("Djan2", 1, true, 0, 0, 0, 0, true). 
+user_game_data("Matheus2", 1, true, 0, 0, 0, 0, true).
+user_game_data("Pedro3", 1, false, 0, 0, 0, 0, false).
+user_game_data("Djan3", 1, true, 0, 0, 0, 0, true). 
+user_game_data("Matheus3", 1, true, 0, 0, 0, 0, true).
 
 % User Game Data Actions ----------------------------------------
 add_user_game_data(Name) :-
@@ -14,7 +26,7 @@ delete_user_game_data(Name) :-
     retract(user_game_data(Name, _, _, _, _, _, _, _)).
 
 delete_user_game_data_in_room(Room) :-
-    players_in_room(Room, Players),
+    get_all_in_room(Room, Players),
     delete_user_game_data_for_players(Players).
 
 delete_user_game_data_for_players([]).
@@ -23,7 +35,7 @@ delete_user_game_data_for_players([Player|Rest]) :-
     delete_user_game_data_for_players(Rest).
 
 assign_roles(Room) :-
-    players_in_room(Room, Players),
+    get_all_in_room(Room, Players),
     numlist(1, 12, AllRoles),
     random_permutation(AllRoles, RandomizedRoles),
     assign_roles_to_players(Players, RandomizedRoles).
@@ -34,8 +46,8 @@ assign_roles_to_players([Player|Rest], [Role|RemainingRoles]) :-
     assign_roles_to_players(Rest, RemainingRoles).
 
 reset_values(Name) :-
-    retract(user_game_data(Name, Role, Status, _, _, _, _, IsDeleted)),
-    assertz(user_game_data(Name, Role, Status, 0, 0, 0, 0, IsDeleted)).
+    retract(user_game_data(Name, Role, Status, _, _, _, _, isDeadByCursedWord)),
+    assertz(user_game_data(Name, Role, Status, 0, 0, 0, 0, isDeadByCursedWord)).
 
 % User Game Data Utils ------------------------------------------
 get_role(Name, Role) :-
