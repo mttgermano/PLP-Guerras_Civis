@@ -152,17 +152,13 @@ voteBotsRound(RName) :-
     callBotsVote(Bots, RName),
     format("> [~w] Room - Terminou Bot Vote", [RName]).
 
+:- dynamic(bot/1).
+
+deleteBot(BUUID) :-
+    retract(bot(BUUID)),
+    format('Bot ~w deletado.~n', [BUUID]).
+
 deleteRoomBots(RName) :-
     getRoomBots(RName, Bots),
     maplist(deleteBot, Bots),
-    format("> [~w] Room - bots deletados", [RName]).
-
-deleteBot(BUUID) :-
-    getDbConnection(Connection),
-    SQLQuery = "DELETE FROM Player WHERE player_uuid = ?",
-    execute(Connection, SQLQuery, [BUUID]),
-    close(Connection).
-
-getDbConnection(Connection) :- db_connection(Connection).
-execute(Connection, SQLQuery, Values) :- db_execute(Connection, SQLQuery, Values).
-close(Connection) :- db_close(Connection).
+    format("[~w] Room - Bots deletados.~n", [RName]).
