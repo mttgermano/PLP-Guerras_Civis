@@ -4,9 +4,6 @@
 :- include('./../Databases/UserGameData.pl').
 :- use_module(library(uuid)).
 
-random_uuid(UUID) :-
-    uuid(UUID).
-
 botActionChoice(PlayerName, RName) :-
     get_alive_players_in_room(RName, Players),
     length(Players, Length),
@@ -17,7 +14,7 @@ createBots(0, RName) :-
     format('> All Bots created in [~w]', [RName]).
 
 createBots(Quant, RName) :-
-    random_uuid(UUID),
+    uuid(UUID),
     atomic_list_concat(['bot-', UUID], BotName),
     add_player(BotName, "", true),
     add_user_game_data(BotName),
