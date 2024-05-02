@@ -15,6 +15,7 @@ menu_template("Start",
     "│                                                                          │",
     "│ [1]  Create Player                                                       │",
     "│ [2]  Login  Player                                                       │",
+    "│ [3]  Chat   Room                                                         │",
     "└──────────────────────────────────────────────────────────────────────────┘"]).
 
 menu_template("PlayerCreate",
@@ -81,6 +82,11 @@ menu_template("RoomCreate",
     "│                                                                          │",
     "└──────────────────────────────────────────────────────────────────────────┘"]).
 
+
+
+
+
+
 menu_template("RoomLogin",
     [
     "┌───────────────────────────── Guerras Civis ──────────────────────────────┐",
@@ -103,7 +109,7 @@ menu_template("RoomWait", RName, Cpname, Menu) :-
             [RName]),
     format(string(Players),
             '| > Players:                                                               |\n| - ~w', 
-            [Cpname]),
+
     Menu = [
         "┌───────────────────────────── Guerras Civis ──────────────────────────────┐",
         MenuLine,
@@ -130,6 +136,7 @@ menu_template("RoomWaitNotRoomMaster", RName, Cpname, Menu) :-
     format(string(Players),
             '| > Players:                                                            |\n ~w', 
             [Cpname]),
+
     Menu = [
         "┌───────────────────────────── Guerras Civis ──────────────────────────────┐",
         MenuLine,
@@ -147,6 +154,29 @@ menu_template("RoomWaitNotRoomMaster", RName, Cpname, Menu) :-
         "└──────────────────────────────────────────────────────────────────────────┘"
     ].
 
+
+
+menu_template("RoomChat", MenuTemplate) :-
+   %mostar numero n de linhas....
+   %manter em loop?
+   %ou escolher acao?
+   %botao Atualizar chat
+   open('chat.txt', read, Str),
+   stream_to_list(Str, ChatList),
+   close(Str),
+   prepend_pipe_to_strings(ChatList,ModifiedList),
+   reverse_chat(ModifiedList,4,ChatResult2),
+   append(["┌───────────────────────────── Guerrras Civis ─────────────────────────────┐"], ChatResult2, MenuWithHeader),
+   append(MenuWithHeader, ["└──────────────────────────────────────────────────────────────────────────┘"], MenuChatEnd),
+   append(MenuChatEnd,["[1] Back Menu"], MenuSelect1),%pode virar um template so.....
+   append(MenuSelect1,["[2] Back Menu"], MenuSelect2),
+   append(MenuSelect2,["[3] Update Chat"], MenuTemplate).
+
+
+
+%limit_list_by(limiter,[X | XS],Result) :- 
+
+
 % Utils ---------------------------------------------------------
 print_menu([]).
 print_menu([X|Xs]) :-
@@ -154,6 +184,21 @@ print_menu([X|Xs]) :-
     print_menu(Xs), !.
 
 cl :- (current_prolog_flag(windows, true) -> shell('cls'); shell('clear')).
+
+stream_to_list(Stream, []):-
+  at_end_of_stream(Stream).
+
+stream_to_list(Stream, [X|L]):-
+  \+ at_end_of_stream(Stream),
+  read(Stream, X),
+  stream_to_list(Stream, L).
+
+%%adicionar calculo para formatacao dependendo do tamanho da palavra
+prepend_pipe_to_strings([], []).
+prepend_pipe_to_strings([String|Rest], [ModifiedString|ModifiedRest]) :-
+    atom_concat('│', String, ModifiedString),
+    prepend_pipe_to_strings(Rest, ModifiedRest).
+
 
 
 % Menu Principal -----------------------------------------------
@@ -173,7 +218,24 @@ switch_menu_main("2") :-
     menu_action("PlayerLogin", Menu), !.
 
 
+% pode atualizar o chat escolhendo msm opcao
+% pode voltar para menu main,ou o menu anterior
+switch_menu_main("3") :- 
+    menu_template("RoomChat", Menu),
+    chat_action(Menu).
+
+
+% funcao para print na tela do chat e selecao de acao.
+chat_action(MenuTemplate) :-
+	cl,
+	print_menu(MenuTemplate),
+	read_line_to_string(user_input,Input),
+	switch_menu_main(Input).%volta para tela anterior...
+
+
+
 % Menu Action ---------------------------------------------------
+
 menu_action(MenuType, MenuTemplate) :-
     cl,
     print_menu(MenuTemplate),
@@ -199,14 +261,17 @@ menu_room(MenuTemplate, Cpname) :-  % Current Player Name
     read_line_to_string(user_input, Input),
     switch_menu_room(Input, Cpname), !.
 
+
 % Escolha das acoes
 switch_menu_room("1", Cpname) :- 
     menu_template("RoomCreate", Menu),
     menu_room_action("RoomCreate", Menu, Cpname), !.
 
+
 switch_menu_room("2", Cpname) :- 
     menu_template("RoomLogin", Menu),
     menu_room_action("RoomLogin", Menu, Cpname), !.
+
 
 
 % Menu Room Action ----------------------------------------------
@@ -216,6 +281,7 @@ menu_room_action(MenuType, MenuTemplate, Cpname) :-
     write("│ Room Name      $ "),
     read_line_to_string(user_input, Input),
     switch_menu_room_action(MenuType, Input, Cpname), !.
+
 
 % Escolha das acoes
 switch_menu_room_action("RoomCreate", Rname, Cpname) :- 
