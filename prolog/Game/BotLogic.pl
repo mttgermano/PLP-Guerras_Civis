@@ -1,22 +1,27 @@
-botActionChoice(BotName, RName, PlayerName) :-
-    players_in_room(RName, Players),
+:- include('./../Databases/Rooms.pl').
+:- include('./../Databases/Players.pl').
+:- include('./../Databases/PlayersKnowledge.pl').
+:- include('./../Databases/UserGameData.pl').
+:- use_module(library(uuid)).
+
+botActionChoice(PlayerName, RName) :-
+    get_alive_players_in_room(RName, Players),
     length(Players, Length),
     random(0, Length, Posicao),
-    nth0(Posicao, Players, PlayerName),
-    is_player_alive(PlayerName, Alive),
-    Alive == true,
-    BotName \= PlayerName.
+    nth0(Posicao, Players, PlayerName).
+
+createBots(0, RName) :-
+    format('> All Bots created in [~w]', [RName]).
 
 createBots(Quant, RName) :-
-    random_uuid(UUID),
+    uuid(UUID),
     atomic_list_concat(['bot-', UUID], BotName),
-    add_player(BotName, "", RName, true),
+    add_player(BotName, "", true),
     add_user_game_data(BotName),
     NewQuant is Quant - 1,
     createBots(NewQuant, RName).
 
-createBots(0, RName) :-
-    format('> All Bots created in [~w]', [RName]).
+
 
 splitBySpaces([], []).
 
@@ -25,58 +30,53 @@ splitBySpaces([String|Rest], Result) :-
     split_string(String, " ", "", StringList),
     append(StringList, RestResult, Result).
 
-botBrain(RName, BotName) :-
-    is_player_alive(BotName, BotAlive),
-    (
-        BotAlive = false
-    ;
-        BotAlive = true,
-        get_alive_players(RName, PlayersNames),
-        get_room_messages(PlayersNames, Messages),
-        splitBySpaces(Messages, AllWords),
-        countReferencesForAll(AllWords, PlayersNames, References),
-        getPlayerKnowledgeList(BotName, Players),
-        compareIsGoodList(BotName, PlayersNames, Players, Comparison),
-        call(Comparison, Comp),
-        listSom(Comp, References, Results),
-        biggestVote(Results, Ind),
-        nth0(Ind, PlayersNames, PlayerToIncrement),
-        incrementVote(BName, PlayerToIncrement),
-        getRole(BotName, BotRole),
-        (
-            BotRole = 11,
-            incrementVote(BName, PlayerToIncrement),
-            incrementVote(BName, PlayerToIncrement)
-        ;
-            true
-        )
-    ).
+% botBrain(RName, BotName) :-
+%     is_player_alive(BotName, BotAlive),
+%     (
+%         BotAlive = false
+%     ;
+%         BotAlive = true,
+%         get_alive_players(RName, PlayersNames),
+%         get_room_messages(PlayersNames, Messages),
+%         splitBySpaces(Messages, AllWords),
+%         countReferencesForAll(AllWords, PlayersNames, References),
+%         getPlayerKnowledgeList(BotName, Players),
+%         compareIsGoodList(BotName, PlayersNames, Players, Comparison),
+%         call(Comparison, Comp),
+%         listSom(Comp, References, Results),
+%         biggestVote(Results, Ind),
+%         nth0(Ind, PlayersNames, PlayerToIncrement),
+%         incrementVote(BName, PlayerToIncrement),
+%         getRole(BotName, BotRole),
+%         (
+%             BotRole = 11,
+%             incrementVote(BName, PlayerToIncrement),
+%             incrementVote(BName, PlayerToIncrement)
+%         ;
+%             true
+%         )
+%     ).
 
-compareIsGoodIsAlive(BotName, Players, PlayerName, Score) :-
-    getIsGood(BotName, BotIsGood),
-    getIsGood(PlayerName, PlayerIsGood),
-    isPlayerAlive(PlayerName, PlayerAlive),
-    (   (BotIsGood \== PlayerIsGood), member(PlayerName, Players), PlayerAlive
+compareIsGood(BotName, Players, PlayerName, Score) :-
+    is_good(BotName, BotIsGood),
+    is_good(PlayerName, PlayerIsGood),
+    (   (BotIsGood \== PlayerIsGood), member(PlayerName, Players)
     ->  Score = 1000000
-    ;   (BotIsGood == PlayerIsGood, member(PlayerName, Players)); \+ PlayerAlive
+    ;   (BotIsGood == PlayerIsGood, member(PlayerName, Players))
     ->  Score = -100000
     ;   Score = 0
     ).
 
-compareIsGoodList(BotName, Players, Result) :-
-    maplist(compareIsGoodIsAlive(BotName, Players), Result).
+compareIsGoodList(_, [], []).
+compareIsGoodList(BotName, [Player|RestPlayers], [Result|RestResults]) :-
+    compareIsGood(BotName, [Player|RestPlayers], Player, Result),
+    compareIsGoodList(BotName, RestPlayers, RestResults).
 
 
-biggest_vote_index(Xs, Index) :-
-    biggest_vote_index(Xs, 0, -1, Index).
+index_of_max(List, Index, Max) :-
+    max_list(List, Max),
+    nth0(Index, List, Max).
 
-biggest_vote_index([], _, MaxIndex, MaxIndex).
-biggest_vote_index([X|Xs], CurrIndex, MaxIndexSoFar, MaxIndex) :-
-    NewIndex is CurrIndex + 1,
-    (   X > MaxIndexSoFar
-    ->  biggest_vote_index(Xs, NewIndex, X, MaxIndex)
-    ;   biggest_vote_index(Xs, NewIndex, MaxIndexSoFar, MaxIndex)
-    ).
 
 countReferencesForAll(_, [], []).
 countReferencesForAll(Words, [X|Xs], [Count|Counts]) :-
@@ -89,6 +89,8 @@ listSom(Xs, [], Xs).
 listSom([X|Xs], [Y|Ys], [Z|Zs]) :-
     Z is X + Y,
     listSom(Xs, Ys, Zs).
+
+%--------------------------------
 
 nameCountReferences(_, [], 0).
 nameCountReferences(Player, [Player|PlayerNames], Count) :-
@@ -114,7 +116,7 @@ botAction(BotId, RName) :-
     isPlayerAlive(BotId, BotAlive),
     (
         BotAlive = false -> true
-    ;
+;
         (
             BotRole = 1 -> kill(BotName, PlayerName)
         ;   BotRole = 2 -> apprentice(BotName, PlayerName)
@@ -130,6 +132,7 @@ botAction(BotId, RName) :-
         ;   true -> format(".")
         )
     ).
+
 callBots([], _).
 callBots([BotId|Rest], RName) :-
     botAction(BotId, RName),
@@ -153,6 +156,8 @@ voteBotsRound(RName) :-
     format("> [~w] Room - Terminou Bot Vote", [RName]).
 
 :- dynamic(bot/1).
+
+
 
 deleteBot(BUUID) :-
     retract(bot(BUUID)),
