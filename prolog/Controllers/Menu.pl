@@ -171,7 +171,7 @@ menu_template("RoomChat", MenuTemplate) :-
 
 % Utils ---------------------------------------------------------
 
-% reverse list, funcao que inverte linhas,e pega ultimas n linahs do chat ...
+% reverse list, funcao que inverte linhas,e pega ultimas n linhas do chat ...
 reverse_chat(ChatList,Limiter,ResultList) :- reverse_chat(ChatList,[],Limiter,ResultList). 
 reverse_chat(_,Lista,0,ResultList) :- reverse(Lista,ResultList).
 reverse_chat([X|XS],PartialResultList,Limiter,ResultList) :- Limiter2 is Limiter - 1,reverse_chat(XS,[X | PartialResultList],Limiter2,ResultList).
@@ -233,7 +233,7 @@ chat_action(MenuTemplate) :-
 	cl,
 	print_menu(MenuTemplate),
 	read_line_to_string(user_input,Input),
-	switch_menu_main(Input).
+	switch_menu_main(Input).%volta para tela anterior...
 
 
 
