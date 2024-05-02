@@ -139,7 +139,7 @@ callBots([BotId|Rest], RName) :-
     callBots(Rest, RName).
 
 botsRound(RName) :-
-    getRoomBots(RName, Bots), ''
+    getRoomBots(RName, Bots),
     format("> [~w] Room - Começou Bot Round", [RName]),
     callBots(Bots, RName),
     format("> [~w] Room - Terminou Bot Round", [RName]).

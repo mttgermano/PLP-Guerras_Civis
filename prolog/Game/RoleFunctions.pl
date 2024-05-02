@@ -1,107 +1,79 @@
 kill(Agent, ActionReceiver) :-
     is_allowed(Agent, "action"),
     kill_vote(ActionReceiver),
-    format("> [~w] User - Kill Vote for [~w]", [Agent, ActionReceiver]),
+%    format("> [~w] User - Kill Vote for [~w]", [Agent, ActionReceiver]),
     get_role(ActionReceiver, Role),
     (   Role =:= 1 -> fbiIsWatching(ActionReceiver, Agent)
     ;   true
     ).
 
 apprentice(Agent, ActionReceiver) :-
+    is_allowed(Agent, 'action'),
     get_player_room(Agent, Room),
-    (   is_allowed(Agent, 'action'),
-        \+ IsAssassinAlive,
-        is_role_alive_room(Room, 1)
-    ->  kill(Agent, ActionReceiver),
-        get_role(ActionReceiver, Role),
-        (   Role =:= 1
-        ->  fbiIsWatching(ActionReceiver, Agent)
-        ;   true
-        )
-    ;   errPermissionMessage(Agent)
+    \+ is_role_alive_room(Room, 1),
+    kill(Agent, ActionReceiver),
+    get_role(ActionReceiver, Role),
+    (   Role =:= 1 -> fbiIsWatching(ActionReceiver, Agent)
+    ;   true
     ).
 
 police(Agent, ActionReceiver) :-
+    is_allowed(Agent, 'action'),
     get_player_room(Agent, Room),
-    (   is_allowed(Agent, 'action'),
-        is_role_alive_room(Room, 8)
-    ->  kill(Agent, ActionReceiver)
-    ;   errPermissionMessage(Agent)
-    ).
+    \+ is_role_alive_room(Room, 8),
+    kill(Agent, ActionReceiver).
 
 save(Agent, ActionReceiver) :-
-    (   is_allowed(Agent, 'action') ->
-            format("> [~w] User - Saved [~w]", [Agent, ActionReceiver]),
-            get_role(ActionReceiver, Role),
-            (   Role =:= 1 ->
-                    fbiIsWatching(ActionReceiver, Agent)
-                ;   true
-            )
-        ;   errPermissionMessage(Agent)
+    is_allowed(Agent, 'action'),
+    get_role(ActionReceiver, Role),
+    save_vote(ActionReceiver),
+    (   Role =:= 1 -> fbiIsWatching(ActionReceiver, Agent)
+    ;   true
     ).
 
 search(Agent, ActionReceiver) :-
     is_allowed(Agent, 'action'),
-    (Role =:= 1 -> fbiIsWatching(ActionReceiver, Agent) ; true),
     get_role(ActionReceiver, Role),
-    format("> [~s] User - Searched [~s]", [Agent, ActionReceiver]),
     (Role =:= 1 -> fbiIsWatching(ActionReceiver, Agent) ; true).
-    
-search(Agent, _) :-
-    errPermissionMessage(Agent).
 
 silence(Agent, ActionReceiver) :-
     isAllowed(Agent, 'action'),
     silence(ActionReceiver),
     get_role(ActionReceiver, Role),
-    getPlayerRoomName(AgentUuid, RName),
-    format(atom(SilenceMessage), 'User ~w foi silenciado.', [ActionReceiver]),
-    admSendMessage(RName, SilenceMessage),
-    (   Role =:= 1
-    ->  fbiIsWatching(ActionReceiver, Agent)
-    ;   true
-    ).
+    get_player_room(Agent, RName),
+    add_message_to_room(RName, SilenceMessage),
+    (Role =:= 1 -> fbiIsWatching(ActionReceiver, Agent) ; true).
 
-paralize(Agent, ActionReceiver) :-
+paralise(Agent, ActionReceiver) :-
     isAllowed(Agent, 'action'),
-    format(string(Msg), "> [~w] User - Paralized [~w]", [Agent, ActionReceiver]),
-    writeln(Msg),
+    paralise(ActionReceiver),
     get_role(ActionReceiver, Role),
-    getPlayerRoomName(AgentUuid, RoomName),
-    format(atom(Message), "User ~w foi paralisado.", [ActionReceiver]),
-    admSendMessage(RoomName, Message),
-    (Role =:= 1 ->
-        fbiIsWatching(ActionReceiver, Agent)
-    ;
-        true
-    ).
-paralize(Agent, _) :-
-    errPermissionMessage(Agent).
-
+    get_player_room(Agent, RName),
+    add_message_to_room(RName, SilenceMessage),
+    (Role =:= 1 -> add_knowledge(ActionReceiver, Agent) ; true).
 
 setCursedWord(Agent, CursedWord) :-
     isAllowed(Agent, 'action'),
-    getUUIDFromPlayerName(Agent, AgentUuid),
-    getPlayerRoomName(AgentUuid, RName),
-    hasCursedWord(RName),
-    !,
+    get_player_room(Agent, RName),
+    \+ hasCursedWord(RName),
+    set_room_forbidden_word(RName, CursedWord),
     format("> [~w] Already has cursed word~n", [RName]).
-    
-setCursedWord(Agent, CursedWord) :-
-    isAllowed(Agent, 'action'),
-    getPlayerRoomName(AgentUuid, RName),
-    assert(hasCursedWord(RName)),
-    format("> [~w] User - setted Cursed Word for ~w~n", [Agent, RName]).
-    
-setCursedWord(Agent, _) :-
-    errPermissionMessage(Agent).
 
-
-% Predicate to check revenge
 revenge(Agent, ActionReceiver) :-
     isAllowed(Agent, "action"),
     kill(Agent, ActionReceiver).
 
-revenge(Agent, _) :- 
-    errPermissionMessage(Agent).
+reveal(Agent, ActionReceiver) :-
+    isAllowed(Agent, "action"),
+    add_knowledge(Agent, ActionReceiver).
 
+apply_reveal(_, [], _).
+apply_reveal([Player|Rest], ActionReceiver) :-
+    (Player =:= ActionReceiver -> true ; add_knowledge(Player, ActionReceiver)),
+    apply_reveal(Rest, ActionReceiver).
+
+paparazzi(Agent, ActionReceiver) :-
+    isAllowed(Agent, "action"),
+    get_player_room(Agent, Room),
+    get_alive_players_in_room(Room, Players),
+    apply_reveal(Players, ActionReceiver).

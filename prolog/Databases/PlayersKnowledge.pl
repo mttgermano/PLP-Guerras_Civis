@@ -7,7 +7,6 @@
 % Player Knowledge Actions --------------------------------------
 add_knowledge(Name, NamePlayer, Room) :-
     \+ knows(Name, NamePlayer, _),
-    \+ knows(NamePlayer, Name, _),
     assertz(knows(Name, NamePlayer, Room)).
 
 remove_room_knowledge(Room) :-

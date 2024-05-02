@@ -47,6 +47,10 @@ get_room_master(RoomName, Master) :-
 get_room_messages(Name, Messages) :-
     room(Name, _, _, _, Messages, _).
 
+set_room_forbidden_word(RoomName, ForbiddenWord) :-
+    retract(room(RoomName, Master, Up, _, Messages, State)),
+    assertz(room(RoomName, Master, Up, ForbiddenWord, Messages, State)).
+
 get_room_forbidden_word(Name, ForbiddenWord) :-
     room(Name, _, _, ForbiddenWord, _, _).
 

@@ -56,9 +56,9 @@ get_role(Name, Role) :-
 is_player_alive(Name, Alive) :-
     user_game_data(Name, _, Alive, _, _, _, _, _).
 
-is_role_alive(Role, Names, IsAlive) :-
+is_role_alive(Role, Names) :-
     member(Name, Names),
-    user_game_data(Name, Role, IsAlive, _, _, _, _, _).
+    user_game_data(Name, Role, true, _, _, _, _, _).
 
 get_alive_players([], []).
 
