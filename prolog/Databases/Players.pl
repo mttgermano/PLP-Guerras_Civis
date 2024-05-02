@@ -23,9 +23,9 @@ delete_player(Name) :-
     retract(player(Name, _, _, _)),
     write('Player '), write(Name), write(' has been deleted.'), nl.
 
-change_player_room(PlayerName, CurrentRoom, NewRoom) :-
-    retract(player(PlayerName, ID, CurrentRoom, Status)),
-    assertz(player(PlayerName, ID, NewRoom, Status)).
+change_player_room(PlayerName,NewRoom) :-
+    retract(player(PlayerName, Password, CurrentRoom, Status)),
+    assertz(player(PlayerName, Password, NewRoom, Status)).
 
 player_login(Name, Password) :-
     player(Name, Password, _, _).
