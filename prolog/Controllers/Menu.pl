@@ -292,7 +292,7 @@ menu_room_action(MenuType, MenuTemplate, Cpname) :-
 switch_menu_room_action("RoomCreate", Rname, Cpname) :- 
     add_room(Rname, Cpname, "asd"),
     menu_template("RoomWait", Rname, Cpname, Menu),
-    menu_room_wait(Menu, Cpname).
+    menu_room_wait(Menu, Rname, Cpname).
 
 switch_menu_room_action("RoomLogin", Rname, Cpname) :- 
     room_login(Rname, Cpname),
@@ -301,23 +301,23 @@ switch_menu_room_action("RoomLogin", Rname, Cpname) :-
 
 
 % Menu Room Wait ------------------------------------------------
-menu_room_wait(Menu, Cpname) :-
+menu_room_wait(Menu, Rname, Cpname) :-
     cl,
     print_menu(Menu),
     read_line_to_string(user_input, Input),
-    switch_menu_room_wait_action(Input, Menu).
+    switch_menu_room_wait_action(Input, Rname, Menu).
 
 % Início do Jogo
-switch_menu_room_wait_action("1", _):- 
+switch_menu_room_wait_action("1", Rname, _):- 
     writeln("Loading Game..."),
     sleep(2),
-    start_match. % Indo para GameMenu.pl
+    start_match(Rname), !. % Indo para GameMenu.pl
 
 % Atualizar sala
-switch_menu_room_wait_action("2", Menu):-
-    menu_room_wait(Menu, Cpname).
+switch_menu_room_wait_action("2", Rname, Menu):-
+    menu_room_wait(Menu, Rname, Cpname), !.
 
-switch_menu_room_wait_action(_, Menu):-
+switch_menu_room_wait_action(_, Rname, Menu):-
     writeln("Botão inválido, tente novamente"),
     sleep(2),
-    menu_room_wait(Menu, Cpname).
+    menu_room_wait(Menu, Rname, Cpname).
