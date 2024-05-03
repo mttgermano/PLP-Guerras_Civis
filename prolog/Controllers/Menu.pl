@@ -22,6 +22,7 @@ menu_template("Start",
     "│                                                                          │",
     "│ [1]  Create Player                                                       │",
     "│ [2]  Login  Player                                                       │",
+    "│ [3]  Quit                                                                │",
     "└──────────────────────────────────────────────────────────────────────────┘"]).
 
 menu_template("PlayerCreate",
@@ -175,16 +176,12 @@ menu_template("RoomChat", MenuTemplate) :-
    append(MenuChatEnd,["[1] Back Menu"], MenuSelect),%pode virar um template so.....
    append(MenuSelect,["[2] Update Chat"], MenuTemplate).
 
-
-
 %limit_list_by(limiter,[X | XS],Result) :- 
-
 
 % reverse list, funcao que inverte linhas,e pega ultimas n linahs do chat ...
 reverse_chat(ChatList,Limiter,ResultList) :- reverse_chat(ChatList,[],Limiter,ResultList). 
 reverse_chat(_,Lista,0,ResultList) :- reverse(Lista,ResultList).
 reverse_chat([X|XS],PartialResultList,Limiter,ResultList) :- Limiter2 is Limiter - 1,reverse_chat(XS,[X | PartialResultList],Limiter2,ResultList).
-
 
 stream_to_list(Stream, []):-
   at_end_of_stream(Stream).
@@ -199,6 +196,8 @@ prepend_pipe_to_strings([], []).
 prepend_pipe_to_strings([String|Rest], [ModifiedString|ModifiedRest]) :-
     atom_concat('│', String, ModifiedString),
     prepend_pipe_to_strings(Rest, ModifiedRest).
+
+
 
 
 % Menu Principal -----------------------------------------------
@@ -217,8 +216,10 @@ switch_menu_main("2") :-
     menu_template("PlayerLogin", Menu),
     menu_action("PlayerLogin", Menu).
 
+switch_menu_main("3") :- 
+    halt.
 
-%funcao para print na tela do chat e selecao de acao.
+% funcao para print na tela do chat e selecao de acao.
 chat_action(MenuTemplate) :-
 	cl,
 	print_menu(MenuTemplate),
@@ -228,7 +229,6 @@ chat_action(MenuTemplate) :-
 
 
 % Menu Action ---------------------------------------------------
-
 menu_action(MenuType, MenuTemplate) :-
     cl,
     print_menu(MenuTemplate),
@@ -245,7 +245,11 @@ switch_menu_action("PlayerCreate", Pname, Ppassword) :-
     menu_room(Menu, Pname).
 
 switch_menu_action("PlayerLogin",  Pname, Ppassword) :- 
-    (\+player_login(Pname, Ppassword) -> writeln("player não existe"), sleep(3), menu_template("Start", StartMenu), menu_main(StartMenu) ; menu_template("Room", Menu), menu_room(Menu)).
+    (\+player_login(Pname, Ppassword) 
+    -> writeln("> Player não existe!"), sleep(2), menu_template("Start", StartMenu), menu_main(StartMenu)
+    ; switch_menu_main("2")).
+
+
 
 % Menu Room -----------------------------------------------------
 menu_room(MenuTemplate, Cpname) :-  % Current Player Name
@@ -294,10 +298,9 @@ menu_room_wait(Menu, Cpname) :-
 
 % Início do Jogo
 switch_menu_room_wait_action("1", _):- 
-    writeln("Um momento..."),
-    sleep(3),
-    % Indo para GameMenu.pl
-    menu_template("Game", Menu),
+    writeln("Loading Game..."),
+    sleep(2),
+    menu_template("Game", Menu),    % Indo para GameMenu.pl
     menu_game(Menu).
 
 % Atualizar sala
