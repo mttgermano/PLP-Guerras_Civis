@@ -38,7 +38,7 @@ menu_template("PlayerCreate",
     "│                                                                          │",
     "│                                                                          │",
     "│                                                                          │",
-    "│                                                                          │",
+    "│ [1]  Go back                                                             │",
     "└──────────────────────────────────────────────────────────────────────────┘"]).
 
 menu_template("PlayerLogin",
@@ -54,7 +54,7 @@ menu_template("PlayerLogin",
     "│                                                                          │",
     "│                                                                          │",
     "│                                                                          │",
-    "│                                                                          │",
+    "│ [1]  Go back                                                             │",
     "└──────────────────────────────────────────────────────────────────────────┘"]).
 
 menu_template("Room",
@@ -239,9 +239,11 @@ menu_action(MenuType, MenuTemplate) :-
     print_menu(MenuTemplate),
     write("│ Player Name      $ "),
     read_line_to_string(user_input, Input1),
-    write("│ Player Password  $ "),
+    (Input1 = "1"
+    -> menu_template("Start", Menu), menu_main(Menu)
+    ; write("│ Player Password  $ "),
     read_line_to_string(user_input, Input2),
-    switch_menu_action(MenuType, Input1, Input2).
+    switch_menu_action(MenuType, Input1, Input2)).
 
 % Escolha das acoes
 switch_menu_action("PlayerCreate", Pname, Ppassword) :- 
@@ -251,8 +253,8 @@ switch_menu_action("PlayerCreate", Pname, Ppassword) :-
 
 switch_menu_action("PlayerLogin",  Pname, Ppassword) :- 
     (\+player_login(Pname, Ppassword) 
-    -> writeln("> Player não existe!"), sleep(2), menu_template("Start", StartMenu), menu_main(StartMenu)
-    ; switch_menu_main("2", _)).
+    -> writeln("> Player não existe!"), sleep(1), switch_menu_main("2", _)
+    ; menu_template("Room", Menu), menu_room(Menu)).
 
 
 
