@@ -206,17 +206,21 @@ menu_main(MenuTemplate) :-
     cl,
     print_menu(MenuTemplate),
     read_line_to_string(user_input, Input),
-    switch_menu_main(Input).
+    switch_menu_main(Input, MenuTemplate).
 
 % Escolha das acoes
-switch_menu_main("1") :- 
+switch_menu_main("1", _) :- 
     menu_template("PlayerCreate", Menu),
-    menu_action("PlayerCreate", Menu).
+    menu_action("PlayerCreate", Menu), !.
 
-switch_menu_main("2") :- 
+switch_menu_main("2", _) :- 
     menu_template("PlayerLogin", Menu),
-    menu_action("PlayerLogin", Menu).
+    menu_action("PlayerLogin", Menu), !.
 
+switch_menu_main(_, Menu):- 
+    writeln("Botão inválido, tente novamente"),
+    sleep(2),
+    menu_main(Menu).
 
 %funcao para print na tela do chat e selecao de acao.
 chat_action(MenuTemplate) :-
@@ -252,17 +256,21 @@ menu_room(MenuTemplate, Cpname) :-  % Current Player Name
     cl,
     print_menu(MenuTemplate),
     read_line_to_string(user_input, Input),
-    switch_menu_room(Input, Cpname).
+    switch_menu_room(Input, Cpname, MenuTemplate).
 
 % Escolha das acoes
-switch_menu_room("1", Cpname) :- 
+switch_menu_room("1", Cpname, _) :- 
     menu_template("RoomCreate", Menu),
     menu_room_action("RoomCreate", Menu, Cpname).
 
-switch_menu_room("2", Cpname) :- 
+switch_menu_room("2", Cpname, _) :- 
     menu_template("RoomLogin", Menu),
     menu_room_action("RoomLogin", Menu, Cpname).
 
+switch_menu_room(_, Cpname, Menu):-
+    writeln("Botão inválido, tente novamente"),
+    sleep(2),
+    menu_room(Menu, Cpname).
 
 
 % Menu Room Action ----------------------------------------------
@@ -302,4 +310,9 @@ switch_menu_room_wait_action("1", _):-
 
 % Atualizar sala
 switch_menu_room_wait_action("2", Menu):-
+    menu_room_wait(Menu, Cpname).
+
+switch_menu_room_wait_action(_, Menu):-
+    writeln("Botão inválido, tente novamente"),
+    sleep(2),
     menu_room_wait(Menu, Cpname).
