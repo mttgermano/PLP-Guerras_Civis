@@ -180,11 +180,6 @@ menu_template("RoomChat", MenuTemplate) :-
 %limit_list_by(limiter,[X | XS],Result) :- 
 
 
-% Utils ---------------------------------------------------------
-
-%cl :- (current_prolog_flag(windows, true) -> shell('cls'); shell('clear')).
-cl :- writeln(5).
-
 % reverse list, funcao que inverte linhas,e pega ultimas n linahs do chat ...
 reverse_chat(ChatList,Limiter,ResultList) :- reverse_chat(ChatList,[],Limiter,ResultList). 
 reverse_chat(_,Lista,0,ResultList) :- reverse(Lista,ResultList).

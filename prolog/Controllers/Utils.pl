@@ -5,3 +5,4 @@ print_menu([X|Xs]) :-
     print_menu(Xs).
 
 cl :- (current_prolog_flag(windows, true) -> shell('cls'); shell('clear')).
+%cl :- writeln(5).    % use it for debug
