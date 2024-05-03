@@ -1,5 +1,8 @@
 :- include('./../Databases/Rooms.pl').
 
+:- discontiguous menu_template/2.
+:- discontiguous player/4.
+
 % Menu Template -------------------------------------------------
 menu_template("Start",
     [
@@ -13,9 +16,9 @@ menu_template("Start",
     "│                                                                          │",
     "│                                                                          │",
     "│                                                                          │",
+    "│                                                                          │",
     "│ [1]  Create Player                                                       │",
     "│ [2]  Login  Player                                                       │",
-    "│ [3]  Chat   Room                                                         │",
     "└──────────────────────────────────────────────────────────────────────────┘"]).
 
 menu_template("PlayerCreate",
@@ -183,7 +186,8 @@ print_menu([X|Xs]) :-
     writeln(X),  
     print_menu(Xs), !.
 
-cl :- (current_prolog_flag(windows, true) -> shell('cls'); shell('clear')).
+%cl :- (current_prolog_flag(windows, true) -> shell('cls'); shell('clear')).
+cl :- writeln(5).
 
 stream_to_list(Stream, []):-
   at_end_of_stream(Stream).
@@ -216,13 +220,6 @@ switch_menu_main("1") :-
 switch_menu_main("2") :- 
     menu_template("PlayerLogin", Menu),
     menu_action("PlayerLogin", Menu), !.
-
-
-% pode atualizar o chat escolhendo msm opcao
-% pode voltar para menu main,ou o menu anterior
-switch_menu_main("3") :- 
-    menu_template("RoomChat", Menu),
-    chat_action(Menu).
 
 
 % funcao para print na tela do chat e selecao de acao.
@@ -291,7 +288,7 @@ switch_menu_room_action("RoomCreate", Rname, Cpname) :-
 
 switch_menu_room_action("RoomLogin", Rname, Cpname) :- 
     room_login(Rname, Cpname),
-    menu_template("RoomWait", Menu),
+    menu_template("RoomWait", Rname, Cpname, Menu),
     menu_room_wait(Menu, Cpname), !.
 
 
@@ -305,5 +302,6 @@ menu_room_wait(Menu, Cpname) :-
 % Início do Jogo
 switch_menu_room_wait_start("1", _):- 
     menu_template("Game", Menu).
+
 switch_menu_room_wait_start("2", Menu):-
     menu_room_wait(Menu, Cpname), !.
