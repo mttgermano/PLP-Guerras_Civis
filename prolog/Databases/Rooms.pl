@@ -1,6 +1,5 @@
 :- dynamic room/6.
-:- include('./../Databases/UserGameData.pl').
-:- include('./../Databases/Players.pl').
+:- include('UserGameData.pl').
 
 % Test
 % room(room123, "PEDRO", false, "MATAR", [], "VOTE").

@@ -1,5 +1,7 @@
 :- use_module(library(random)).
 :- dynamic user_game_data/8.
+:- include('PlayersKnowledge.pl').
+:- include('Players.pl').
 
 % Test
 % user_game_data("PEDRO", 10, true, 0, 0, 0, 0, false).
@@ -123,3 +125,20 @@ save_vote(PlayerName) :-
     retract(user_game_data(PlayerName, X, Y, A, B, C, D, E)),
     NewA is A - 1,
     assertz(user_game_data(PlayerName, X, Y, NewA, B, C, D, E)).
+
+get_players_alive_role(Person, Alive, Role) :-
+    get_player_room(Person, Room),
+    get_all_in_room(Room, Players),
+    get_user_game_data(Person, Players, Alive, Role).
+
+get_user_game_data(_, [], [], []).
+get_user_game_data(Person, [Player|Rest], [Alive|RestAlive], [Role|RestRole]) :-
+    (knows(Person, Player) ->
+        get_role(Player, Comp),
+        Role = Comp
+    ;
+        Role = -1
+    ),
+    is_player_alive(Player, Temp),
+    Alive = Temp,
+    get_user_game_data(Person, Rest, RestAlive, RestRole).
