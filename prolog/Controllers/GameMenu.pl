@@ -15,6 +15,10 @@ menu_template("Game",
     "│                                                                          │",
     "└──────────────────────────────────────────────────────────────────────────┘"]).
 
+start_match():-
+    menu_template("Game", Menu),
+    menu_game(Menu).
+
 menu_game(Menu):-
     cl,
     print_menu(Menu).

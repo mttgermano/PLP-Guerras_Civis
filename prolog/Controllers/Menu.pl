@@ -311,8 +311,7 @@ menu_room_wait(Menu, Cpname) :-
 switch_menu_room_wait_action("1", _):- 
     writeln("Loading Game..."),
     sleep(2),
-    menu_template("Game", Menu),    % Indo para GameMenu.pl
-    menu_game(Menu).
+    start_match. % Indo para GameMenu.pl
 
 % Atualizar sala
 switch_menu_room_wait_action("2", Menu):-
