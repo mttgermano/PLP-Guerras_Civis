@@ -1,6 +1,6 @@
 :- include('./Utils.pl').
-menu_template("Game", Cpname, Rname, Players, IsAlive, Role, Round, State, Menu):- spaces1(X),spaces2(Y),spaces3(Z),spaces4(V),
-format(string(RoomData), '│ > Room: ~w~w│\n│~w│\n│ > Round: ~w - ~w~w│\n│~w│ ~w', [Rname,X,Y,Round,State,Z,V, Cpname]),
+menu_template("Game", Rname, Players, IsAlive, Role, Round, State, Menu):- spaces1(X),spaces2(Y),spaces3(Z),spaces4(V),
+format(string(RoomData), '│ > Room: ~w~w│\n│~w│\n│ > Round: ~w - ~w~w│\n│~w│', [Rname,X,Y,Round,State,Z,V]),
 
 
 
@@ -37,7 +37,7 @@ start_match(Cpname, Rname):-
     Players = ["bot-4323", "bot-3213", "bot-3212", "bot-9873"],
     IsAlive = ["T", "T", "F", "T"],
     Role = ["???", "Assassino", "Policial", "???"],
-    menu_template("Game", Cpname, Rname, Players, IsAlive, Role, Round, State, Menu),
+    menu_template("Game", Rname, Players, IsAlive, Role, Round, State, Menu),
     menu_game(Cpname, Menu).
 
 menu_game(Cpname, Menu):-
