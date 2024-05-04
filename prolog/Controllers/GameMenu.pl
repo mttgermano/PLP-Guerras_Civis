@@ -1,7 +1,6 @@
 :- include('./Utils.pl').
-menu_template("Game", Rname, Players, IsAlive, Role, Round, State, Menu):-
-
-    format(string(RoomData), '│ > Room: ~w                                                             │\n│                                                                          │\n│ > Round: ~w - ~w                                                 │\n│                                                                          │ ', [Rname, Round, State]),
+menu_template("Game", Rname, Players, IsAlive, Role, Round, State, Menu):- spaces1(X),spaces2(Y),spaces3(Z),spaces4(V),
+format(string(RoomData), '│ > Room: ~w~w│\n│~w│\n│ > Round: ~w - ~w~w│\n│~w│ ', [Rname,X,Y,Round,State,Z,V]),
 
 
 
@@ -21,7 +20,10 @@ menu_template("Game", Rname, Players, IsAlive, Role, Round, State, Menu):-
             "│ [2] Enviar Mensagem                                                      │",
             "│                                                                          │",
             "└──────────────────────────────────────────────────────────────────────────┘"].
-
+spaces1(X) :- X = "                                                             ". 
+spaces2(X) :- X = "                                                                          ".
+spaces3(X) :- X = "                                                 ".
+spaces4(X) :- X = "                                                                          ".
 % Util ---------------------------------------------
 print_lists([], [], []):- !.
 print_lists([Player|Players], [IsAlive|IsAliveList], [Role|Roles]) :-
