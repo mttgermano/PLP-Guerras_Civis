@@ -1,6 +1,5 @@
 :- include('./../Databases/Rooms.pl').
 :- include('./GameMenu.pl').
-
 :- include('./Utils.pl').
 
 :- discontiguous menu_template/2.
@@ -86,7 +85,7 @@ menu_template("RoomCreate",
     "│                                                                          │",
     "│                                                                          │",
     "│                                                                          │",
-    "│                                                                          │",
+    "│ [1]  Go back                                                             │",
     "└──────────────────────────────────────────────────────────────────────────┘"]).
 
 
@@ -104,7 +103,7 @@ menu_template("RoomLogin",
     "│                                                                          │",
     "│                                                                          │",
     "│                                                                          │",
-    "│                                                                          │",
+    "│ [1]  Go back                                                             │",
     "└──────────────────────────────────────────────────────────────────────────┘"]).
 
 menu_template("RoomWait", RName, Cpname, Menu) :-
@@ -286,7 +285,10 @@ menu_room_action(MenuType, MenuTemplate, Cpname) :-
     print_menu(MenuTemplate),
     write("│ Room Name      $ "),
     read_line_to_string(user_input, Input),
-    switch_menu_room_action(MenuType, Input, Cpname).
+    (Input = "1" 
+    -> menu_template("Room", Menu), menu_room(Menu, Cpname)
+    ; switch_menu_room_action(MenuType, Input, Cpname)).
+
 
 % Escolha das acoes
 switch_menu_room_action("RoomCreate", Rname, Cpname) :- 
@@ -295,9 +297,11 @@ switch_menu_room_action("RoomCreate", Rname, Cpname) :-
     menu_room_wait(Menu, Rname, Cpname).
 
 switch_menu_room_action("RoomLogin", Rname, Cpname) :- 
-    room_login(Rname, Cpname),
-    menu_template("RoomWait", Rname, Cpname, Menu),
-    menu_room_wait(Menu, Rname, Cpname), !.
+    (\+room_login(Rname, Cpname)
+    -> writeln("> Room não existe!"), sleep(1), switch_menu_room("2", Cpname, "asd")
+    ; menu_template("RoomWait", Rname, Cpname, Menu),
+    menu_room_wait(Menu, Rname, Cpname)).
+
 
 
 % Menu Room Wait ------------------------------------------------
