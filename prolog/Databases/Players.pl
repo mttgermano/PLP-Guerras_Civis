@@ -30,6 +30,7 @@ change_player_room(PlayerName,NewRoom) :-
 player_login(Name, Password) :-
     player(Name, Password, _, _).
 
+
 % Player Utils --------------------------------------------------
 get_player_room(Name, Room) :-
     player(Name, _, Room, _).

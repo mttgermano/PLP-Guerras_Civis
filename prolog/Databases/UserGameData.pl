@@ -1,5 +1,7 @@
 :- use_module(library(random)).
 :- dynamic user_game_data/8.
+:- include('PlayersKnowledge.pl').
+:- include('Players.pl').
 
 % Test
 % user_game_data("PEDRO", 10, true, 0, 0, 0, 0, false).
@@ -48,6 +50,23 @@ assign_roles_to_players([Player|Rest], [Role|RemainingRoles]) :-
 reset_values(Name) :-
     retract(user_game_data(Name, Role, Status, _, _, _, _, isDeadByCursedWord)),
     assertz(user_game_data(Name, Role, Status, 0, 0, 0, 0, isDeadByCursedWord)).
+    
+get_players_alive_role(Person, Players, Alive, Role) :-
+    get_player_room(Person, Room),
+    get_all_in_room(Room, Players),
+    get_user_game_data(Person, Players, Alive, Role).
+
+get_user_game_data(_, [], [], []).
+get_user_game_data(Person, [Player|Rest], [Alive|RestAlive], [Role|RestRole]) :-
+    (knows(Person, Player) ->
+        get_role(Player, Comp),
+        Role = Comp
+    ;
+        Role = -1
+    ),
+    is_player_alive(Player, Temp),
+    Alive = Temp,
+    get_user_game_data(Person, Rest, RestAlive, RestRole).
 
 % User Game Data Utils ------------------------------------------
 get_role(Name, Role) :-

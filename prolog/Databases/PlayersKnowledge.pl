@@ -1,18 +1,23 @@
-:- dynamic knows/3.
+:- dynamic know/3.
 
 % Test
-% knows("PEDRO", "Djan", room123).
-% knows("Djan", "Matheus", room123). 
+know("Pedro", "Djan").
+know("Pedro", "Matheus").
+know("Djan", "Matheus"). 
 
 % Player Knowledge Actions --------------------------------------
-add_knowledge(Name, NamePlayer, Room) :-
-    \+ knows(Name, NamePlayer, _),
-    assertz(knows(Name, NamePlayer, Room)).
+add_knowledge(Name, NamePlayer) :-
+    \+ know(Name, NamePlayer),
+    assertz(know(Name, NamePlayer)).
 
-remove_room_knowledge(Room) :-
-    retractall(knows(_, _, Room)).
+remove_room_knowledge(Player) :-
+    retractall(know(Player, _)),
+    retractall(know(_, Player)).
+
+knows(Name, NamePlayer) :-
+    know(Name, NamePlayer).
 
 
 % Player Knowledge Utils ----------------------------------------
 get_knowledge(Person, KnowledgeList) :-
-    findall((NamePlayer), knows(Person, NamePlayer, _), KnowledgeList).
+    findall((NamePlayer), know(Person, NamePlayer, _), KnowledgeList).
