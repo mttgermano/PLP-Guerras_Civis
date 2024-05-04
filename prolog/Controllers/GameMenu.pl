@@ -36,31 +36,38 @@ print_lists([Player|Players], [IsAlive|IsAliveList], [Role|Roles]) :-
 
 % Início do Jogo / Loop - Vai receber os dados do jogo e chamar o template
 start_match(Cpname, Rname):-
-    get_players_alive_role(Cpname, Players, Alive, Role),
+    Players = ["bot-4323", "bot-3213", "bot-3212", "bot-9873"],
+    IsAlive = ["T", "T", "F", "T"],
+    Role = ["???", "Assassino", "Policial", "???"],
     menu_template("Game", Rname, Players, Alive, Role, Round, State, Menu),
-    menu_game(Cpname, Menu).
+    menu_game(Cpname, Players, Menu).
 
-menu_game(Cpname, Menu):-
+menu_game(Cpname, Players, Menu):-
     cl,
     print_menu(Menu),
     read_line_to_string(user_input, Input),
-    switch_game_action(Input, Cpname, Menu).
+    switch_game_action(Input, Cpname, Players, Menu).
 
 % Ação
-switch_game_action("1", Cpname, Menu):-
+switch_game_action("1", Cpname, Players, Menu):-
     write("│ Qual jogador você quer executar sua ação?    $ "),
-    read_line_to_string(user_input, ActionTarget), % Validar jogador (provv mesma ideia em login)
+    read_line_to_string(user_input, ActionTarget),
+    (
+        member(ActionTarget, Players) -> 
+        writeln("Carregando..."), sleep(2), menu_game(Cpname, Players, Menu) 
+        ; writeln("Nome incorreto, tente novamente"), sleep(2), menu_game(Cpname, Players, Menu)
+        ).
     % realizar_action(Cpname, ActionTarget), % ABSTRACT
-    writeln("Carregando..."),
-    sleep(2), % Será preciso esperar um tempo para os bots jogarem?
-    menu_game(Cpname, Menu).
+    % writeln("Carregando..."),
+    % sleep(2), % Será preciso esperar um tempo para os bots jogarem?
+    % menu_game(Cpname, Menu).
     
 % Chat de mensagem
-switch_game_action("2", Cpname, Menu).
+switch_game_action("2", Cpname, Players, Menu).
 % Enviar para a interface de mensagens
 
 % Botão inválido
-switch_game_action(_, Cpname, Menu):-
+switch_game_action(_, Cpname, Players, Menu):-
     writeln("Botão inválido, tente novamente"),
     sleep(2),
-    menu_game(Cpname, Menu).
+    menu_game(Cpname, Players, Menu).
