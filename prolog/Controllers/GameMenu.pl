@@ -1,4 +1,6 @@
 :- include('./Utils.pl').
+:- include('./../Databases/UserGameData.pl').
+
 menu_template("Game", Rname, Players, IsAlive, Role, Round, State, Menu):- spaces1(X),spaces2(Y),spaces3(Z),spaces4(V),
 format(string(RoomData), '│ > Room: ~w~w│\n│~w│\n│ > Round: ~w - ~w~w│\n│~w│', [Rname,X,Y,Round,State,Z,V]),
 
@@ -34,10 +36,8 @@ print_lists([Player|Players], [IsAlive|IsAliveList], [Role|Roles]) :-
 
 % Início do Jogo / Loop - Vai receber os dados do jogo e chamar o template
 start_match(Cpname, Rname):-
-    Players = ["bot-4323", "bot-3213", "bot-3212", "bot-9873"],
-    IsAlive = ["T", "T", "F", "T"],
-    Role = ["???", "Assassino", "Policial", "???"],
-    menu_template("Game", Rname, Players, IsAlive, Role, Round, State, Menu),
+    get_players_alive_role(Cpname, Players, Alive, Role),
+    menu_template("Game", Rname, Players, Alive, Role, Round, State, Menu),
     menu_game(Cpname, Menu).
 
 menu_game(Cpname, Menu):-
