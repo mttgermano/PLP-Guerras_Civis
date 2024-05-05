@@ -1,3 +1,5 @@
+
+
 :- include('./../Databases/Rooms.pl').
 :- include('./GameMenu.pl').
 :- include('./Utils.pl').
@@ -108,7 +110,7 @@ menu_template("RoomLogin",
 
 menu_template("RoomWait", RName, Cpname, Menu) :-
     format(string(MenuLine),
-            '│ > Room Wait [~w]                                                       │',
+            '│ > Room Wait (~w)                                                       │',
             [RName]),
     format(string(Players),
             '| > Players:                                                               |\n| - ~w', 
@@ -134,7 +136,7 @@ menu_template("RoomWait", RName, Cpname, Menu) :-
 
 menu_template("RoomWaitNotRoomMaster", RName, Cpname, Menu) :-
     format(string(MenuLine),
-            '│ > Room Wait [~w]                                                        │',
+            '│ > Room Wait (~w)                                                        │',
             [RName]),
     format(string(Players),
             '| > Players:                                                            |\n ~w', 
@@ -202,6 +204,8 @@ prepend_pipe_to_strings([String|Rest], [ModifiedString|ModifiedRest]) :-
 % Menu Principal -----------------------------------------------
 menu_main(MenuTemplate) :-
     cl,
+    open('chat.txt', write, Stream),
+    close(Stream),
     print_menu(MenuTemplate),
     read_line_to_string(user_input, Input),
     switch_menu_main(Input, MenuTemplate).
@@ -289,10 +293,17 @@ menu_room_action(MenuType, MenuTemplate, Cpname) :-
     -> menu_template("Room", Menu), menu_room(Menu, Cpname)
     ; switch_menu_room_action(MenuType, Input, Cpname)).
 
+set_rname(NewRname) :-
+    retractall(rname(_)),
+    assertz(rname(NewRname)).
+
+get_rname(Rname) :-
+    rname(Rname).
 
 % Escolha das acoes
 switch_menu_room_action("RoomCreate", Rname, Cpname) :- 
     add_room(Rname, Cpname, "asd"),
+    set_rname(Rname),
     menu_template("RoomWait", Rname, Cpname, Menu),
     menu_room_wait(Menu, Rname, Cpname).
 
@@ -309,19 +320,22 @@ menu_room_wait(Menu, Rname, Cpname) :-
     cl,
     print_menu(Menu),
     read_line_to_string(user_input, Input),
-    switch_menu_room_wait_action(Input, Cpname, Rname, Menu).
+    switch_menu_room_wait_action(Input, Cpname, Menu).
 
 % Iniciar Jogo
-switch_menu_room_wait_action("1", Cpname, Rname, _):- 
+switch_menu_room_wait_action("1", Cpname, _):- 
     writeln("Loading Game..."),
     sleep(2),
+    get_rname(Rname),
     start_match(Cpname, Rname), !. % Indo para GameMenu.pl
 
 % Atualizar sala
-switch_menu_room_wait_action("2", Cpname, Rname, Menu):-
+switch_menu_room_wait_action("2", Cpname, Menu):-
+    get_rname(Rname),
     menu_room_wait(Menu, Cpname, Rname), !.
 
-switch_menu_room_wait_action(_, Cpname, Rname, Menu):-
+switch_menu_room_wait_action(_, Cpname, Menu):-
+    get_rname(Rname),
     writeln("Botão inválido, tente novamente"),
     sleep(2),
     menu_room_wait(Menu, Cpname, Rname).
