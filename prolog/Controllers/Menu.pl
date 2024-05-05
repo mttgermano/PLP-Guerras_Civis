@@ -1,5 +1,3 @@
-
-
 :- include('./../Databases/Rooms.pl').
 :- include('./GameMenu.pl').
 :- include('./Utils.pl').
@@ -159,48 +157,6 @@ menu_template("RoomWaitNotRoomMaster", RName, Cpname, Menu) :-
     ].
 
 
-
-
-
-menu_template("RoomChat", MenuTemplate) :-
-   %mostar numero n de linhas....
-   %manter em loop?
-   %ou escolher acao?
-   %botao Atualizar chat
-   open('chat.txt', read, Str),
-   stream_to_list(Str, ChatList),
-   close(Str),
-   prepend_pipe_to_strings(ChatList,ModifiedList),
-   reverse_chat(ModifiedList,6,ChatResult2),
-   append(["┌───────────────────────────── Guerrras Civis ─────────────────────────────┐"], ChatResult2, MenuWithHeader),
-   append(MenuWithHeader, ["└──────────────────────────────────────────────────────────────────────────┘"], MenuChatEnd),
-   append(MenuChatEnd,["[1] Back Menu"], MenuSelect),%pode virar um template so.....
-   append(MenuSelect,["[2] Update Chat"], MenuTemplate).
-
-%limit_list_by(limiter,[X | XS],Result) :- 
-
-% reverse list, funcao que inverte linhas,e pega ultimas n linahs do chat ...
-reverse_chat(ChatList,Limiter,ResultList) :- reverse_chat(ChatList,[],Limiter,ResultList). 
-reverse_chat(_,Lista,0,ResultList) :- reverse(Lista,ResultList).
-reverse_chat([X|XS],PartialResultList,Limiter,ResultList) :- Limiter2 is Limiter - 1,reverse_chat(XS,[X | PartialResultList],Limiter2,ResultList).
-
-stream_to_list(Stream, []):-
-  at_end_of_stream(Stream).
-
-stream_to_list(Stream, [X|L]):-
-  \+ at_end_of_stream(Stream),
-  read(Stream, X),
-  stream_to_list(Stream, L).
-
-%%adicionar calculo para formatacao dependendo do tamanho da palavra
-prepend_pipe_to_strings([], []).
-prepend_pipe_to_strings([String|Rest], [ModifiedString|ModifiedRest]) :-
-    atom_concat('│', String, ModifiedString),
-    prepend_pipe_to_strings(Rest, ModifiedRest).
-
-
-
-
 % Menu Principal -----------------------------------------------
 menu_main(MenuTemplate) :-
     cl,
@@ -226,14 +182,6 @@ switch_menu_main(_, Menu):-
     writeln("> Botão inválido, tente novamente"),
     sleep(2),
     menu_main(Menu).
-
-% funcao para print na tela do chat e selecao de acao.
-chat_action(MenuTemplate) :-
-	cl,
-	print_menu(MenuTemplate),
-	read_line_to_string(user_input,Input),
-	switch_menu_main(Input).
-
 
 
 % Menu Action ---------------------------------------------------
