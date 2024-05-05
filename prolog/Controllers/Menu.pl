@@ -160,8 +160,6 @@ menu_template("RoomWaitNotRoomMaster", RName, Cpname, Menu) :-
 % Menu Principal -----------------------------------------------
 menu_main(MenuTemplate) :-
     cl,
-    open('chat.txt', write, Stream),
-    close(Stream),
     print_menu(MenuTemplate),
     read_line_to_string(user_input, Input),
     switch_menu_main(Input, MenuTemplate).
@@ -275,7 +273,7 @@ switch_menu_room_wait_action("1", Cpname, _):-
     writeln("Loading Game..."),
     sleep(2),
     get_rname(Rname),
-    start_match(Cpname, Rname), !. % Indo para GameMenu.pl
+    loop_match(Cpname, Rname), !. % Indo para GameMenu.pl
 
 % Atualizar sala
 switch_menu_room_wait_action("2", Cpname, Menu):-
