@@ -9,18 +9,18 @@
 :- discontiguous get_all_in_room/2.
 
 % Test 
-%player("Pedro", teste, room123, true).
-%player("Djan", teste, room123, true). 
-%player("Matheus", teste, room123, false).
-%player("Pedro1", teste, room123, true).
-%player("Djan1", teste, room123, true). 
-%player("Matheus1", teste, room123, false).
-%player("Pedro2", teste, room123, true).
-%player("Djan2", teste, room123, true). 
-%player("Matheus2", teste, room123, false).
-%player("Pedro3", teste, room123, true).
-%player("Djan3", teste, room123, true). 
-%player("Matheus3", teste, room123, false).
+player("Pedro", teste, room123, true).
+player("Djan", teste, room123, true). 
+player("Matheus", teste, room123, false).
+player("Pedro1", teste, room123, true).
+player("Djan1", teste, room123, true). 
+player("Matheus1", teste, room123, false).
+player("Pedro2", teste, room123, true).
+player("Djan2", teste, room123, true). 
+player("Matheus2", teste, room123, false).
+player("Pedro3", teste, room123, true).
+player("Djan3", teste, room123, true). 
+player("Matheus3", teste, room123, false).
 
 % Player Actions ------------------------------------------------
 add_player(Name, Password, Status) :-
@@ -32,7 +32,7 @@ delete_player(Name) :-
     write('Player '), write(Name), write(' has been deleted.'), nl.
 
 change_player_room(PlayerName,NewRoom) :-
-    retract(player(PlayerName, Password, CurrentRoom, Status)),
+    retract(player(PlayerName, Password, _, Status)),
     assertz(player(PlayerName, Password, NewRoom, Status)).
 
 player_login(Name, Password) :-

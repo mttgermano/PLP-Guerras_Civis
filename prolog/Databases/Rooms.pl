@@ -2,7 +2,7 @@
 :- include('UserGameData.pl').
 
 % Test
-% room(room123, "PEDRO", false, "MATAR", [], "VOTE").
+room(room123, "PEDRO", false, "MATAR", [], 'action').
 
 % Room Actions --------------------------------------------------
 add_room(Name, Master, CursedWord) :-
@@ -59,3 +59,7 @@ get_alive_players_in_room(Room, AlivePlayers) :-
 is_role_alive_room(Room, Role) :-
     get_all_in_room(Room, Players),
     is_role_alive(Role, Players).
+
+is_allowed_room(Agent, Name, State) :-
+    get_room_state(Name, State),
+    is_allowed(Agent).

@@ -1,24 +1,25 @@
-:- use_module(library(random)).
-:- dynamic user_game_data/8.
 :- include('PlayersKnowledge.pl').
 :- include('Players.pl').
 
+:- use_module(library(random)).
+:- dynamic user_game_data/8.
+
 % Test
-% user_game_data("PEDRO",   10, true,   0, 0, 0, 0, false).
-% user_game_data("Djan",    6,  true,   0, 0, 1, 0, false).
-% user_game_data("Matheus", 1,  false,  0, 0, 0, 0, false).
-% user_game_data("Pedro",   1,  false,  0, 0, 0, 0, false).
-% user_game_data("Djan",    2,  true,   0, 0, 0, 0, true). 
-% user_game_data("Matheus", 3,  true,   0, 0, 0, 0, true).
-% user_game_data("Pedro1",  4,  false,  0, 0, 0, 0, false).
-% user_game_data("Djan1",   5,  true,   0, 0, 0, 0, true). 
-% user_game_data("Matheus1",6,  true,   0, 0, 0, 0, true).
-% user_game_data("Pedro2",  7,  false,  0, 0, 0, 0, false).
-% user_game_data("Djan2",   8,  true,   0, 0, 0, 0, true). 
-% user_game_data("Matheus2",9,  true,   0, 0, 0, 0, true).
-% user_game_data("Pedro3",  10, false,  0, 0, 0, 0, false).
-% user_game_data("Djan3",   11, true,   0, 0, 0, 0, true). 
-% user_game_data("Matheus3",12, true,   0, 0, 0, 0, true).
+user_game_data("Pedro",     1, true,    0, 0, 0, 0, false).
+user_game_data("Djan",      6, true,    0, 0, 0, 0, false).
+user_game_data("Matheus",   1, false,   0, 0, 0, 0, false).
+user_game_data("Pedro",     1, false,   0, 0, 0, 0, false).
+user_game_data("Djan",      2, true,    0, 0, 0, 0, true). 
+user_game_data("Matheus",   3, true,    0, 0, 0, 0, true).
+user_game_data("Pedro1",    4, false,   0, 0, 0, 0, false).
+user_game_data("Djan1",     5, true,    0, 0, 0, 0, true). 
+user_game_data("Matheus1",  6, true,    0, 0, 0, 0, true).
+user_game_data("Pedro2",    7, false,   0, 0, 0, 0, false).
+user_game_data("Djan2",     8, true,    0, 0, 0, 0, true). 
+user_game_data("Matheus2",  9, true,    0, 0, 0, 0, true).
+user_game_data("Pedro3",    10, false,  0, 0, 0, 0, false).
+user_game_data("Djan3",     11, true,   0, 0, 0, 0, true). 
+user_game_data("Matheus3",  12, true,   0, 0, 0, 0, true).
 
 % User Game Data Actions ----------------------------------------
 add_user_game_data(Name) :-
@@ -110,9 +111,8 @@ count_good_players([_|Players], Count) :-
     count_good_players(Players, Count).
 
 is_allowed(Name) :-
-    user_game_data(Name, _, true, _, _, LastNum1, LastNum2, _),
-    LastNum1 =:= 0,
-    LastNum2 =:= 0.
+    user_game_data(Name, _, true, _, _, 0, 0, _),
+    write('foi'), nl.
 
 % Player Actions ------------------------------------------------
 vote(PlayerName) :-
