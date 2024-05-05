@@ -32,24 +32,14 @@ menu_template("RoomChat", MenuTemplate) :-
     %manter em loop?
     %ou escolher acao?
     %botao Atualizar chat
-    open('chat.txt', read, Str),
-    stream_to_list(Str, ChatList),
-    close(Str),
-    prepend_pipe_to_strings(ChatList,ModifiedList),
+    get_rname(Rname),
+    get_room_messages(Rname, Messages),
+    prepend_pipe_to_strings(Messages, ModifiedList),
     append(["┌───────────────────────────── Guerras Civis ──────────────────────────────┐\n|"], ModifiedList, MenuWithMessages),
     append(MenuWithMessages, ["|\n|──────────────────────────────────────────────────────────────────────────|"], MenuWithButtonHeader),
     append(MenuWithButtonHeader,["|\n| [1] Back Menu\n| [2] Atualizar\n|"], MenuWithButtons),%pode virar um template so.....
     append(MenuWithButtons, ["└──────────────────────────────────────────────────────────────────────────┘"], MenuTemplate).
 
-
-stream_to_list(Stream, []):-
-    at_end_of_stream(Stream).
-
-stream_to_list(Stream, [X|L]):-
-    \+ at_end_of_stream(Stream),
-    read(Stream, X),
-    X \= 'end_of_file',
-    stream_to_list(Stream, L).
 
 %%adicionar calculo para formatacao dependendo do tamanho da palavra
 prepend_pipe_to_strings([], []).
@@ -65,7 +55,7 @@ print_lists([Player|Players], [IsAlive|IsAliveList], [Role|Roles]) :-
     print_lists(Players, IsAliveList, Roles).
 
 % Início do Jogo / Loop - Vai receber os dados do jogo e chamar o template
-start_match(Cpname, Rname):-
+loop_match(Cpname, Rname):-
     Players = ["bot-4323", "bot-3213", "bot-3212", "bot-9873"],
     Alive = ["T", "T", "F", "T"],
     Role = ["???", "Assassino", "Policial", "???"],
@@ -110,16 +100,14 @@ chat_menu(Menu, Cpname):-
 % Ações do chat
 switch_chat_menu_action("1", Cpname, _):-
     get_rname(Rname), 
-    start_match(Cpname, Rname), !.
+    loop_match(Cpname, Rname), !.
 
 switch_chat_menu_action("2", Cpname, Menu):-
     chat_menu(Menu, Cpname), !.
 
 switch_chat_menu_action(Input, Cpname, _):-
-    open('chat.txt', append, Str),
     atom_concat(Cpname, ': ', MessagePrefix),
     atom_concat(MessagePrefix, Input, Message),
-    atomic_list_concat(['"', Message, '".'], FullMessage),
-    writeln(Str, FullMessage), 
-    close(Str), 
+    get_rname(Rname),
+    add_message_to_room(Rname, Message),
     switch_game_action("2", Cpname, _, _).
