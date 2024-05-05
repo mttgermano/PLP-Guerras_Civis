@@ -2,7 +2,6 @@
 :- module(game_cli, [start_game_cli/0]).
 
 % Parte da tela inicial (Maria Clara Rodrigues %do Nascimento)
-
 start_game_cli :-
     writeln("Bem-vindo ao Guerras Civis CLI!"),
     writeln("Escolha uma opção:"),
@@ -34,4 +33,26 @@ handle_choice(_) :-
     start_game_cli.
 
 % Implementações de funções de ação, mensagem, listagem de jogadores, etc.
-    
+list_alive_players :-
+    findall(Name, player(Name, _, true), AlivePlayers),
+    list_players_with_numbers(AlivePlayers, 1).
+
+list_players_with_numbers([], _).
+list_players_with_numbers([H|T], Index) :-
+    format("~w. ~w~n", [Index, H]),
+    NextIndex is Index + 1,
+    list_players_with_numbers(T, NextIndex).
+
+send_message(Message) :-
+    % Suponha que você tenha um contexto de usuário ou um nome de usuário padrão
+    current_user(Username),
+    % Suponha uma função que lide com o envio de mensagens
+    broadcast_message(Username, Message),
+    writeln("Mensagem enviada com sucesso!").
+
+execute_action(Index) :-
+    findall(Name, player(Name, _, true), AlivePlayers),
+    nth1(Index, AlivePlayers, Target),  % Pegar o jogador baseado no índice
+    % Suponha uma função attack_player que executa a ação
+    attack_player(Target),
+    writeln("Ação executada com sucesso!").
