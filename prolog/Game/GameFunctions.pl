@@ -18,4 +18,6 @@ player_action(PlayerName, Action) :-
 
 start_game(Rname) :-
     room(Rname, RoomMaster, IsAlive, CursedWord, Messages, Rstate).
+    % TODO
+
 

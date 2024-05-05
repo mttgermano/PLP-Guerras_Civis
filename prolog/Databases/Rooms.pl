@@ -29,13 +29,17 @@ is_room_up(Name, Up) :-
 get_room_state(Name, State, Nround) :-
     room(Name, _, _, _, _, State, Nround).
 
+set_room_state(Rname, State, Nround) :- 
+    retract(room(Rname, Master, Up, ForbiddenWord, Messages, _,     _)),
+    assertz(room(Rname, Master, Up, ForbiddenWord, Messages, State, Nround)).
+
 room_exists(Name) :-
     room(Name, _, _, _, _, _, _).
 
 room_has_forbidden_word(_, false).
 room_has_forbidden_word(RoomName, HasForbiddenWord) :-
     room(RoomName, _, _, ForbiddenWord, _, _, _),
-    ForbiddenWord \= "",
+    ForbiddenWord   \= "",
     HasForbiddenWord = true.
 
 get_room_master(RoomName, Master) :-
@@ -45,8 +49,8 @@ get_room_messages(Name, Messages) :-
     room(Name, _, _, _, Messages, _, _).
 
 set_room_forbidden_word(RoomName, ForbiddenWord) :-
-    retract(room(RoomName, Master, Up, _, Messages, State, Nround)),
-    assertz(room(RoomName, Master, Up, ForbiddenWord, Messages, State, Nround)).
+    retract(room(RoomName, Master, Up, _,               Messages, State, Nround)),
+    assertz(room(RoomName, Master, Up, ForbiddenWord,   Messages, State, Nround)).
 
 get_room_forbidden_word(Name, ForbiddenWord) :-
     room(Name, _, _, ForbiddenWord, _, _, _).
