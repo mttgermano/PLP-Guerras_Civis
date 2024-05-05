@@ -1,5 +1,11 @@
 :- dynamic know/3.
 
+:- discontiguous know/2.
+:- discontiguous knows/2.
+:- discontiguous add_knowledge/2.
+:- discontiguous remove_room_knowledge/1.
+:- discontiguous get_knowledge/2.
+
 % Test
 know("Pedro", "Djan").
 know("Pedro", "Matheus").

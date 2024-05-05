@@ -4,21 +4,21 @@
 :- include('Players.pl').
 
 % Test
-% user_game_data("PEDRO", 10, true, 0, 0, 0, 0, false).
-% user_game_data("Djan", 6, true, 0, 0, 1, 0, false).
-% user_game_data("Matheus", 1, false, 0, 0, 0, 0, false).
-% user_game_data("Pedro", 1, false, 0, 0, 0, 0, false).
-% user_game_data("Djan", 2, true, 0, 0, 0, 0, true). 
-% user_game_data("Matheus", 3, true, 0, 0, 0, 0, true).
-% user_game_data("Pedro1", 4, false, 0, 0, 0, 0, false).
-% user_game_data("Djan1", 5, true, 0, 0, 0, 0, true). 
-% user_game_data("Matheus1", 6, true, 0, 0, 0, 0, true).
-% user_game_data("Pedro2", 7, false, 0, 0, 0, 0, false).
-% user_game_data("Djan2", 8, true, 0, 0, 0, 0, true). 
-% user_game_data("Matheus2", 9, true, 0, 0, 0, 0, true).
-% user_game_data("Pedro3", 10, false, 0, 0, 0, 0, false).
-% user_game_data("Djan3", 11, true, 0, 0, 0, 0, true). 
-% user_game_data("Matheus3", 12, true, 0, 0, 0, 0, true).
+% user_game_data("PEDRO",   10, true,   0, 0, 0, 0, false).
+% user_game_data("Djan",    6,  true,   0, 0, 1, 0, false).
+% user_game_data("Matheus", 1,  false,  0, 0, 0, 0, false).
+% user_game_data("Pedro",   1,  false,  0, 0, 0, 0, false).
+% user_game_data("Djan",    2,  true,   0, 0, 0, 0, true). 
+% user_game_data("Matheus", 3,  true,   0, 0, 0, 0, true).
+% user_game_data("Pedro1",  4,  false,  0, 0, 0, 0, false).
+% user_game_data("Djan1",   5,  true,   0, 0, 0, 0, true). 
+% user_game_data("Matheus1",6,  true,   0, 0, 0, 0, true).
+% user_game_data("Pedro2",  7,  false,  0, 0, 0, 0, false).
+% user_game_data("Djan2",   8,  true,   0, 0, 0, 0, true). 
+% user_game_data("Matheus2",9,  true,   0, 0, 0, 0, true).
+% user_game_data("Pedro3",  10, false,  0, 0, 0, 0, false).
+% user_game_data("Djan3",   11, true,   0, 0, 0, 0, true). 
+% user_game_data("Matheus3",12, true,   0, 0, 0, 0, true).
 
 % User Game Data Actions ----------------------------------------
 add_user_game_data(Name) :-
@@ -58,12 +58,9 @@ get_players_alive_role(Person, Players, Alive, Role) :-
 
 get_user_game_data(_, [], [], []).
 get_user_game_data(Person, [Player|Rest], [Alive|RestAlive], [Role|RestRole]) :-
-    (knows(Person, Player) ->
-        get_role(Player, Comp),
-        Role = Comp
-    ;
-        Role = -1
-    ),
+    (knows(Person, Player) 
+    -> get_role(Player, Comp), Role = Comp
+    ; Role = -1),
     is_player_alive(Player, Temp),
     Alive = Temp,
     get_user_game_data(Person, Rest, RestAlive, RestRole).

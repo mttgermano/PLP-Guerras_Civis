@@ -108,7 +108,7 @@ menu_template("RoomLogin",
 
 menu_template("RoomWait", RName, Cpname, Menu) :-
     format(string(MenuLine),
-            '│ > Room Wait (~w)                                                       │',
+            '│ > Room Wait [~w]                                                       │',
             [RName]),
     format(string(Players),
             '| > Players:                                                               |\n| - ~w', 
@@ -134,7 +134,7 @@ menu_template("RoomWait", RName, Cpname, Menu) :-
 
 menu_template("RoomWaitNotRoomMaster", RName, Cpname, Menu) :-
     format(string(MenuLine),
-            '│ > Room Wait (~w)                                                        │',
+            '│ > Room Wait [~w]                                                        │',
             [RName]),
     format(string(Players),
             '| > Players:                                                            |\n ~w', 
