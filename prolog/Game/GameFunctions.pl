@@ -15,3 +15,7 @@ player_action(PlayerName, Action) :-
         Role =:= 11 -> write('Aldeao');
         Role =:= 12 -> revenge(PlayerName, Action);
     ).
+
+start_game(Rname) :-
+    room(Rname, RoomMaster, IsAlive, CursedWord, Messages, Rstate).
+
