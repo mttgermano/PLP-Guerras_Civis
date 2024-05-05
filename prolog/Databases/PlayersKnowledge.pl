@@ -1,7 +1,8 @@
-:- dynamic know/3.
+:- dynamic know/2.
 
 % Test
 know("Pedro", "Djan").
+know("Pedro", "Djan3").
 know("Pedro", "Matheus").
 know("Djan", "Matheus"). 
 
@@ -20,4 +21,4 @@ knows(Name, NamePlayer) :-
 
 % Player Knowledge Utils ----------------------------------------
 get_knowledge(Person, KnowledgeList) :-
-    findall((NamePlayer), know(Person, NamePlayer, _), KnowledgeList).
+    findall((NamePlayer), know(Person, NamePlayer), KnowledgeList).

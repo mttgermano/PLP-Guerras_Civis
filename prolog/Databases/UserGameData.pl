@@ -5,11 +5,8 @@
 
 % Test
 user_game_data("Pedro", 1, true, 0, 0, 0, 0, false).
-user_game_data("Djan", 6, true, 0, 0, 0, 0, false).
-user_game_data("Matheus", 1, false, 0, 0, 0, 0, false).
-user_game_data("Pedro", 1, false, 0, 0, 0, 0, false).
-user_game_data("Djan", 2, true, 0, 0, 0, 0, true). 
-user_game_data("Matheus", 3, true, 0, 0, 0, 0, true).
+user_game_data("Djan", 2, true, 0, 0, 0, 0, false).
+user_game_data("Matheus", 3, false, 0, 0, 0, 0, false).
 user_game_data("Pedro1", 4, false, 0, 0, 0, 0, false).
 user_game_data("Djan1", 5, true, 0, 0, 0, 0, true). 
 user_game_data("Matheus1", 6, true, 0, 0, 0, 0, true).
