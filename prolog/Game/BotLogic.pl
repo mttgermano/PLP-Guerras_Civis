@@ -7,10 +7,8 @@ botActionChoice(PlayerName, RName) :-
     random(0, Length, Posicao),
     nth0(Posicao, Players, PlayerName).
 
-createBots(0, RName) :-
-    format('> All Bots created in [~w]', [RName]).
-
-createBots(Quant, RName) :-
+createBots(0, RName)        :- format('> All Bots created in [~w]', [RName]).
+createBots(Quant, RName)    :-
     uuid(UUID),
     atomic_list_concat(['bot-', UUID], BotName),
     add_player(BotName, "", true),
@@ -21,7 +19,6 @@ createBots(Quant, RName) :-
 
 
 splitBySpaces([], []).
-
 splitBySpaces([String|Rest], Result) :-
     splitBySpaces(Rest, RestResult),
     split_string(String, " ", "", StringList),
@@ -51,12 +48,11 @@ botBrain(RName, BotName) :-
 compareIsGood(BotName, Players, PlayerName, Score) :-
     is_good(BotName, BotIsGood),
     is_good(PlayerName, PlayerIsGood),
-    (   (BotIsGood \== PlayerIsGood), member(PlayerName, Players)
-    ->  Score = 1000000
-    ;   (BotIsGood == PlayerIsGood, member(PlayerName, Players))
-    ->  Score = -100000
-    ;   Score = 0
-    ).
+    ((BotIsGood \== PlayerIsGood), member(PlayerName, Players)
+    -> Score = 1000000
+    ;(BotIsGood == PlayerIsGood, member(PlayerName, Players))
+        -> Score = -100000
+        ;  Score = 0).
 
 compareIsGoodList(_, _, [], []).
 compareIsGoodList(BotName, KnowList, [Player|RestPlayers], [Result|RestResults]) :-
@@ -107,7 +103,7 @@ botAction(BotId, RName) :-
     isPlayerAlive(BotId, BotAlive),
     (
         BotAlive = false -> true
-;
+        ;
         (
             BotRole = 1 -> kill(BotName, PlayerName)
         ;   BotRole = 2 -> apprentice(BotName, PlayerName)
@@ -147,8 +143,6 @@ voteBotsRound(RName) :-
     format("> [~w] Room - Terminou Bot Vote", [RName]).
 
 :- dynamic(bot/1).
-
-
 
 deleteBot(BUUID) :-
     retract(bot(BUUID)),

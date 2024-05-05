@@ -1,5 +1,13 @@
 :- dynamic player/4.
 
+:- discontiguous add_player/3.
+:- discontiguous delete_player/1.
+:- discontiguous change_player_room/2.
+:- discontiguous player_login/2.
+:- discontiguous get_player_room/2.
+:- discontiguous player_exists/1.
+:- discontiguous get_all_in_room/2.
+
 % Test 
 player("Pedro", teste, room123, true).
 player("Djan", teste, room123, true). 
