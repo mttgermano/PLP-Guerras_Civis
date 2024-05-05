@@ -81,16 +81,13 @@ menu_game(Cpname, Players, Menu):-
 % Ação
 switch_game_action("1", Cpname, Players, Menu):-
     write("│ Qual jogador você quer executar sua ação?    $ "),
-    read_line_to_string(user_input, ActionTarget),
-    (
-        member(ActionTarget, Players) -> 
-        writeln("Carregando..."), sleep(2), menu_game(Cpname, Players, Menu) 
-        ; writeln("Nome incorreto, tente novamente"), sleep(2), menu_game(Cpname, Players, Menu)
+    read_line_to_string(user_input, ActionTarget), (
+        member(ActionTarget, Players)
+        ->  writeln("Carregando..."), sleep(2), menu_game(Cpname, Players, Menu) 
+        ;   writeln("Nome incorreto, tente novamente"), sleep(2), menu_game(Cpname, Players, Menu)
         ).
-    % realizar_action(Cpname, ActionTarget), % ABSTRACT
-    % writeln("Carregando..."),
-    % sleep(2), % Será preciso esperar um tempo para os bots jogarem?
-    % menu_game(Cpname, Menu).
+    player_action(Cpname, ActionTarget),
+    menu_game(Cpname, Menu).
     
 % Chat de mensagem
 switch_game_action("2", Cpname, _, _):-
