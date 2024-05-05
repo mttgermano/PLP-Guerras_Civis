@@ -2,7 +2,7 @@
 :- include('UserGameData.pl').
 
 % Test
-room(room123, "PEDRO", false, "MATAR", [], 'action').
+room(room123, "Pedro", false, "MATAR", ['Djan Djan', 'Teste'], 'action').
 
 % Room Actions --------------------------------------------------
 add_room(Name, Master, CursedWord) :-

@@ -1,7 +1,4 @@
 :- include('./../Databases/Rooms.pl').
-:- include('./../Databases/Players.pl').
-:- include('./../Databases/PlayersKnowledge.pl').
-:- include('./../Databases/UserGameData.pl').
 :- use_module(library(uuid)).
 
 botActionChoice(PlayerName, RName) :-
@@ -27,32 +24,26 @@ splitBySpaces([String|Rest], Result) :-
     split_string(String, " ", "", StringList),
     append(StringList, RestResult, Result).
 
-% botBrain(RName, BotName) :-
-%     is_player_alive(BotName, BotAlive),
-%     (
-%         BotAlive = false
-%     ;
-%         BotAlive = true,
-%         get_alive_players(RName, PlayersNames),
-%         get_room_messages(PlayersNames, Messages),
-%         splitBySpaces(Messages, AllWords),
-%         countReferencesForAll(AllWords, PlayersNames, References),
-%         getPlayerKnowledgeList(BotName, Players),
-%         compareIsGoodList(BotName, PlayersNames, Players, Comparison),
-%         call(Comparison, Comp),
-%         listSom(Comp, References, Results),
-%         biggestVote(Results, Ind),
-%         nth0(Ind, PlayersNames, PlayerToIncrement),
-%         incrementVote(BName, PlayerToIncrement),
-%         getRole(BotName, BotRole),
-%         (
-%             BotRole = 11,
-%             incrementVote(BName, PlayerToIncrement),
-%             incrementVote(BName, PlayerToIncrement)
-%         ;
-%             true
-%         )
-%     ).
+botBrain(RName, BotName) :-
+    is_player_alive(BotName, BotAlive),
+    ( BotAlive ->
+        (  
+            get_alive_players_in_room(RName, PlayersNames),
+            get_room_messages(RName, Messages),
+            splitBySpaces(Messages, AllWords),
+            countReferencesForAll(AllWords, PlayersNames, References),
+            get_knowledge(BotName, Players),
+            compareIsGoodList(BotName, Players, PlayersNames, Comp),
+            listSom(Comp, References, Results),
+            index_of_max(Results, Ind, Max),
+            nth0(Ind, PlayersNames, PlayerToIncrement),
+            vote(PlayerToIncrement),
+            get_role(BotName, BotRole),
+            ( BotRole =:= 11 -> (
+                    vote(PlayerToIncrement),
+                    vote(PlayerToIncrement)
+                ); true )
+        ) ; true ).
 
 compareIsGood(BotName, Players, PlayerName, Score) :-
     is_good(BotName, BotIsGood),
@@ -63,10 +54,10 @@ compareIsGood(BotName, Players, PlayerName, Score) :-
         -> Score = -100000
         ;  Score = 0).
 
-compareIsGoodList(_, [], []).
-compareIsGoodList(BotName, [Player|RestPlayers], [Result|RestResults]) :-
-    compareIsGood(BotName, [Player|RestPlayers], Player, Result),
-    compareIsGoodList(BotName, RestPlayers, RestResults).
+compareIsGoodList(_, _, [], []).
+compareIsGoodList(BotName, KnowList, [Player|RestPlayers], [Result|RestResults]) :-
+    compareIsGood(BotName, KnowList, Player, Result),
+    compareIsGoodList(BotName, KnowList, RestPlayers, RestResults).
 
 
 index_of_max(List, Index, Max) :-
