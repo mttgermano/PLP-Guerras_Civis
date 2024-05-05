@@ -108,7 +108,7 @@ menu_template("RoomLogin",
 
 menu_template("RoomWait", RName, Cpname, Menu) :-
     format(string(MenuLine),
-            '│ > Room Wait [~w]                                                       │',
+            '│ > Room Wait (~w)                                                       │',
             [RName]),
     format(string(Players),
             '| > Players:                                                               |\n| - ~w', 
@@ -134,7 +134,7 @@ menu_template("RoomWait", RName, Cpname, Menu) :-
 
 menu_template("RoomWaitNotRoomMaster", RName, Cpname, Menu) :-
     format(string(MenuLine),
-            '│ > Room Wait [~w]                                                        │',
+            '│ > Room Wait (~w)                                                        │',
             [RName]),
     format(string(Players),
             '| > Players:                                                            |\n ~w', 
@@ -157,51 +157,11 @@ menu_template("RoomWaitNotRoomMaster", RName, Cpname, Menu) :-
     ].
 
 
-
-
-
-menu_template("RoomChat", MenuTemplate) :-
-   %mostar numero n de linhas....
-   %manter em loop?
-   %ou escolher acao?
-   %botao Atualizar chat
-   open('chat.txt', read, Str),
-   stream_to_list(Str, ChatList),
-   close(Str),
-   prepend_pipe_to_strings(ChatList,ModifiedList),
-   reverse_chat(ModifiedList,6,ChatResult2),
-   append(["┌───────────────────────────── Guerrras Civis ─────────────────────────────┐"], ChatResult2, MenuWithHeader),
-   append(MenuWithHeader, ["└──────────────────────────────────────────────────────────────────────────┘"], MenuChatEnd),
-   append(MenuChatEnd,["[1] Back Menu"], MenuSelect),%pode virar um template so.....
-   append(MenuSelect,["[2] Update Chat"], MenuTemplate).
-
-%limit_list_by(limiter,[X | XS],Result) :- 
-
-% reverse list, funcao que inverte linhas,e pega ultimas n linahs do chat ...
-reverse_chat(ChatList,Limiter,ResultList) :- reverse_chat(ChatList,[],Limiter,ResultList). 
-reverse_chat(_,Lista,0,ResultList) :- reverse(Lista,ResultList).
-reverse_chat([X|XS],PartialResultList,Limiter,ResultList) :- Limiter2 is Limiter - 1,reverse_chat(XS,[X | PartialResultList],Limiter2,ResultList).
-
-stream_to_list(Stream, []):-
-  at_end_of_stream(Stream).
-
-stream_to_list(Stream, [X|L]):-
-  \+ at_end_of_stream(Stream),
-  read(Stream, X),
-  stream_to_list(Stream, L).
-
-%%adicionar calculo para formatacao dependendo do tamanho da palavra
-prepend_pipe_to_strings([], []).
-prepend_pipe_to_strings([String|Rest], [ModifiedString|ModifiedRest]) :-
-    atom_concat('│', String, ModifiedString),
-    prepend_pipe_to_strings(Rest, ModifiedRest).
-
-
-
-
 % Menu Principal -----------------------------------------------
 menu_main(MenuTemplate) :-
     cl,
+    open('chat.txt', write, Stream),
+    close(Stream),
     print_menu(MenuTemplate),
     read_line_to_string(user_input, Input),
     switch_menu_main(Input, MenuTemplate).
@@ -222,14 +182,6 @@ switch_menu_main(_, Menu):-
     writeln("> Botão inválido, tente novamente"),
     sleep(2),
     menu_main(Menu).
-
-% funcao para print na tela do chat e selecao de acao.
-chat_action(MenuTemplate) :-
-	cl,
-	print_menu(MenuTemplate),
-	read_line_to_string(user_input,Input),
-	switch_menu_main(Input).
-
 
 
 % Menu Action ---------------------------------------------------
@@ -289,10 +241,17 @@ menu_room_action(MenuType, MenuTemplate, Cpname) :-
     -> menu_template("Room", Menu), menu_room(Menu, Cpname)
     ; switch_menu_room_action(MenuType, Input, Cpname)).
 
+set_rname(NewRname) :-
+    retractall(rname(_)),
+    assertz(rname(NewRname)).
+
+get_rname(Rname) :-
+    rname(Rname).
 
 % Escolha das acoes
 switch_menu_room_action("RoomCreate", Rname, Cpname) :- 
     add_room(Rname, Cpname, "asd"),
+    set_rname(Rname),
     menu_template("RoomWait", Rname, Cpname, Menu),
     menu_room_wait(Menu, Rname, Cpname).
 
@@ -309,19 +268,22 @@ menu_room_wait(Menu, Rname, Cpname) :-
     cl,
     print_menu(Menu),
     read_line_to_string(user_input, Input),
-    switch_menu_room_wait_action(Input, Cpname, Rname, Menu).
+    switch_menu_room_wait_action(Input, Cpname, Menu).
 
 % Iniciar Jogo
-switch_menu_room_wait_action("1", Cpname, Rname, _):- 
+switch_menu_room_wait_action("1", Cpname, _):- 
     writeln("Loading Game..."),
     sleep(2),
+    get_rname(Rname),
     start_match(Cpname, Rname), !. % Indo para GameMenu.pl
 
 % Atualizar sala
-switch_menu_room_wait_action("2", Cpname, Rname, Menu):-
+switch_menu_room_wait_action("2", Cpname, Menu):-
+    get_rname(Rname),
     menu_room_wait(Menu, Cpname, Rname), !.
 
-switch_menu_room_wait_action(_, Cpname, Rname, Menu):-
+switch_menu_room_wait_action(_, Cpname, Menu):-
+    get_rname(Rname),
     writeln("Botão inválido, tente novamente"),
     sleep(2),
     menu_room_wait(Menu, Cpname, Rname).
