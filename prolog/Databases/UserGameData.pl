@@ -5,20 +5,15 @@
 :- dynamic user_game_data/8.
 
 % Test
+% user_game_data("Pedro", 1, true, 0, 0, 0, 0, false).
+% user_game_data("Djan", 2, true, 0, 0, 0, 0, false).
+% user_game_data("Matheus", 3, true, 0, 0, 0, 0, false).
 % user_game_data(Player, Role, Status, KillVote, Vote, Paralize, Silence, IsDeadByCursedWord),
 
 % user_game_data("Pedro", 1, true, 0, 0, 0, 0, false).
 % user_game_data("Djan", 2, true, 0, 0, 0, 0, false).
 % user_game_data("Matheus", 3, false, 0, 0, 0, 0, false).
-% user_game_data("Pedro1", 4, false, 0, 0, 0, 0, false).
-% user_game_data("Djan1", 5, true, 0, 0, 0, 0, true). 
-% user_game_data("Matheus1", 6, true, 0, 0, 0, 0, true).
-% user_game_data("Pedro2", 7, false, 0, 0, 0, 0, false).
-% user_game_data("Djan2", 8, true, 0, 0, 0, 0, true). 
-% user_game_data("Matheus2", 9, true, 0, 0, 0, 0, true).
-% user_game_data("Pedro3", 10, false, 0, 0, 0, 0, false).
-% user_game_data("Djan3", 11, true, 0, 0, 0, 0, true). 
-% user_game_data("Matheus3", 12, true, 0, 0, 0, 0, true).
+
 
 
 % User Game Data Actions ----------------------------------------
@@ -44,12 +39,15 @@ assign_roles(Room) :-
     assign_roles_to_players(Players, RandomizedRoles),
     maplista(start_knowledge, Players, RandomizedRoles).
 
+
+
+
 maplista(_, [], []).
 maplista(Pred, [X|Xs], [Y|Ys]) :-
     call(Pred, X, Y),
     maplista(Pred, Xs, Ys).
-
-assign_roles_to_players([], []).
+    
+assign_roles_to_players([], _).
 assign_roles_to_players([Player|Rest], [Role|RemainingRoles]) :-
     assertz(user_game_data(Player, Role, true, 0, 0, 0, 0, false)),
     assign_roles_to_players(Rest, RemainingRoles).
@@ -57,7 +55,7 @@ assign_roles_to_players([Player|Rest], [Role|RemainingRoles]) :-
 reset_values(Name) :-
     retract(user_game_data(Name, Role, Status, _, _, _, _, isDeadByCursedWord)),
     assertz(user_game_data(Name, Role, Status, 0, 0, 0, 0, isDeadByCursedWord)).
-    
+
 get_players_alive_role(Person, Players, Alive, Role) :-
     get_player_room(Person, Room),
     get_all_in_room(Room, Players),
@@ -117,8 +115,7 @@ count_good_players([_|Players], Count) :-
     count_good_players(Players, Count).
 
 is_allowed(Name) :-
-    user_game_data(Name, _, true, _, _, 0, 0, _),
-    write('foi'), nl.
+    user_game_data(Name, _, true, _, _, 0, 0, _).
 
 % Player Actions ------------------------------------------------
 vote(PlayerName) :-
@@ -131,7 +128,7 @@ paralise(PlayerName) :-
     NewC is C + 1,
     assertz(user_game_data(PlayerName, X, Y, A, B, NewC, D, E)).
 
-silence(PlayerName) :-
+silence_player(PlayerName) :-
     retract(user_game_data(PlayerName, X, Y, A, B, C, D, E)),
     NewD is D + 1,
     assertz(user_game_data(PlayerName, X, Y, A, B, C, NewD, E)).
@@ -145,8 +142,6 @@ save_vote(PlayerName) :-
     retract(user_game_data(PlayerName, X, Y, A, B, C, D, E)),
     NewA is A - 1,
     assertz(user_game_data(PlayerName, X, Y, NewA, B, C, D, E)).
-
-
 
 % KNowledge
 % start_knowledge(Rname, Player, Role)

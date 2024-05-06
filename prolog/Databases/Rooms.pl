@@ -36,11 +36,10 @@ set_room_state(Rname, State, Nround) :-
 room_exists(Name) :-
     room(Name, _, _, _, _, _, _).
 
-room_has_forbidden_word(_, false).
-room_has_forbidden_word(RoomName, HasForbiddenWord) :-
-    room(RoomName, _, _, ForbiddenWord, _, _, _),
-    ForbiddenWord   \= "",
-    HasForbiddenWord = true.
+
+room_has_forbidden_word(RoomName) :-
+    room(RoomName, _, _, ForbiddenWord, _, _),
+    ForbiddenWord \= "".
 
 get_room_master(RoomName, Master) :-
     room(RoomName, Master, _, _, _, _, _).

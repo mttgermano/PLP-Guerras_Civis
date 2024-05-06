@@ -9,7 +9,8 @@
 :- discontiguous get_all_in_room/2.
 
 % Test 
-% player("Pedro", teste, room123, true).
+
+player("Pedro", teste, room123, true).
 % player("Djan", teste, room123, true). 
 % player("Matheus", teste, room123, false).
 % player("Pedro1", teste, room123, true).
@@ -25,6 +26,7 @@
 % Player Actions ------------------------------------------------
 add_player(Name, Password, Status) :-
     \+ player(Name, _, _, _),
+    write(Name), nl,
     assertz(player(Name, Password, _, Status)).
 
 delete_player(Name) :-
@@ -52,5 +54,5 @@ get_all_in_room(RoomName, Players) :-
 get_players_in_room(Room, Players) :-
     findall(X, player(X, _, Room, true), Players).
 
-gey_bots_in_room(Room, Bots) :-
+get_bots_in_room(Room, Bots) :-
     findall(X, player(X, _, Room, false), Bots).
