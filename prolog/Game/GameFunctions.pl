@@ -1,4 +1,5 @@
 :- include('RoleFunctions.pl').
+:- include('BotLogic.pl').
 
 player_action(PlayerName, Action) :-
     get_role(PlayerName, Role), (
@@ -17,7 +18,6 @@ player_action(PlayerName, Action) :-
     ).
 
 start_game(Rname, Cpname) :-
-    room(Rname, RoomMaster, IsAlive, CursedWord, Messages, Rstate),
     get_players_in_room(Cpname, Nplayers),
     length(Nplayers, Length),
     Nbots is 12 - Length,
