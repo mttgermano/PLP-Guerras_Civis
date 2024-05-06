@@ -11,10 +11,8 @@ format(string(RoomData), '│ > Room: ~w~w│\n│~w│\n│ > Round: ~w - ~w~w�
             "┌───────────────────────────── Guerras Civis ──────────────────────────────┐",
             RoomData,
             "│                                                                          │",
-            "│ Players:  IsAlive:  Role:                                                │",
+            "│ Players:   IsAlive:    Role:                                             │",
             PlayerData,
-            "│                                                                          │",
-            "│                                                                          │",
             "│                                                                          │",
             "│                                                                          │",
             "│──────────────────────────────────────────────────────────────────────────│",
@@ -85,9 +83,25 @@ prepend_pipe_to_strings([String|Rest], [ModifiedString|ModifiedRest]) :-
 % Util ---------------------------------------------
 print_lists([], [], []):- !.
 print_lists([Player|Players], [IsAlive|IsAliveList], [Role|Roles]) :-
-    format(atom(PlayerData), "| ~w    ~w        ~w", [Player, IsAlive, Role]),
+    translate_role(Role, R),
+    format(atom(PlayerData), "| ~w    ~w      ~w", [Player, IsAlive, R]),
     writeln(PlayerData),
     print_lists(Players, IsAliveList, Roles).
+
+translate_role(-1, "???").
+translate_role(1, "Assassino").
+translate_role(2, "Aprendiz").
+translate_role(3, "Paparazzi").
+translate_role(4, "Paralisador").
+translate_role(5, "Silenciador").
+translate_role(6, "Bruxo").
+translate_role(7, "Detetive").
+translate_role(8, "Juiz").
+translate_role(9, "Policial").
+translate_role(10, "Médico").
+translate_role(11, "Aldeão").
+translate_role(12, "Espírito Vingativo").
+
 
 start_match(Cpname, Rname):-
     start_game(Rname, Cpname),
