@@ -50,9 +50,6 @@ assign_roles(Room) :-
     assign_roles_to_players(Players, RandomizedRoles),
     maplista(start_knowledge, Players, RandomizedRoles).
 
-
-
-
 maplista(_, [], []).
 maplista(Pred, [X|Xs], [Y|Ys]) :-
     call(Pred, X, Y),

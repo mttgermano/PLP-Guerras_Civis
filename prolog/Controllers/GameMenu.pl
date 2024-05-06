@@ -86,20 +86,19 @@ print_lists([Player|Players], [IsAlive|IsAliveList], [Role|Roles]) :-
     writeln(PlayerData),
     print_lists(Players, IsAliveList, Roles).
 
-translate_role(-1, "???").
-translate_role(1, "Assassino").
-translate_role(2, "Aprendiz").
-translate_role(3, "Paparazzi").
-translate_role(4, "Paralisador").
-translate_role(5, "Silenciador").
-translate_role(6, "Bruxo").
-translate_role(7, "Detetive").
-translate_role(8, "Juiz").
-translate_role(9, "Policial").
-translate_role(10, "Médico").
-translate_role(11, "Aldeão").
-translate_role(12, "Espírito Vingativo").
-
+translate_role(-1,  "???").
+translate_role(1,   "Assassino").
+translate_role(2,   "Aprendiz").
+translate_role(3,   "Paparazzi").
+translate_role(4,   "Paralisador").
+translate_role(5,   "Silenciador").
+translate_role(6,   "Bruxo").
+translate_role(7,   "Detetive").
+translate_role(8,   "Juiz").
+translate_role(9,   "Policial").
+translate_role(10,  "Médico").
+translate_role(11,  "Aldeão").
+translate_role(12,  "Espírito Vingativo").
 
 start_match(Cpname, Rname):-
     start_game(Rname),
@@ -109,12 +108,13 @@ start_match(Cpname, Rname):-
 loop_match(Cpname, Rname):-
     get_room_state(Rname, State, Nround),
     measure_state(State, Period),
-    (Period = "Civis" ; Period = "Mafiosos" -> 
-        menu_template(State, Menu), 
-        menu_winner(Menu) 
-        ; get_players_alive_role(Cpname, Players, Alive, Role),
-        menu_template("Game", Rname, Players, Alive, Role, Nround, Period, Menu),
-        menu_game(Cpname, Players, Menu)).
+    (Period = "Civis" ; Period = "Mafiosos" 
+        ->  menu_template(State, Menu), 
+            menu_winner(Menu) 
+
+        ;   get_players_alive_role(Cpname, Players, Alive, Role),
+            menu_template("Game", Rname, Players, Alive, Role, Nround, Period, Menu),
+            menu_game(Cpname, Players, Menu)).
 
 measure_state("A", "Noite").
 measure_state("V", "Dia").

@@ -9,23 +9,23 @@
 :- discontiguous get_all_in_room/2.
 
 % Test 
-
-player("Pedro", teste, room123, true).
-player("Djan", teste, room123, true). 
-player("Matheus", teste, room123, false).
-player("Pedro1", teste, room123, true).
-player("Djan1", teste, room123, true). 
-player("Matheus1", teste, room123, false).
-player("Pedro2", teste, room123, true).
-player("Djan2", teste, room123, true). 
-player("Matheus2", teste, room123, false).
-player("Pedro3", teste, room123, true).
-player("Djan3", teste, room123, true). 
-player("Matheus3", teste, room123, false).
+player("Pedro",     teste, room123, true).
+player("Djan",      teste, room123, true). 
+player("Matheus",   teste, room123, false).
+player("Pedro1",    teste, room123, true).
+player("Djan1",     teste, room123, true). 
+player("Matheus1",  teste, room123, false).
+player("Pedro2",    teste, room123, true).
+player("Djan2",     teste, room123, true). 
+player("Matheus2",  teste, room123, false).
+player("Pedro3",    teste, room123, true).
+player("Djan3",     teste, room123, true). 
+player("Matheus3",  teste, room123, false).
 
 % Player Actions ------------------------------------------------
 add_player(Name, Password, Status) :-
     \+ player(Name, _, _, _),
+    writeln(Name),
     assertz(player(Name, Password, _, Status)).
 
 delete_player(Name) :-

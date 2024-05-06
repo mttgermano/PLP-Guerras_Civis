@@ -7,11 +7,10 @@ botActionChoice(RName, Chosen) :-
     random(0, Length, Posicao),
     nth0(Posicao, Players, Chosen).
 
-createBots(0, _)        :- true.
+createBots(0, _)        :- writeln("bots criados").
 createBots(Quant, RName)    :-
     atomic_list_concat(['bot-', Quant], BotName),
     add_player(BotName, "", true),
-    %add_user_game_data(BotName),
     NewQuant is Quant - 1,
     createBots(NewQuant, RName).
 
@@ -40,9 +39,10 @@ botBrain(RName, BotName) :-
             get_role(BotName, BotRole),
             ( BotRole =:= 11 -> (
                     vote(PlayerToIncrement),
-                    vote(PlayerToIncrement)
-                ); true )
-        ) ; true ).
+                    vote(PlayerToIncrement))
+                    ; true )
+        ) 
+        ; true).
 
 compareIsGood(BotName, Players, PlayerName, Score) :-
     is_good(BotName, BotIsGood),
