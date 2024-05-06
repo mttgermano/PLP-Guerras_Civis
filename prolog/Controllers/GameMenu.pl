@@ -22,9 +22,9 @@ format(string(RoomData), '│ > Room: ~w~w│\n│~w│\n│ > Round: ~w - ~w~w�
             "│                                                                          │",
             "└──────────────────────────────────────────────────────────────────────────┘"].
 
-spaces1(X) :- X = "                                                             ". 
+spaces1(X) :- X = "                                                            ". 
 spaces2(X) :- X = "                                                                          ".
-spaces3(X) :- X = "                                                 ".
+spaces3(X) :- X = "                                                       ".
 
 menu_template("RoomChat", MenuTemplate) :-
     %mostar numero n de linhas....
@@ -35,8 +35,8 @@ menu_template("RoomChat", MenuTemplate) :-
     get_room_messages(Rname, Messages),
     prepend_pipe_to_strings(Messages, ModifiedList),
     append(["┌───────────────────────────── Guerras Civis ──────────────────────────────┐\n|"], ModifiedList, MenuWithMessages),
-    append(MenuWithMessages, ["|\n|──────────────────────────────────────────────────────────────────────────|"], MenuWithButtonHeader),
-    append(MenuWithButtonHeader,["|\n| [1] Back Menu\n| [2] Atualizar\n|"], MenuWithButtons),%pode virar um template so.....
+    append(MenuWithMessages, ["|\n|──────────────────────────────────────────────────────────────────────────┐"], MenuWithButtonHeader),
+    append(MenuWithButtonHeader,["|\n| [1] Voltar para o menu principal\n| [2] Atualizar Chat\n|"], MenuWithButtons),%pode virar um template so.....
     append(MenuWithButtons, ["└──────────────────────────────────────────────────────────────────────────┘"], MenuTemplate).
 
 menu_template("M",
@@ -159,7 +159,7 @@ switch_game_action(_, Cpname, Players, Menu):-
 chat_menu(Menu, Cpname):-
     cl,
     print_menu(Menu),
-    write("| Message  $ "),
+    write("| Mensagem  $ "),
     read_line_to_string(user_input, Input),
     switch_chat_menu_action(Input, Cpname, Menu).
 
