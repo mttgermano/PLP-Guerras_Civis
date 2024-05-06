@@ -1,4 +1,5 @@
-:- include('BotLogic.pl').
+:- include('RoleFunctions.pl').
+
 
 player_action(PlayerName, Action, 'action') :-
     get_role(PlayerName, Role), (

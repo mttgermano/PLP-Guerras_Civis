@@ -11,11 +11,9 @@ createBots(0, _)        :- format('> All Bots created  ~n').
 createBots(Quant, RName)    :-
     atomic_list_concat(['bot-', Quant], BotName),
     add_player(BotName, "", true),
-    add_user_game_data(BotName),
+    %add_user_game_data(BotName),
     NewQuant is Quant - 1,
     createBots(NewQuant, RName).
-
-
 
 splitBySpaces([], []).
 splitBySpaces([String|Rest], Result) :-
@@ -113,11 +111,11 @@ botAction(Bot, RName) :-
         ;   BotRole =:= 12 -> revenge(Bot, Player)
         ;   true
     ).
-
 callBots([], _).
 callBots([BotName|Rest], RName) :-
     botAction(BotName, RName),
     callBots(Rest, RName).
+
 
 botsRound(RName) :-
     get_bots_in_room(RName, Bots),
@@ -126,8 +124,8 @@ botsRound(RName) :-
     format("> [~w] Room - Terminou Bot Round ~n", [RName]).
 
 callBotsVote([], _).
-callBotsVote([BotId|Rest], RName) :-
-    botBrain(RName, BotId),
+callBotsVote([BotName|Rest], RName) :-
+    botBrain(RName, BotName),
     callBotsVote(Rest, RName).
 
 voteBotsRound(RName) :-
@@ -139,6 +137,7 @@ voteBotsRound(RName) :-
 deleteBot(Name) :-
     delete_player(Name),
     format('Bot ~w deletado.~n', [Name]).
+
 
 deleteRoomBots(RName) :-
     get_bots_in_room(RName, Bots),

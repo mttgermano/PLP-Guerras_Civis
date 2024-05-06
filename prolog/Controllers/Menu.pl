@@ -1,6 +1,7 @@
 :- include('./../Databases/Rooms.pl').
 :- include('./GameMenu.pl').
 :- include('./Utils.pl').
+:-
 
 :- discontiguous menu_template/2.
 :- discontiguous player/4.
@@ -9,7 +10,7 @@
 menu_template("Start",
     [
     "┌───────────────────────────── Guerras Civis ──────────────────────────────┐",
-    "│ > Welcome to Guerras Civis                                               │",
+    "│ > Bem-vindo(a) ao Guerras Civis!                                         │",
     "│                                                                          │",
     "│                                                                          │",
     "│                                                                          │",
@@ -19,15 +20,15 @@ menu_template("Start",
     "│                                                                          │",
     "│                                                                          │",
     "│                                                                          │",
-    "│ [1]  Create Player                                                       │",
-    "│ [2]  Login  Player                                                       │",
-    "│ [3]  Quit                                                                │",
+    "│ [1]  Criar Jogador                                                       │",
+    "│ [2]  Realizar Login                                                      │",
+    "│ [3]  Sair                                                                │",
     "└──────────────────────────────────────────────────────────────────────────┘"]).
 
 menu_template("PlayerCreate",
     [
     "┌───────────────────────────── Guerras Civis ──────────────────────────────┐",
-    "│ > Player Register                                                        │",
+    "│ > Registrar Jogador                                                      │",
     "│                                                                          │",
     "│                                                                          │",
     "│                                                                          │",
@@ -37,13 +38,13 @@ menu_template("PlayerCreate",
     "│                                                                          │",
     "│                                                                          │",
     "│                                                                          │",
-    "│ [1]  Go back                                                             │",
+    "│ [1]  Voltar                                                              │",
     "└──────────────────────────────────────────────────────────────────────────┘"]).
 
 menu_template("PlayerLogin",
     [
     "┌───────────────────────────── Guerras Civis ──────────────────────────────┐",
-    "│ > Player Login                                                           │",
+    "│ > Realizar Login                                                         │",
     "│                                                                          │",
     "│                                                                          │",
     "│                                                                          │",
@@ -53,13 +54,13 @@ menu_template("PlayerLogin",
     "│                                                                          │",
     "│                                                                          │",
     "│                                                                          │",
-    "│ [1]  Go back                                                             │",
+    "│ [1]  Voltar                                                              │",
     "└──────────────────────────────────────────────────────────────────────────┘"]).
 
 menu_template("Room",
     [
     "┌───────────────────────────── Guerras Civis ──────────────────────────────┐",
-    "│ > Room                                                                   │",
+    "│ > Sala                                                                   │",
     "│                                                                          │",
     "│                                                                          │",
     "│                                                                          │",
@@ -68,14 +69,14 @@ menu_template("Room",
     "│                                                                          │",
     "│                                                                          │",
     "│                                                                          │",
-    "│ [1] Create Room                                                          │",
-    "│ [2] Login  Room                                                          │",
+    "│ [1] Criar Sala                                                           │",
+    "│ [2] Entrar em sala                                                       │",
     "└──────────────────────────────────────────────────────────────────────────┘"]).
 
 menu_template("RoomCreate",
     [
     "┌───────────────────────────── Guerras Civis ──────────────────────────────┐",
-    "│ > Room Register                                                          │",
+    "│ > Criar Sala                                                             │",
     "│                                                                          │",
     "│                                                                          │",
     "│                                                                          │",
@@ -85,7 +86,7 @@ menu_template("RoomCreate",
     "│                                                                          │",
     "│                                                                          │",
     "│                                                                          │",
-    "│ [1]  Go back                                                             │",
+    "│ [1]  Voltar                                                              │",
     "└──────────────────────────────────────────────────────────────────────────┘"]).
 
 
@@ -93,7 +94,7 @@ menu_template("RoomCreate",
 menu_template("RoomLogin",
     [
     "┌───────────────────────────── Guerras Civis ──────────────────────────────┐",
-    "│ > Room Login                                                             │",
+    "│ > Entrar em Sala                                                         │",
     "│                                                                          │",
     "│                                                                          │",
     "│                                                                          │",
@@ -103,15 +104,15 @@ menu_template("RoomLogin",
     "│                                                                          │",
     "│                                                                          │",
     "│                                                                          │",
-    "│ [1]  Go back                                                             │",
+    "│ [1]  Voltar                                                              │",
     "└──────────────────────────────────────────────────────────────────────────┘"]).
 
 menu_template("RoomWait", RName, Cpname, Menu) :-
     format(string(MenuLine),
-            '│ > Room Wait (~w)                                                       │',
+            '│ > Sala de espera (~w)                                                 │',
             [RName]),
     format(string(Players),
-            '| > Players:                                                               |\n| - ~w', 
+            '| > Jogadores:                                                             |\n| - ~w', 
             [Cpname]),
     Menu = [
         "┌───────────────────────────── Guerras Civis ──────────────────────────────┐",
@@ -126,18 +127,18 @@ menu_template("RoomWait", RName, Cpname, Menu) :-
         "│                                                                          │",
         "│                                                                          │",
         "│                                                                          │",
-        "│ [1] Start Game                                                           │",
-        "│ [2] Atualizar                                                            │",
+        "│ [1] Iniciar Jogo                                                         │",
+        "│ [2] Atualizar Sala                                                       │",
         "└──────────────────────────────────────────────────────────────────────────┘"
     ].
     
 
 menu_template("RoomWaitNotRoomMaster", RName, Cpname, Menu) :-
     format(string(MenuLine),
-            '│ > Room Wait (~w)                                                        │',
+            '│ > Sala de espera (~w)                                                        │',
             [RName]),
     format(string(Players),
-            '| > Players:                                                            |\n ~w', 
+            '| > Jogadores:                                                          |\n ~w', 
             [Cpname]),
     Menu = [
         "┌───────────────────────────── Guerras Civis ──────────────────────────────┐",
@@ -270,10 +271,10 @@ menu_room_wait(Menu, Rname, Cpname) :-
 
 % Iniciar Jogo
 switch_menu_room_wait_action("1", Cpname, _):- 
-    writeln("Loading Game..."),
+    writeln("Carregando Partida..."),
     sleep(2),
     get_rname(Rname),
-    loop_match(Cpname, Rname), !. % Indo para GameMenu.pl
+    start_match(Cpname, Rname), !. % Indo para GameMenu.pl
 
 % Atualizar sala
 switch_menu_room_wait_action("2", Cpname, Menu):-

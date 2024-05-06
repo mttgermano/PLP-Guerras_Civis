@@ -9,6 +9,7 @@
 :- discontiguous get_all_in_room/2.
 
 % Test 
+
 player("Pedro", teste, room123, true).
 % player("Djan", teste, room123, true). 
 % player("Matheus", teste, room123, false).

@@ -1,8 +1,8 @@
 :- include('./Utils.pl').
-:- include('./../Databases/UserGameData.pl').
+:- include('./../Game/GameFunctions.pl').
 
-menu_template("Game", Rname, Players, IsAlive, Role, Round, State, Menu):- spaces1(X),spaces2(Y),spaces3(Z),spaces4(V),
-format(string(RoomData), '│ > Room: ~w~w│\n│~w│\n│ > Round: ~w - ~w~w│\n│~w│', [Rname,X,Y,Round,State,Z,V]),
+menu_template("Game", Rname, Players, IsAlive, Role, Round, Period, Menu):- spaces1(X),spaces2(Y),spaces3(Z),
+format(string(RoomData), '│ > Room: ~w~w│\n│~w│\n│ > Round: ~w - ~w~w│', [Rname,X,Y,Round,Period,Z]),
 
 
 
@@ -10,10 +10,9 @@ format(string(RoomData), '│ > Room: ~w~w│\n│~w│\n│ > Round: ~w - ~w~w�
     Menu = [
             "┌───────────────────────────── Guerras Civis ──────────────────────────────┐",
             RoomData,
-            "│ Players:  IsAlive:  Role:                                                │",
+            "│                                                                          │",
+            "│ Players:   IsAlive:    Role:                                             │",
             PlayerData,
-            "│                                                                          │",
-            "│                                                                          │",
             "│                                                                          │",
             "│                                                                          │",
             "│──────────────────────────────────────────────────────────────────────────│",
@@ -22,10 +21,10 @@ format(string(RoomData), '│ > Room: ~w~w│\n│~w│\n│ > Round: ~w - ~w~w�
             "│ [2] Enviar Mensagem                                                      │",
             "│                                                                          │",
             "└──────────────────────────────────────────────────────────────────────────┘"].
-spaces1(X) :- X = "                                                             ". 
+
+spaces1(X) :- X = "                                                            ". 
 spaces2(X) :- X = "                                                                          ".
-spaces3(X) :- X = "                                                 ".
-spaces4(X) :- X = "                                                                          ".
+spaces3(X) :- X = "                                                       ".
 
 menu_template("RoomChat", MenuTemplate) :-
     %mostar numero n de linhas....
@@ -36,13 +35,47 @@ menu_template("RoomChat", MenuTemplate) :-
     get_room_messages(Rname, Messages),
     prepend_pipe_to_strings(Messages, ModifiedList),
     append(["┌───────────────────────────── Guerras Civis ──────────────────────────────┐\n|"], ModifiedList, MenuWithMessages),
-    append(MenuWithMessages, ["|\n|──────────────────────────────────────────────────────────────────────────|"], MenuWithButtonHeader),
-    append(MenuWithButtonHeader,["|\n| [1] Back Menu\n| [2] Atualizar\n|"], MenuWithButtons),%pode virar um template so.....
+    append(MenuWithMessages, ["|\n|──────────────────────────────────────────────────────────────────────────┐"], MenuWithButtonHeader),
+    append(MenuWithButtonHeader,["|\n| [1] Voltar para o menu principal\n| [2] Atualizar Chat\n|"], MenuWithButtons),%pode virar um template so.....
     append(MenuWithButtons, ["└──────────────────────────────────────────────────────────────────────────┘"], MenuTemplate).
 
+menu_template("M",
+    [
+    "┌───────────────────────────── Guerras Civis ──────────────────────────────┐",
+    "│ > Os mafiosos venceram!                                                  │",
+    "│                                                                          │",
+    "│                                                                          │",
+    "│                                                                          │",
+    "│                                                                          │",
+    "│                                                                          │",
+    "│                                                                          │",
+    "│                                                                          │",
+    "│                                                                          │",
+    "│                                                                          │",
+    "│                                                                          │",
+    "│                                                                          │",
+    "│                                                                          │",
+    "└──────────────────────────────────────────────────────────────────────────┘"]).
+menu_template("C",
+    [
+    "┌───────────────────────────── Guerras Civis ──────────────────────────────┐",
+    "│ > Os civis venceram!                                                     │",
+    "│                                                                          │",
+    "│                                                                          │",
+    "│                                                                          │",
+    "│                                                                          │",
+    "│                                                                          │",
+    "│                                                                          │",
+    "│                                                                          │",
+    "│                                                                          │",
+    "│                                                                          │",
+    "│                                                                          │",
+    "│                                                                          │",
+    "│                                                                          │",
+    "└──────────────────────────────────────────────────────────────────────────┘"]).
 
 %%adicionar calculo para formatacao dependendo do tamanho da palavra
-prepend_pipe_to_strings([], []).
+prepend_pipe_to_strings([], []):- !.
 prepend_pipe_to_strings([String|Rest], [ModifiedString|ModifiedRest]) :-
     atom_concat('│', String, ModifiedString),
     prepend_pipe_to_strings(Rest, ModifiedRest).
@@ -50,17 +83,51 @@ prepend_pipe_to_strings([String|Rest], [ModifiedString|ModifiedRest]) :-
 % Util ---------------------------------------------
 print_lists([], [], []):- !.
 print_lists([Player|Players], [IsAlive|IsAliveList], [Role|Roles]) :-
-    format(atom(PlayerData), "| ~w    ~w         ~w", [Player, IsAlive, Role]),
+    translate_role(Role, R),
+    format(atom(PlayerData), "| ~w    ~w      ~w", [Player, IsAlive, R]),
     writeln(PlayerData),
     print_lists(Players, IsAliveList, Roles).
 
-% Início do Jogo / Loop - Vai receber os dados do jogo e chamar o template
+translate_role(-1, "???").
+translate_role(1, "Assassino").
+translate_role(2, "Aprendiz").
+translate_role(3, "Paparazzi").
+translate_role(4, "Paralisador").
+translate_role(5, "Silenciador").
+translate_role(6, "Bruxo").
+translate_role(7, "Detetive").
+translate_role(8, "Juiz").
+translate_role(9, "Policial").
+translate_role(10, "Médico").
+translate_role(11, "Aldeão").
+translate_role(12, "Espírito Vingativo").
+
+
+start_match(Cpname, Rname):-
+    start_game(Rname, Cpname),
+    loop_match(Cpname, Rname).
+
+% Início do Jogo / Loop - Vai receber os dados do jogo, chamar o template e esperar escolha
 loop_match(Cpname, Rname):-
-    Players = ["bot-4323", "bot-3213", "bot-3212", "bot-9873"],
-    Alive = ["T", "T", "F", "T"],
-    Role = ["???", "Assassino", "Policial", "???"],
-    menu_template("Game", Rname, Players, Alive, Role, Round, State, Menu),
-    menu_game(Cpname, Players, Menu).
+    get_room_state(Rname, State, Nround),
+    measure_state(State, Period),
+    (Period = "Civis" ; Period = "Mafiosos" -> 
+        menu_template(State, Menu), 
+        menu_winner(Menu) 
+        ;
+        get_players_alive_role(Cpname, Players, Alive, Role),
+        menu_template("Game", Rname, Players, Alive, Role, Nround, Period, Menu),
+        menu_game(Cpname, Players, Menu)   
+    ).
+
+measure_state("A", "Noite").
+measure_state("V", "Dia").
+measure_state("C", "Civis").
+measure_state("M", "Mafiosos").
+
+menu_winner(Menu):-
+    cl,
+    print_menu(Menu).
 
 menu_game(Cpname, Players, Menu):-
     cl,
@@ -73,10 +140,9 @@ switch_game_action("1", Cpname, Players, Menu):-
     write("│ Qual jogador você quer executar sua ação?    $ "),
     read_line_to_string(user_input, ActionTarget), (
         member(ActionTarget, Players)
-        ->  writeln("Carregando..."), sleep(2), menu_game(Cpname, Players, Menu) 
+        ->  writeln("Carregando..."), player_action(Cpname, ActionTarget), sleep(2), menu_game(Cpname, Players, Menu) 
         ;   writeln("Nome incorreto, tente novamente"), sleep(2), menu_game(Cpname, Players, Menu)
         ).
-    player_action(Cpname, ActionTarget),
     menu_game(Cpname, Menu).
     
 % Chat de mensagem
@@ -93,18 +159,20 @@ switch_game_action(_, Cpname, Players, Menu):-
 chat_menu(Menu, Cpname):-
     cl,
     print_menu(Menu),
-    write("| Message  $ "),
+    write("| Mensagem  $ "),
     read_line_to_string(user_input, Input),
     switch_chat_menu_action(Input, Cpname, Menu).
 
-% Ações do chat
+% Voltar
 switch_chat_menu_action("1", Cpname, _):-
     get_rname(Rname), 
     loop_match(Cpname, Rname), !.
 
+% Atualizar chat
 switch_chat_menu_action("2", Cpname, Menu):-
     chat_menu(Menu, Cpname), !.
 
+% Mensagem
 switch_chat_menu_action(Input, Cpname, _):-
     atom_concat(Cpname, ': ', MessagePrefix),
     atom_concat(MessagePrefix, Input, Message),
