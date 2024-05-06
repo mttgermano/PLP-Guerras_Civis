@@ -52,5 +52,5 @@ get_all_in_room(RoomName, Players) :-
 get_players_in_room(Room, Players) :-
     findall(X, player(X, _, Room, true), Players).
 
-gey_bots_in_room(Room, Bots) :-
+get_bots_in_room(Room, Bots) :-
     findall(X, player(X, _, Room, false), Bots).

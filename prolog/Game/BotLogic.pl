@@ -1,11 +1,11 @@
-:- include('./../Databases/Rooms.pl').
+:- include('RoleFunctions.pl').
 :- use_module(library(uuid)).
 
-botActionChoice(PlayerName, RName) :-
+botActionChoice(RName, Chosen) :-
     get_alive_players_in_room(RName, Players),
     length(Players, Length),
     random(0, Length, Posicao),
-    nth0(Posicao, Players, PlayerName).
+    nth0(Posicao, Players, Chosen).
 
 createBots(0, RName)        :- format('> All Bots created in [~w]', [RName]).
 createBots(Quant, RName)    :-
@@ -38,6 +38,8 @@ botBrain(RName, BotName) :-
             index_of_max(Results, Ind, Max),
             nth0(Ind, PlayersNames, PlayerToIncrement),
             vote(PlayerToIncrement),
+            write(BotName), nl,
+            write(PlayerToIncrement), nl,
             get_role(BotName, BotRole),
             ( BotRole =:= 11 -> (
                     vote(PlayerToIncrement),
@@ -94,42 +96,35 @@ randomWord(Word) :-
     random(0, Length, Index),
     nth0(Index, Words, Word).
 
-botAction(BotId, RName) :-
-    getRole(BotId, BotRole),
-    botActionChoice(BotId, RName, PlayerId),
+botAction(Bot, RName) :-
+    get_role(Bot, BotRole),
+    botActionChoice(RName, Player),
     randomWord(ChoiceWord),
-    getPlayerNameFromUUID(PlayerId, PlayerName),
-    getPlayerNameFromUUID(BotId, BotName),
-    isPlayerAlive(BotId, BotAlive),
     (
-        BotAlive = false -> true
-        ;
-        (
-            BotRole = 1 -> kill(BotName, PlayerName)
-        ;   BotRole = 2 -> apprentice(BotName, PlayerName)
-        ;   BotRole = 3 -> reveal(BotName, PlayerName)
-        ;   BotRole = 4 -> paralize(BotName, PlayerName)
-        ;   BotRole = 5 -> silence(BotName, PlayerName)
-        ;   BotRole = 6 -> setCursedWord(BotName, ChoiceWord)
-        ;   BotRole = 7 -> search(BotName, PlayerName)
-        ;   BotRole = 8 -> kill(BotName, PlayerName)
-        ;   BotRole = 9 -> police(BotName, PlayerName)
-        ;   BotRole = 10 -> save(BotName, PlayerName)
-        ;   BotRole = 12 -> revenge(BotName, PlayerName)
-        ;   true -> format(".")
-        )
+        BotRole =:= 1 -> kill(Bot, Player)
+        ;   BotRole =:= 2 -> apprentice(Bot, Player)
+        ;   BotRole =:= 3 -> reveal(Bot, Player)
+        ;   BotRole =:= 4 -> paralyze(Bot, Player)
+        ;   BotRole =:= 5 -> silence(Bot, Player)
+        ;   BotRole =:= 6 -> setCursedWord(Bot, ChoiceWord)
+        ;   BotRole =:= 7 -> search(Bot, Player)
+        ;   BotRole =:= 8 -> kill(Bot, Player)
+        ;   BotRole =:= 9 -> police(Bot, Player)
+        ;   BotRole =:= 10 -> save(Bot, Player)
+        ;   BotRole =:= 12 -> revenge(Bot, Player)
+        ;   true
     ).
 
 callBots([], _).
-callBots([BotId|Rest], RName) :-
-    botAction(BotId, RName),
+callBots([BotName|Rest], RName) :-
+    botAction(BotName, RName),
     callBots(Rest, RName).
 
 botsRound(RName) :-
-    getRoomBots(RName, Bots),
-    format("> [~w] Room - Começou Bot Round", [RName]),
+    get_bots_in_room(RName, Bots),
+    format("> [~w] Room - Comecou Bot Round ~n", [RName]),
     callBots(Bots, RName),
-    format("> [~w] Room - Terminou Bot Round", [RName]).
+    format("> [~w] Room - Terminou Bot Round ~n", [RName]).
 
 callBotsVote([], _).
 callBotsVote([BotId|Rest], RName) :-
@@ -137,18 +132,16 @@ callBotsVote([BotId|Rest], RName) :-
     callBotsVote(Rest, RName).
 
 voteBotsRound(RName) :-
-    getRoomBots(RName, Bots),
-    format("> [~w] Room - Começou Bot Vote", [RName]),
+    get_bots_in_room(RName, Bots),
+    format("> [~w] Room - Comecou Bot Vote ~n", [RName]),
     callBotsVote(Bots, RName),
-    format("> [~w] Room - Terminou Bot Vote", [RName]).
+    format("> [~w] Room - Terminou Bot Vote ~n", [RName]).
 
-:- dynamic(bot/1).
-
-deleteBot(BUUID) :-
-    retract(bot(BUUID)),
-    format('Bot ~w deletado.~n', [BUUID]).
+deleteBot(Name) :-
+    delete_player(Name),
+    format('Bot ~w deletado.~n', [Name]).
 
 deleteRoomBots(RName) :-
-    getRoomBots(RName, Bots),
+    get_bots_in_room(RName, Bots),
     maplist(deleteBot, Bots),
     format("[~w] Room - Bots deletados.~n", [RName]).

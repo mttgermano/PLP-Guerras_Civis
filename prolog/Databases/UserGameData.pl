@@ -7,7 +7,7 @@
 % Test
 user_game_data("Pedro", 1, true, 0, 0, 0, 0, false).
 user_game_data("Djan", 2, true, 0, 0, 0, 0, false).
-user_game_data("Matheus", 3, false, 0, 0, 0, 0, false).
+user_game_data("Matheus", 3, true, 0, 0, 0, 0, false).
 user_game_data("Pedro1", 4, false, 0, 0, 0, 0, false).
 user_game_data("Djan1", 5, true, 0, 0, 0, 0, true). 
 user_game_data("Matheus1", 6, true, 0, 0, 0, 0, true).
@@ -109,8 +109,7 @@ count_good_players([_|Players], Count) :-
     count_good_players(Players, Count).
 
 is_allowed(Name) :-
-    user_game_data(Name, _, true, _, _, 0, 0, _),
-    write('foi'), nl.
+    user_game_data(Name, _, true, _, _, 0, 0, _).
 
 % Player Actions ------------------------------------------------
 vote(PlayerName) :-
@@ -123,7 +122,7 @@ paralise(PlayerName) :-
     NewC is C + 1,
     assertz(user_game_data(PlayerName, X, Y, A, B, NewC, D, E)).
 
-silence(PlayerName) :-
+silence_player(PlayerName) :-
     retract(user_game_data(PlayerName, X, Y, A, B, C, D, E)),
     NewD is D + 1,
     assertz(user_game_data(PlayerName, X, Y, A, B, C, NewD, E)).
