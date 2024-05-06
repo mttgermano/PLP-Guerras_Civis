@@ -1,5 +1,5 @@
 :- include('./Utils.pl').
-:- include('./../Databases/UserGameData.pl').
+:- include('./../Game/GameFunctions.pl').
 
 menu_template("Game", Rname, Players, IsAlive, Role, Round, State, Menu):- spaces1(X),spaces2(Y),spaces3(Z),spaces4(V),
 format(string(RoomData), '│ > Room: ~w~w│\n│~w│\n│ > Round: ~w - ~w~w│\n│~w│', [Rname,X,Y,Round,State,Z,V]),
@@ -75,7 +75,7 @@ switch_game_action("1", Cpname, Players, Menu):-
         member(ActionTarget, Players)
         ->  writeln("Carregando..."), sleep(2), menu_game(Cpname, Players, Menu) 
         ;   writeln("Nome incorreto, tente novamente"), sleep(2), menu_game(Cpname, Players, Menu)
-        ).
+        ),
     player_action(Cpname, ActionTarget),
     menu_game(Cpname, Menu).
     

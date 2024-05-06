@@ -13,7 +13,7 @@ player_action(PlayerName, Action) :-
         Role =:= 9  -> police(PlayerName, Action);
         Role =:= 10 -> save(PlayerName, Action);
         Role =:= 11 -> true;
-        Role =:= 12 -> revenge(PlayerName, Action);
+        Role =:= 12 -> revenge(PlayerName, Action)
     ).
 
 start_game(Rname, Cpname) :-
