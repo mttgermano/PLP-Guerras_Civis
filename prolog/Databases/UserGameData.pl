@@ -10,21 +10,21 @@
 % user_game_data("Matheus", 3, true, 0, 0, 0, 0, false).
 % user_game_data(Player, Role, Status, KillVote, Vote, Paralize, Silence, IsDeadByCursedWord),
 
-user_game_data("Pedro", 1, aflse, 0, 0, 0, 0, false).
-user_game_data("Djan", 2, faflse, 0, 0, 0, 0, false).
-user_game_data("Matheus", 3, false, 0, 0, 0, 0, false).
+% user_game_data("Pedro", 1, aflse, 0, 0, 0, 0, false).
+% user_game_data("Djan", 2, faflse, 0, 0, 0, 0, false).
+% user_game_data("Matheus", 3, false, 0, 0, 0, 0, false).
 
-user_game_data("Pedro1", 4, false, 0, 0, 0, 0, false).
-user_game_data("Djan1", 5, false, 0, 0, 0, 0, false).
-user_game_data("Matheus1", 6, false, 0, 0, 0, 0, false).
+% user_game_data("Pedro1", 4, false, 0, 0, 0, 0, false).
+% user_game_data("Djan1", 5, false, 0, 0, 0, 0, false).
+% user_game_data("Matheus1", 6, false, 0, 0, 0, 0, false).
 
-user_game_data("Pedro2", 7, true, 0, 0, 0, 0, false).
-user_game_data("Djan2", 8, false, 0, 0, 0, 0, false).
-user_game_data("Matheus2", 9, false, 0, 0, 0, 0, false).
+% user_game_data("Pedro2", 7, true, 0, 0, 0, 0, false).
+% user_game_data("Djan2", 8, false, 0, 0, 0, 0, false).
+% user_game_data("Matheus2", 9, false, 0, 0, 0, 0, false).
 
-user_game_data("Pedro3", 10, false, 0, 0, 0, 0, false).
-user_game_data("Djan3", 11, false, 0, 0, 0, 0, false).
-user_game_data("Matheus3", 12, false, 0, 0, 0, 0, false).
+% user_game_data("Pedro3", 10, false, 0, 0, 0, 0, false).
+% user_game_data("Djan3", 11, false, 0, 0, 0, 0, false).
+% user_game_data("Matheus3", 12, false, 0, 0, 0, 0, false).
 
 
 % User Game Data Actions ----------------------------------------
@@ -48,8 +48,7 @@ assign_roles(Room) :-
     numlist(1, 12, AllRoles),
     random_permutation(AllRoles, RandomizedRoles),
     assign_roles_to_players(Players, RandomizedRoles),
-    maplista(start_knowledge, Players, RandomizedRoles),
-    writeln(";;;;").
+    maplista(start_knowledge, Players, RandomizedRoles).
 
 maplista(_, [], []).
 maplista(Pred, [X|Xs], [Y|Ys]) :-

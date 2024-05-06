@@ -7,12 +7,14 @@ botActionChoice(RName, Chosen) :-
     random(0, Length, Posicao),
     nth0(Posicao, Players, Chosen).
 
-createBots(0, _).
-createBots(Quant, Rname)    :-
+createBots(0, _)        :- true.
+createBots(Quant, RName)    :-
     atomic_list_concat(['bot-', Quant], BotName),
     add_player(BotName, "", true),
+    change_player_room(BotName, RName),
+    %add_user_game_data(BotName),
     NewQuant is Quant - 1,
-    createBots(NewQuant, Rname).
+    createBots(NewQuant, RName).
 
 splitBySpaces([], []).
 splitBySpaces([String|Rest], Result) :-
