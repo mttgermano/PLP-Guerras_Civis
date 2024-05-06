@@ -67,5 +67,6 @@ Através da comunicação por chat de texto, os jogadores tecem suas estratégia
 
 ### Ferramentas
 - Haskell
+- Prolog
 - PostgreSQL
 - React
