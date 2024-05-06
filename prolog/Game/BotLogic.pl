@@ -12,7 +12,7 @@ createBots(Quant, RName)    :-
     uuid(UUID),
     atomic_list_concat(['bot-', UUID], BotName),
     add_player(BotName, "", true),
-    add_user_game_data(BotName),
+    %add_user_game_data(BotName),
     NewQuant is Quant - 1,
     createBots(NewQuant, RName).
 

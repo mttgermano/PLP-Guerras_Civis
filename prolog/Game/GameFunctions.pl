@@ -19,7 +19,8 @@ player_action(PlayerName, Action) :-
 start_game(Rname, Cpname) :-
     room(Rname, RoomMaster, IsAlive, CursedWord, Messages, Rstate),
     get_players_in_room(Cpname, Nplayers),
-    Nbots is 12 - Nplayers,
+    length(Nplayers, Length),
+    Nbots is 12 - Length,
     createBots(Nbots, RName),
     get_user_game_data(Cpname, Players, Alive, RoleList),
     maplist(start_knowledge, Players, RoleList).
