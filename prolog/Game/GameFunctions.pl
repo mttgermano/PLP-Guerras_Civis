@@ -1,6 +1,6 @@
 :- include('RoleFunctions.pl').
 
-player_action(PlayerName, Action) :-
+player_action(PlayerName, Action, 'action') :-
     get_role(PlayerName, Role), (
         Role =:= 1  -> kill(PlayerName, Action);
         Role =:= 2  -> apprentice(PlayerName, Action);
@@ -15,3 +15,6 @@ player_action(PlayerName, Action) :-
         Role =:= 11 -> write('Aldeao');
         Role =:= 12 -> revenge(PlayerName, Action);
     ).
+
+player_action(PlayerName, Action, 'vote') :-
+    vote(PlayerName, Action).
