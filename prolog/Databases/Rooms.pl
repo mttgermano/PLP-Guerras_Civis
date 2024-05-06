@@ -7,7 +7,7 @@
 % Room Actions --------------------------------------------------
 add_room(Name, Master, CursedWord) :-
     \+ room(Name, _, _, _, _, _),
-    assertz(room(Name, Master, true, CursedWord, [], "A", 1)).
+    assertz(room(Name, Master, true, CursedWord, [], 'A', 1)).
 
 delete_room(Name) :-
     retract(room(Name, _, _, _, _, _, _)).
@@ -57,6 +57,23 @@ get_room_forbidden_word(Name, ForbiddenWord) :-
 get_alive_players_in_room(Room, AlivePlayers) :-
     get_all_in_room(Room, Players),
     get_alive_players(Players, AlivePlayers).
+
+get_room_round_state(Room, State) :-
+    get_alive_players_in_room(Room, AlivePlayers),
+    write(AlivePlayers), nl,
+    get_good_players(AlivePlayers, GoodPlayers),
+    (   length(GoodPlayers, GoodPlayersLength),
+        GoodPlayersLength =:= 0 -> 
+        State = 'M'
+    ;   length(AlivePlayers, AlivePlayersLength),
+        length(GoodPlayers, GoodPlayersLength),
+        GoodPlayersLength =:= AlivePlayersLength -> 
+        State = 'C'
+    ;   State = 'N'
+    ),
+    write(State).
+
+
 
 is_role_alive_room(Room, Role) :-
     get_all_in_room(Room, Players),

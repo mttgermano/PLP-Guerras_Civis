@@ -10,10 +10,21 @@
 % user_game_data("Matheus", 3, true, 0, 0, 0, 0, false).
 % user_game_data(Player, Role, Status, KillVote, Vote, Paralize, Silence, IsDeadByCursedWord),
 
-% user_game_data("Pedro", 1, true, 0, 0, 0, 0, false).
-% user_game_data("Djan", 2, true, 0, 0, 0, 0, false).
-% user_game_data("Matheus", 3, false, 0, 0, 0, 0, false).
+user_game_data("Pedro", 1, aflse, 0, 0, 0, 0, false).
+user_game_data("Djan", 2, faflse, 0, 0, 0, 0, false).
+user_game_data("Matheus", 3, false, 0, 0, 0, 0, false).
 
+user_game_data("Pedro1", 4, false, 0, 0, 0, 0, false).
+user_game_data("Djan1", 5, false, 0, 0, 0, 0, false).
+user_game_data("Matheus1", 6, false, 0, 0, 0, 0, false).
+
+user_game_data("Pedro2", 7, true, 0, 0, 0, 0, false).
+user_game_data("Djan2", 8, false, 0, 0, 0, 0, false).
+user_game_data("Matheus2", 9, false, 0, 0, 0, 0, false).
+
+user_game_data("Pedro3", 10, false, 0, 0, 0, 0, false).
+user_game_data("Djan3", 11, false, 0, 0, 0, 0, false).
+user_game_data("Matheus3", 12, false, 0, 0, 0, 0, false).
 
 
 % User Game Data Actions ----------------------------------------
@@ -90,6 +101,20 @@ get_alive_players([Player|Rest], AlivePlayers) :-
 
 get_alive_players([_|Rest], AlivePlayers) :-
     get_alive_players(Rest, AlivePlayers).
+
+get_good_players([], []).
+
+get_good_players([Player|Rest], GoodPlayers) :-
+    user_game_data(Player, Role, _, _, _, _, _, _),
+    write(Role), nl,
+    Role >= 7,
+    Role =< 12,
+    get_good_players(Rest, RemainingAlive),
+    GoodPlayers = [Player|RemainingAlive].
+
+get_good_players([_|Rest], GoodPlayers) :-
+    get_good_players(Rest, GoodPlayers).
+
 
 is_good(Name, Result) :-
     user_game_data(Name, Value, _, _, _, _, _, _),

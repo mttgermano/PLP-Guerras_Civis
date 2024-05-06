@@ -11,17 +11,17 @@
 % Test 
 
 player("Pedro", teste, room123, true).
-% player("Djan", teste, room123, true). 
-% player("Matheus", teste, room123, false).
-% player("Pedro1", teste, room123, true).
-% player("Djan1", teste, room123, true). 
-% player("Matheus1", teste, room123, false).
-% player("Pedro2", teste, room123, true).
-% player("Djan2", teste, room123, true). 
-% player("Matheus2", teste, room123, false).
-% player("Pedro3", teste, room123, true).
-% player("Djan3", teste, room123, true). 
-% player("Matheus3", teste, room123, false).
+player("Djan", teste, room123, true). 
+player("Matheus", teste, room123, false).
+player("Pedro1", teste, room123, true).
+player("Djan1", teste, room123, true). 
+player("Matheus1", teste, room123, false).
+player("Pedro2", teste, room123, true).
+player("Djan2", teste, room123, true). 
+player("Matheus2", teste, room123, false).
+player("Pedro3", teste, room123, true).
+player("Djan3", teste, room123, true). 
+player("Matheus3", teste, room123, false).
 
 % Player Actions ------------------------------------------------
 add_player(Name, Password, Status) :-
