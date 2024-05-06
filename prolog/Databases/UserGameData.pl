@@ -48,14 +48,15 @@ assign_roles(Room) :-
     numlist(1, 12, AllRoles),
     random_permutation(AllRoles, RandomizedRoles),
     assign_roles_to_players(Players, RandomizedRoles),
-    maplista(start_knowledge, Players, RandomizedRoles).
+    maplista(start_knowledge, Players, RandomizedRoles),
+    writeln(";;;;").
 
 maplista(_, [], []).
 maplista(Pred, [X|Xs], [Y|Ys]) :-
     call(Pred, X, Y),
     maplista(Pred, Xs, Ys).
     
-assign_roles_to_players([], _).
+assign_roles_to_players([], []).
 assign_roles_to_players([Player|Rest], [Role|RemainingRoles]) :-
     assertz(user_game_data(Player, Role, true, 0, 0, 0, 0, false)),
     assign_roles_to_players(Rest, RemainingRoles).
@@ -126,7 +127,6 @@ is_silinced(Name, Result) :-
     (Value > 0 -> Result = false ; Result = true).
 
 count_good_players([], 0).
-
 count_good_players([Player|Players], Count) :-
     get_role(Player, Value),
     count_good_players(Players, RemainingCount),

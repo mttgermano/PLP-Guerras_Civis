@@ -102,10 +102,12 @@ translate_role(12,  "Espírito Vingativo").
 
 start_match(Cpname, Rname):-
     start_game(Rname),
+    writeln("jogo pronto"),
     loop_match(Cpname, Rname).
 
 % Início do Jogo / Loop - Vai receber os dados do jogo, chamar o template e esperar escolha
 loop_match(Cpname, Rname):-
+    writeln("entrou em loop"),
     get_room_state(Rname, State, Nround),
     measure_state(State, Period),
     (Period = "Civis" ; Period = "Mafiosos" 
