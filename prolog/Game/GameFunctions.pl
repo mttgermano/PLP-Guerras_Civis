@@ -20,5 +20,4 @@ player_action(PlayerName, Action):-
 start_game(Rname) :-
     Nbots is 11,
     createBots(Nbots, Rname),
-    assign_roles(Rname),
-    writeln("Jogo comecou").
+    assign_roles(Rname).

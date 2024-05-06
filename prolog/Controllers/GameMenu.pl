@@ -1,8 +1,8 @@
 :- include('./Utils.pl').
 :- include('./../Game/GameFunctions.pl').
 
-menu_template("Game", Rname, Players, IsAlive, Role, Round, Period, Menu):- spaces1(X),spaces2(Y),spaces3(Z),
-format(string(RoomData), '│ > Room: ~w~w│\n│~w│\n│ > Round: ~w - ~w~w│', [Rname,X,Y,Round,Period,Z]),
+menu_template("Game", Rname, Players, IsAlive, Role, Round, State, Menu):- spaces1(X),spaces2(Y),spaces3(Z),
+format(string(RoomData), '│ > Room: ~w~w│\n│~w│\n│ > Round: ~w - ~w~w│', [Rname,X,Y,Round,State,Z]),
 
 
 
@@ -11,7 +11,7 @@ format(string(RoomData), '│ > Room: ~w~w│\n│~w│\n│ > Round: ~w - ~w~w�
             "┌───────────────────────────── Guerras Civis ──────────────────────────────┐",
             RoomData,
             "│                                                                          │",
-            "│ Players:   IsAlive:    Role:                                             │",
+            "│ Players:  IsAlive:  Role:                                             │",
             PlayerData,
             "│                                                                          │",
             "│                                                                          │",
@@ -25,10 +25,6 @@ spaces2(X) :- X = "                                                             
 spaces3(X) :- X = "                                                       ".
 
 menu_template("RoomChat", MenuTemplate) :-
-    %mostar numero n de linhas....
-    %manter em loop?
-    %ou escolher acao?
-    %botao Atualizar chat
     get_rname(Rname),
     get_room_messages(Rname, Messages),
     prepend_pipe_to_strings(Messages, ModifiedList),
@@ -82,7 +78,7 @@ prepend_pipe_to_strings([String|Rest], [ModifiedString|ModifiedRest]) :-
 print_lists([], [], []):- !.
 print_lists([Player|Players], [IsAlive|IsAliveList], [Role|Roles]) :-
     translate_role(Role, R),
-    format(atom(PlayerData), "| ~w    ~w      ~w", [Player, IsAlive, R]),
+    format(atom(PlayerData), "| ~w     ~w      ~w", [Player, IsAlive, R]),
     writeln(PlayerData),
     print_lists(Players, IsAliveList, Roles).
 
@@ -109,19 +105,14 @@ start_match(Cpname, Rname):-
 loop_match(Cpname, Rname):-
     writeln("entrou em loop"),
     get_room_state(Rname, State, Nround),
-    measure_state(State, Period),
-    (Period = "Civis" ; Period = "Mafiosos" 
+    (State = "C" ; State = "Mafiosos" 
         ->  menu_template(State, Menu), 
             menu_winner(Menu) 
-
-        ;   get_players_alive_role(Cpname, Players, Alive, Role),
-            menu_template("Game", Rname, Players, Alive, Role, Nround, Period, Menu),
+        ;
+            writeln("chegou aqui"),
+            get_players_alive_role(Cpname, Players, Alive, Role),
+            menu_template("Game", Rname, Players, Alive, Role, Nround, State, Menu),
             menu_game(Cpname, Players, Menu)).
-
-measure_state("A", "Noite").
-measure_state("V", "Dia").
-measure_state("C", "Civis").
-measure_state("M", "Mafiosos").
 
 menu_winner(Menu):-
     cl,
