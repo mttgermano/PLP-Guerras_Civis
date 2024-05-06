@@ -7,10 +7,10 @@
 :- discontiguous get_knowledge/2.
 
 % Test
-know("Pedro", "Djan").
-know("Pedro", "Djan3").
-know("Pedro", "Matheus").
-know("Djan", "Matheus"). 
+% know("Pedro", "Djan").
+% know("Pedro", "Djan3").
+% know("Pedro", "Matheus").
+% know("Djan", "Matheus"). 
 
 % Player Knowledge Actions --------------------------------------
 add_knowledge(Name, NamePlayer) :-

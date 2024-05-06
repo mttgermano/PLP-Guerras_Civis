@@ -5,18 +5,18 @@
 :- dynamic user_game_data/8.
 
 % Test
-user_game_data("Pedro", 1, true, 0, 0, 0, 0, false).
-user_game_data("Djan", 2, true, 0, 0, 0, 0, false).
-user_game_data("Matheus", 3, true, 0, 0, 0, 0, false).
-user_game_data("Pedro1", 4, false, 0, 0, 0, 0, false).
-user_game_data("Djan1", 5, true, 0, 0, 0, 0, true). 
-user_game_data("Matheus1", 6, true, 0, 0, 0, 0, true).
-user_game_data("Pedro2", 7, false, 0, 0, 0, 0, false).
-user_game_data("Djan2", 8, true, 0, 0, 0, 0, true). 
-user_game_data("Matheus2", 9, true, 0, 0, 0, 0, true).
-user_game_data("Pedro3", 10, false, 0, 0, 0, 0, false).
-user_game_data("Djan3", 11, true, 0, 0, 0, 0, true). 
-user_game_data("Matheus3", 12, true, 0, 0, 0, 0, true).
+% user_game_data("Pedro", 1, true, 0, 0, 0, 0, false).
+% user_game_data("Djan", 2, true, 0, 0, 0, 0, false).
+% user_game_data("Matheus", 3, true, 0, 0, 0, 0, false).
+% user_game_data("Pedro1", 4, false, 0, 0, 0, 0, false).
+% user_game_data("Djan1", 5, true, 0, 0, 0, 0, true). 
+% user_game_data("Matheus1", 6, true, 0, 0, 0, 0, true).
+% user_game_data("Pedro2", 7, false, 0, 0, 0, 0, false).
+% user_game_data("Djan2", 8, true, 0, 0, 0, 0, true). 
+% user_game_data("Matheus2", 9, true, 0, 0, 0, 0, true).
+% user_game_data("Pedro3", 10, false, 0, 0, 0, 0, false).
+% user_game_data("Djan3", 11, true, 0, 0, 0, 0, true). 
+% user_game_data("Matheus3", 12, true, 0, 0, 0, 0, true).
 
 
 % User Game Data Actions ----------------------------------------
@@ -41,15 +41,16 @@ assign_roles(Room) :-
     random_permutation(AllRoles, RandomizedRoles),
     assign_roles_to_players(Players, RandomizedRoles).
 
-assign_roles_to_players([], _, _).
+assign_roles_to_players([], _).
 assign_roles_to_players([Player|Rest], [Role|RemainingRoles]) :-
     assertz(user_game_data(Player, Role, true, 0, 0, 0, 0, false)),
+    
     assign_roles_to_players(Rest, RemainingRoles).
 
 reset_values(Name) :-
     retract(user_game_data(Name, Role, Status, _, _, _, _, isDeadByCursedWord)),
     assertz(user_game_data(Name, Role, Status, 0, 0, 0, 0, isDeadByCursedWord)).
-    
+
 get_players_alive_role(Person, Players, Alive, Role) :-
     get_player_room(Person, Room),
     get_all_in_room(Room, Players),

@@ -7,10 +7,9 @@ botActionChoice(RName, Chosen) :-
     random(0, Length, Posicao),
     nth0(Posicao, Players, Chosen).
 
-createBots(0, RName)        :- format('> All Bots created in [~w]', [RName]).
+createBots(0, _)        :- format('> All Bots created  ~n').
 createBots(Quant, RName)    :-
-    uuid(UUID),
-    atomic_list_concat(['bot-', UUID], BotName),
+    atomic_list_concat(['bot-', Quant], BotName),
     add_player(BotName, "", true),
     add_user_game_data(BotName),
     NewQuant is Quant - 1,
