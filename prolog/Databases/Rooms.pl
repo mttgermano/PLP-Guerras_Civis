@@ -24,7 +24,7 @@ room_login(Rname, Pname) :-
 
 % Room Utils ----------------------------------------------------
 is_room_up(Name, Up) :-
-    room(Name, _, Up, _, _, _).
+    room(Name, _, Up, _, _, _, _).
 
 get_room_state(Name, State, Nround) :-
     room(Name, _, _, _, _, State, Nround).
@@ -38,7 +38,7 @@ room_exists(Name) :-
 
 
 room_has_forbidden_word(RoomName) :-
-    room(RoomName, _, _, ForbiddenWord, _, _),
+    room(RoomName, _, _, ForbiddenWord, _, _, _),
     ForbiddenWord \= "".
 
 get_room_master(RoomName, Master) :-
@@ -58,21 +58,20 @@ get_alive_players_in_room(Room, AlivePlayers) :-
     get_all_in_room(Room, Players),
     get_alive_players(Players, AlivePlayers).
 
-get_room_round_state(Room, State) :-
+set_room_round_state(Room,Nround) :-
     get_alive_players_in_room(Room, AlivePlayers),
-    write(AlivePlayers), nl,
     get_good_players(AlivePlayers, GoodPlayers),
-    (   length(GoodPlayers, GoodPlayersLength),
+    (
+        length(GoodPlayers, GoodPlayersLength),
         GoodPlayersLength =:= 0 -> 
-        State = 'M'
+        set_room_state(Room, "M",Nround)
+
     ;   length(AlivePlayers, AlivePlayersLength),
         length(GoodPlayers, GoodPlayersLength),
-        GoodPlayersLength =:= AlivePlayersLength -> 
-        State = 'C'
-    ;   State = 'N'
-    ),
-    write(State).
-
+        GoodPlayersLength =:= AlivePlayersLength 
+        -> 
+            set_room_state(Room, "C", Nround)
+        ;   set_room_state(Room, "N", Nround)).
 
 
 is_role_alive_room(Room, Role) :-

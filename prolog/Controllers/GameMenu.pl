@@ -1,11 +1,10 @@
 :- include('./Utils.pl').
 :- include('./../Game/GameFunctions.pl').
+:- include('./../Databases/Rooms.pl')
 
-menu_template("Game", Rname, Players, IsAlive, Role, Round, State, Menu):- spaces1(X),spaces2(Y),spaces3(Z),
-format(string(RoomData), '│ > Room: ~w~w│\n│~w│\n│ > Round: ~w - ~w~w│', [Rname,X,Y,Round,State,Z]),
-
-
-
+menu_template("Game", Rname, Players, IsAlive, Role, Round, State, Menu):- 
+    spaces1(X),spaces2(Y),spaces3(Z),
+    format(string(RoomData), '│ > Room: ~w~w│\n│~w│\n│ > Round: ~w - ~w~w│', [Rname,X,Y,Round,State,Z]),
     with_output_to(string(PlayerData), print_lists(Players, IsAlive, Role)),
     Menu = [
             "┌───────────────────────────── Guerras Civis ──────────────────────────────┐",
@@ -105,14 +104,32 @@ start_match(Cpname, Rname):-
 loop_match(Cpname, Rname):-
     writeln("entrou em loop"),
     get_room_state(Rname, State, Nround),
-    (State = "C" ; State = "Mafiosos" 
+    (State = "C" ; State = "M" 
         ->  menu_template(State, Menu), 
             menu_winner(Menu) 
         ;
-            writeln("chegou aqui"),
-            get_players_alive_role(Cpname, Players, Alive, Role),
-            menu_template("Game", Rname, Players, Alive, Role, Nround, State, Menu),
-            menu_game(Cpname, Players, Menu)).
+            game_action(Rname, Nround),
+            sleep(10),
+            botsRound(Rname),
+            sleep(10),
+            game_vote(Rname, Nround),
+            sleep(10),
+            voteBotsRound(Rname)).
+
+
+game_action(Rname, Nround) :- 
+    set_room_state(Rname, "A", Nround),
+    get_players_alive_role(Cpname, Players, Alive, Role),
+    menu_template("Game", Rname, Players, Alive, Role, Nround, State, Menu),
+    menu_game(Cpname, Players, Menu),
+    set_room_round_state(Rname, Nround).
+
+game_vote(Rname, Nround) :- 
+    set_room_state(Rname, "V", Nround),
+    get_players_alive_role(Cpname, Players, Alive, Role),
+    menu_template("Game", Rname, Players, Alive, Role, Nround, State, Menu),
+    menu_game(Cpname, Players, Menu),
+    set_room_round_state(Rname, Nround).
 
 menu_winner(Menu):-
     cl,
@@ -128,13 +145,12 @@ menu_game(Cpname, Players, Menu):-
 switch_game_action("1", Cpname, Players, Menu):-
     write("│ Qual jogador você quer executar sua ação?    $ "),
     read_line_to_string(user_input, ActionTarget),
-    writeln("Carregando..."), 
-    % player_action(Cpname, ActionTarget), 
-    sleep(2),
+    writeln("Executando Ação..."), 
+    player_action(Cpname, ActionTarget), 
+    sleep(5), 
     atom_concat("Sistema: ação contra ", ActionTarget, Message),
     atom_concat(Message, " foi executada!", MessageComplete),
-    add_message_to_room(Rname, MessageComplete), 
-    menu_game(Cpname, Players, Menu).
+    add_message_to_room(Rname, MessageComplete).
 
 
 % Chat de mensagem
