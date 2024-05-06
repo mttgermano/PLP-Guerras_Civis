@@ -127,13 +127,16 @@ menu_game(Cpname, Players, Menu):-
 % Ação
 switch_game_action("1", Cpname, Players, Menu):-
     write("│ Qual jogador você quer executar sua ação?    $ "),
-    read_line_to_string(user_input, ActionTarget), (
-        member(ActionTarget, Players)
-        ->  writeln("Carregando..."), player_action(Cpname, ActionTarget), sleep(2), menu_game(Cpname, Players, Menu) 
-        ;   writeln("Nome incorreto, tente novamente"), sleep(2), menu_game(Cpname, Players, Menu)
-        ).
-    menu_game(Cpname, Menu).
-    
+    read_line_to_string(user_input, ActionTarget),
+    writeln("Carregando..."), 
+    % player_action(Cpname, ActionTarget), 
+    sleep(2),
+    atom_concat("Sistema: ação contra ", ActionTarget, Message),
+    atom_concat(Message, " foi executada!", MessageComplete),
+    add_message_to_room(Rname, MessageComplete), 
+    menu_game(Cpname, Players, Menu).
+
+
 % Chat de mensagem
 switch_game_action("2", Cpname, _, _):-
     menu_template("RoomChat", Menu),
