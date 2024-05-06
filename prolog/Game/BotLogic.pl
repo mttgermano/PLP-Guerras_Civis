@@ -7,7 +7,7 @@ botActionChoice(RName, Chosen) :-
     random(0, Length, Posicao),
     nth0(Posicao, Players, Chosen).
 
-createBots(0, _)        :- format('> All Bots created  ~n').
+createBots(0, _)        :- true.
 createBots(Quant, RName)    :-
     atomic_list_concat(['bot-', Quant], BotName),
     add_player(BotName, "", true),

@@ -16,10 +16,8 @@ format(string(RoomData), '│ > Room: ~w~w│\n│~w│\n│ > Round: ~w - ~w~w�
             "│                                                                          │",
             "│                                                                          │",
             "│──────────────────────────────────────────────────────────────────────────│",
-            "│                                                                          │",
             "│ [1] Realizar Ação                                                        │",
             "│ [2] Enviar Mensagem                                                      │",
-            "│                                                                          │",
             "└──────────────────────────────────────────────────────────────────────────┘"].
 
 spaces1(X) :- X = "                                                            ". 
@@ -104,7 +102,7 @@ translate_role(12, "Espírito Vingativo").
 
 
 start_match(Cpname, Rname):-
-    start_game(Rname, Cpname),
+    start_game(Rname),
     loop_match(Cpname, Rname).
 
 % Início do Jogo / Loop - Vai receber os dados do jogo, chamar o template e esperar escolha
@@ -114,11 +112,9 @@ loop_match(Cpname, Rname):-
     (Period = "Civis" ; Period = "Mafiosos" -> 
         menu_template(State, Menu), 
         menu_winner(Menu) 
-        ;
-        get_players_alive_role(Cpname, Players, Alive, Role),
+        ; get_players_alive_role(Cpname, Players, Alive, Role),
         menu_template("Game", Rname, Players, Alive, Role, Nround, Period, Menu),
-        menu_game(Cpname, Players, Menu)   
-    ).
+        menu_game(Cpname, Players, Menu)).
 
 measure_state("A", "Noite").
 measure_state("V", "Dia").

@@ -26,7 +26,6 @@ player("Pedro", teste, room123, true).
 % Player Actions ------------------------------------------------
 add_player(Name, Password, Status) :-
     \+ player(Name, _, _, _),
-    write(Name), nl,
     assertz(player(Name, Password, _, Status)).
 
 delete_player(Name) :-

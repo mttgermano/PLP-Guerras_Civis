@@ -2,7 +2,7 @@
 
 kill(Agent, ActionReceiver) :-
     get_player_room(Agent, Room),
-    (   is_allowed_room(Agent, Room, 'action') ->
+    (   is_allowed_room(Agent, Room, 'A') ->
         write(ActionReceiver),
         write(' foi morto.'), nl,
         kill_vote(ActionReceiver),
@@ -14,7 +14,7 @@ kill(Agent, ActionReceiver) :-
 
 apprentice(Agent, ActionReceiver) :-
     get_player_room(Agent, Room),
-    (   is_allowed_room(Agent, Room, 'action'),
+    (   is_allowed_room(Agent, Room, 'A'),
         \+ is_role_alive_room(Room, 1) ->
         kill(Agent, ActionReceiver),
         get_role(ActionReceiver, Role),
@@ -25,7 +25,7 @@ apprentice(Agent, ActionReceiver) :-
 
 police(Agent, ActionReceiver) :-
     get_player_room(Agent, Room),
-    (   is_allowed_room(Agent, Room, 'action'),
+    (   is_allowed_room(Agent, Room, 'A'),
         \+ is_role_alive_room(Room, 8) ->
         write(ActionReceiver),
         write(' foi morto.'), nl,
@@ -35,7 +35,7 @@ police(Agent, ActionReceiver) :-
 
 save(Agent, ActionReceiver) :-
     get_player_room(Agent, Room),
-    (   is_allowed_room(Agent, Room, 'action') ->
+    (   is_allowed_room(Agent, Room, 'A') ->
         get_role(ActionReceiver, Role),
         write(ActionReceiver),
         write(' foi salvo.'), nl,
@@ -47,7 +47,7 @@ save(Agent, ActionReceiver) :-
 
 search(Agent, ActionReceiver) :-
     get_player_room(Agent, Room),
-    (   is_allowed_room(Agent, Room, 'action') ->
+    (   is_allowed_room(Agent, Room, 'A') ->
         get_role(ActionReceiver, Role),
         reveal(Agent, ActionReceiver),
         (   Role =:= 8 -> reveal(Agent, ActionReceiver)
@@ -58,7 +58,7 @@ search(Agent, ActionReceiver) :-
 
 silence(Agent, ActionReceiver) :-
     get_player_room(Agent, Room),
-     (   is_allowed_room(Agent, Room, 'action') ->
+     (   is_allowed_room(Agent, Room, 'A') ->
         silence_player(ActionReceiver),
         get_role(ActionReceiver, Role),
         get_player_room(Agent, RName),
@@ -71,7 +71,7 @@ silence(Agent, ActionReceiver) :-
 
 paralyze(Agent, ActionReceiver) :-
     get_player_room(Agent, Room),
-    (   is_allowed_room(Agent, Room, 'action') ->
+    (   is_allowed_room(Agent, Room, 'A') ->
         paralise(ActionReceiver),
         get_role(ActionReceiver, Role),
         get_player_room(Agent, RName),
@@ -84,7 +84,7 @@ paralyze(Agent, ActionReceiver) :-
 
 setCursedWord(Agent, CursedWord) :-
     get_player_room(Agent, Room),
-    (   is_allowed_room(Agent, Room, 'action'),
+    (   is_allowed_room(Agent, Room, 'A'),
         \+ room_has_forbidden_word(Room) ->
         set_room_forbidden_word(Room, CursedWord),
         format("> [~w] Already has cursed word~n", [Room])
@@ -98,7 +98,7 @@ revenge(Agent, ActionReceiver) :-
 
 reveal(Agent, ActionReceiver) :-
     get_player_room(Agent, Room),
-    (   is_allowed_room(Agent, Room, 'action') ->
+    (   is_allowed_room(Agent, Room, 'A') ->
         write(ActionReceiver),
         write(' foi revelado.'), nl,
         add_knowledge(Agent, ActionReceiver)
@@ -111,7 +111,7 @@ apply_reveal([Player|Rest], ActionReceiver) :-
 
 paparazzi(Agent, ActionReceiver) :-
     get_player_room(Agent, Room),
-    (   is_allowed_room(Agent, Room, 'action') ->
+    (   is_allowed_room(Agent, Room, 'A') ->
         get_alive_players_in_room(Room, Players),
         apply_reveal(Players, ActionReceiver)
     ;   true).
