@@ -7,15 +7,15 @@
 :- discontiguous get_knowledge/2.
 
 % Test
-know("Pedro", "Djan").
-know("Pedro", "Djan3").
-know("Pedro", "Matheus").
-know("Djan", "Matheus"). 
+know("Pedro",   "Djan").
+know("Pedro",   "Djan3").
+know("Pedro",   "Matheus").
+know("Djan",    "Matheus"). 
 
 % Player Knowledge Actions --------------------------------------
-add_knowledge(Name, NamePlayer) :-
-    \+ know(Name, NamePlayer),
-    assertz(know(Name, NamePlayer)).
+add_knowledge(  WhoKnows, WhoIsKnown) :-
+    \+ know(    WhoKnows, WhoIsKnown),
+    assertz(know(WhoKnows,WhoIsKnown)).
 
 remove_room_knowledge(Player) :-
     retractall(know(Player, _)),

@@ -5,18 +5,20 @@
 :- dynamic user_game_data/8.
 
 % Test
-user_game_data("Pedro", 1, true, 0, 0, 0, 0, false).
-user_game_data("Djan", 2, true, 0, 0, 0, 0, false).
-user_game_data("Matheus", 3, false, 0, 0, 0, 0, false).
-user_game_data("Pedro1", 4, false, 0, 0, 0, 0, false).
-user_game_data("Djan1", 5, true, 0, 0, 0, 0, true). 
-user_game_data("Matheus1", 6, true, 0, 0, 0, 0, true).
-user_game_data("Pedro2", 7, false, 0, 0, 0, 0, false).
-user_game_data("Djan2", 8, true, 0, 0, 0, 0, true). 
-user_game_data("Matheus2", 9, true, 0, 0, 0, 0, true).
-user_game_data("Pedro3", 10, false, 0, 0, 0, 0, false).
-user_game_data("Djan3", 11, true, 0, 0, 0, 0, true). 
-user_game_data("Matheus3", 12, true, 0, 0, 0, 0, true).
+% user_game_data(Player, Role, Status, KillVote, Vote, Paralize, Silence, IsDeadByCursedWord),
+
+% user_game_data("Pedro", 1, true, 0, 0, 0, 0, false).
+% user_game_data("Djan", 2, true, 0, 0, 0, 0, false).
+% user_game_data("Matheus", 3, false, 0, 0, 0, 0, false).
+% user_game_data("Pedro1", 4, false, 0, 0, 0, 0, false).
+% user_game_data("Djan1", 5, true, 0, 0, 0, 0, true). 
+% user_game_data("Matheus1", 6, true, 0, 0, 0, 0, true).
+% user_game_data("Pedro2", 7, false, 0, 0, 0, 0, false).
+% user_game_data("Djan2", 8, true, 0, 0, 0, 0, true). 
+% user_game_data("Matheus2", 9, true, 0, 0, 0, 0, true).
+% user_game_data("Pedro3", 10, false, 0, 0, 0, 0, false).
+% user_game_data("Djan3", 11, true, 0, 0, 0, 0, true). 
+% user_game_data("Matheus3", 12, true, 0, 0, 0, 0, true).
 
 
 % User Game Data Actions ----------------------------------------
@@ -137,3 +139,50 @@ save_vote(PlayerName) :-
     retract(user_game_data(PlayerName, X, Y, A, B, C, D, E)),
     NewA is A - 1,
     assertz(user_game_data(PlayerName, X, Y, NewA, B, C, D, E)).
+
+
+
+% KNowledge
+% start_knowledge(Rname, Player, Role)
+
+% Assassino
+start_knowledge(Cpname, 1) :- 
+    get_role(Player1, 2),
+    get_role(Player2, 5),
+    add_knowledge(Cpname, Cpname),
+    add_knowledge(Cpname, Player1),
+    add_knowledge(Cpname, Player2).
+
+% Aprendiz
+start_knowledge(Cpname, 2) :- 
+    get_role(Player1, 1),
+    get_role(Player2, 5),
+    add_knowledge(Cpname, Cpname),
+    add_knowledge(Cpname, Player1),
+    add_knowledge(Cpname, Player2).
+
+% Silenciador
+start_knowledge(Cpname, 5) :- 
+    get_role(Player1, 1),
+    get_role(Player2, 2),
+    add_knowledge(Cpname, Cpname),
+    add_knowledge(Cpname, Player1),
+    add_knowledge(Cpname, Player2).
+
+
+% policial
+start_knowledge(Cpname, 9) :- 
+    get_role(Player1, 8),
+    add_knowledge(Cpname, Cpname),
+    add_knowledge(Cpname, Player1).
+
+
+% juiz
+start_knowledge(Cpname, 8) :- 
+    get_role(Player1, 10),
+    add_knowledge(Cpname, Cpname),
+    add_knowledge(Cpname, Player1).
+
+% Base case 
+start_knowledge(Cpname, _) :- 
+    add_knowledge(Cpname, Cpname).

@@ -7,7 +7,7 @@
 % Room Actions --------------------------------------------------
 add_room(Name, Master, CursedWord) :-
     \+ room(Name, _, _, _, _, _),
-    assertz(room(Name, Master, true, CursedWord, [], "A", 0)).
+    assertz(room(Name, Master, true, CursedWord, [], "A", 1)).
 
 delete_room(Name) :-
     retract(room(Name, _, _, _, _, _, _)).

@@ -16,8 +16,6 @@ createBots(Quant, RName)    :-
     NewQuant is Quant - 1,
     createBots(NewQuant, RName).
 
-
-
 splitBySpaces([], []).
 splitBySpaces([String|Rest], Result) :-
     splitBySpaces(Rest, RestResult),

@@ -12,12 +12,14 @@ player_action(PlayerName, Action) :-
         Role =:= 8  -> kill(PlayerName, Action);
         Role =:= 9  -> police(PlayerName, Action);
         Role =:= 10 -> save(PlayerName, Action);
-        Role =:= 11 -> write('Aldeao');
+        Role =:= 11 -> true;
         Role =:= 12 -> revenge(PlayerName, Action);
     ).
 
-start_game(Rname) :-
-    room(Rname, RoomMaster, IsAlive, CursedWord, Messages, Rstate).
-    % TODO
-
-
+start_game(Rname, Cpname) :-
+    room(Rname, RoomMaster, IsAlive, CursedWord, Messages, Rstate),
+    get_players_in_room(Cpname, Nplayers),
+    Nbots is 12 - Nplayers,
+    createBots(Nbots, RName),
+    get_user_game_data(Cpname, Players, Alive, RoleList),
+    maplist(start_knowledge, Players, RoleList).
