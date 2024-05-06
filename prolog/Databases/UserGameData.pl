@@ -41,9 +41,15 @@ assign_roles(Room) :-
     get_all_in_room(Room, Players),
     numlist(1, 12, AllRoles),
     random_permutation(AllRoles, RandomizedRoles),
-    assign_roles_to_players(Players, RandomizedRoles).
+    assign_roles_to_players(Players, RandomizedRoles),
+    maplista(start_knowledge, Players, RandomizedRoles).
 
-assign_roles_to_players([], _, _).
+maplista(_, [], []).
+maplista(Pred, [X|Xs], [Y|Ys]) :-
+    call(Pred, X, Y),
+    maplista(Pred, Xs, Ys).
+
+assign_roles_to_players([], []).
 assign_roles_to_players([Player|Rest], [Role|RemainingRoles]) :-
     assertz(user_game_data(Player, Role, true, 0, 0, 0, 0, false)),
     assign_roles_to_players(Rest, RemainingRoles).
@@ -184,5 +190,5 @@ start_knowledge(Cpname, 8) :-
     add_knowledge(Cpname, Player1).
 
 % Base case 
-start_knowledge(Cpname, _) :- 
+start_knowledge(Cpname, _) :-
     add_knowledge(Cpname, Cpname).

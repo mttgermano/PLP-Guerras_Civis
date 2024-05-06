@@ -1,6 +1,7 @@
 :- include('./../Databases/Rooms.pl').
 :- include('./GameMenu.pl').
 :- include('./Utils.pl').
+:-
 
 :- discontiguous menu_template/2.
 :- discontiguous player/4.
@@ -273,7 +274,7 @@ switch_menu_room_wait_action("1", Cpname, _):-
     writeln("Loading Game..."),
     sleep(2),
     get_rname(Rname),
-    loop_match(Cpname, Rname), !. % Indo para GameMenu.pl
+    start_match(Cpname, Rname), !. % Indo para GameMenu.pl
 
 % Atualizar sala
 switch_menu_room_wait_action("2", Cpname, Menu):-

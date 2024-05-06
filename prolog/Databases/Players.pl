@@ -9,7 +9,7 @@
 :- discontiguous get_all_in_room/2.
 
 % Test 
-player("Pedro", teste, room123, true).
+% player("Pedro", teste, room123, true).
 % player("Djan", teste, room123, true). 
 % player("Matheus", teste, room123, false).
 % player("Pedro1", teste, room123, true).
@@ -47,8 +47,7 @@ player_exists(Name) :-
     player(Name, _, _, _).
 
 get_all_in_room(RoomName, Players) :-
-    findall(Player, player(Player, _, RoomName, _), Players),
-    write(Players).
+    findall(Player, player(Player, _, RoomName, _), Players).
 
 get_players_in_room(Room, Players) :-
     findall(X, player(X, _, Room, true), Players).

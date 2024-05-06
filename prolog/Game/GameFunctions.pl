@@ -20,7 +20,6 @@ player_action(PlayerName, Action) :-
 start_game(Rname, Cpname) :-
     get_players_in_room(Cpname, Nplayers),
     length(Nplayers, Length),
-    Nbots is 12 - Length,
+    Nbots is 11 - Length,
     createBots(Nbots, RName),
-    get_user_game_data(Cpname, Players, Alive, RoleList),
-    maplist(start_knowledge, Players, RoleList).
+    assign_roles(Rname).

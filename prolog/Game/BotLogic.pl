@@ -7,7 +7,7 @@ botActionChoice(PlayerName, RName) :-
     random(0, Length, Posicao),
     nth0(Posicao, Players, PlayerName).
 
-createBots(0, RName)        :- format('> All Bots created in [~w]', [RName]).
+createBots(0, RName).
 createBots(Quant, RName) :-
     uuid(UUID),
     sub_string(UUID, 5, 9, _, ShortUUID),
