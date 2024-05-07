@@ -98,18 +98,15 @@ translate_role(12,  "Espírito Vingativo").
 
 start_match(Cpname, Rname):-
     start_game(Rname),
-    writeln("jogo pronto"),
     loop_match(Cpname, Rname).
 
 % Início do Jogo / Loop - Vai receber os dados do jogo, chamar o template e esperar escolha
 loop_match(Cpname, Rname):-
-    writeln("entrou em loop"),
     get_room_state(Rname, State, Nround),
-    (State = "C" ; State = "Mafiosos" 
+    (State = "C" ; State = "M" 
         ->  menu_template(State, Menu), 
             menu_winner(Menu) 
         ;
-            writeln("chegou aqui"),
             get_players_alive_role(Cpname, Players, Alive, Role),
             menu_template("Game", Rname, Players, Alive, Role, Nround, State, Menu),
             menu_game(Cpname, Players, Menu)).
@@ -131,7 +128,7 @@ switch_game_action("1", Cpname, Players, Menu):-
     writeln("Carregando..."), 
     % player_action(Cpname, ActionTarget), 
     sleep(2),
-    atom_concat("Sistema: ação contra ", ActionTarget, Message),
+    atom_concat("Sistema: Uma ação contra ", ActionTarget, Message),
     atom_concat(Message, " foi executada!", MessageComplete),
     add_message_to_room(Rname, MessageComplete), 
     menu_game(Cpname, Players, Menu).
