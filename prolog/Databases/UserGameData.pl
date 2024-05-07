@@ -10,6 +10,7 @@
 % user_game_data("Matheus", 3, true, 0, 0, 0, 0, false).
 % user_game_data(Player, Role, Status, KillVote, Vote, Paralize, Silence, IsDeadByCursedWord),
 
+
 user_game_data("Pedro", 1, false, 0, 0, 0, 0, false).
 % user_game_data("Djan", 2, faflse, 0, 0, 0, 0, false).
 % user_game_data("Matheus", 3, true, 0, 0, 0, 0, false).
@@ -53,15 +54,12 @@ assign_roles(Room) :-
     assign_roles_to_players(Players, RandomizedRoles),
     maplista(start_knowledge, Players, RandomizedRoles).
 
-
-
-
 maplista(_, [], []).
 maplista(Pred, [X|Xs], [Y|Ys]) :-
     call(Pred, X, Y),
     maplista(Pred, Xs, Ys).
     
-assign_roles_to_players([], _).
+assign_roles_to_players([], []).
 assign_roles_to_players([Player|Rest], [Role|RemainingRoles]) :-
     assertz(user_game_data(Player, Role, true, 0, 0, 0, 0, false)),
     assign_roles_to_players(Rest, RemainingRoles).
@@ -105,6 +103,20 @@ get_alive_players([Player|Rest], AlivePlayers) :-
 get_alive_players([_|Rest], AlivePlayers) :-
     get_alive_players(Rest, AlivePlayers).
 
+get_good_players([], []).
+
+get_good_players([Player|Rest], GoodPlayers) :-
+    user_game_data(Player, Role, _, _, _, _, _, _),
+    write(Role), nl,
+    Role >= 7,
+    Role =< 12,
+    get_good_players(Rest, RemainingAlive),
+    GoodPlayers = [Player|RemainingAlive].
+
+get_good_players([_|Rest], GoodPlayers) :-
+    get_good_players(Rest, GoodPlayers).
+
+
 is_good(Name, Result) :-
     user_game_data(Name, Value, _, _, _, _, _, _),
     (Value > 6 -> Result = true ; Result = false).
@@ -118,7 +130,6 @@ is_silinced(Name, Result) :-
     (Value > 0 -> Result = false ; Result = true).
 
 count_good_players([], 0).
-
 count_good_players([Player|Players], Count) :-
     get_role(Player, Value),
     count_good_players(Players, RemainingCount),

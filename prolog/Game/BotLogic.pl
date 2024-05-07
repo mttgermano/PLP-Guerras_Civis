@@ -7,6 +7,7 @@ botActionChoice(RName, Chosen) :-
     random(0, Length, Posicao),
     nth0(Posicao, Players, Chosen).
 
+
 get_all_room(RoomName, Players) :-
     get_all_in_room(RoomName, Players).
 
@@ -16,6 +17,7 @@ createBots(Quant, RName)    :-
     add_player(BotName, "", false),
     change_player_room(BotName, RName),
     add_user_game_data(BotName, Quant),
+
     NewQuant is Quant - 1,
     createBots(NewQuant, RName).
 
@@ -43,9 +45,10 @@ botBrain(RName, BotName) :-
             get_role(BotName, BotRole),
             ( BotRole =:= 11 -> (
                     vote(PlayerToIncrement),
-                    vote(PlayerToIncrement)
-                ); true )
-        ) ; true ).
+                    vote(PlayerToIncrement))
+                    ; true )
+        ) 
+        ; true).
 
 compareIsGood(BotName, Players, PlayerName, Score) :-
     is_good(BotName, BotIsGood),

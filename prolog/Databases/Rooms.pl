@@ -7,7 +7,7 @@ room(room123, "Pedro", false, "A", ['bot-1 bot-1 bot-3 bot-4 bot-8 bot-10 bot-9'
 % Room Actions --------------------------------------------------
 add_room(Name, Master, CursedWord) :-
     \+ room(Name, _, _, _, _, _),
-    assertz(room(Name, Master, true, CursedWord, [], "A", 1)).
+    assertz(room(Name, Master, true, CursedWord, [], 'A', 1)).
 
 delete_room(Name) :-
     retract(room(Name, _, _, _, _, _, _)).
@@ -24,7 +24,7 @@ room_login(Rname, Pname) :-
 
 % Room Utils ----------------------------------------------------
 is_room_up(Name, Up) :-
-    room(Name, _, Up, _, _, _).
+    room(Name, _, Up, _, _, _, _).
 
 get_room_state(Name, State, Nround) :-
     room(Name, _, _, _, _, State, Nround).
@@ -38,7 +38,7 @@ room_exists(Name) :-
 
 
 room_has_forbidden_word(RoomName) :-
-    room(RoomName, _, _, ForbiddenWord, _, _),
+    room(RoomName, _, _, ForbiddenWord, _, _, _),
     ForbiddenWord \= "".
 
 get_room_master(RoomName, Master) :-
@@ -57,6 +57,22 @@ get_room_forbidden_word(Name, ForbiddenWord) :-
 get_alive_players_in_room(Room, AlivePlayers) :-
     get_all_in_room(Room, Players),
     get_alive_players(Players, AlivePlayers).
+
+set_room_round_state(Room,Nround) :-
+    get_alive_players_in_room(Room, AlivePlayers),
+    get_good_players(AlivePlayers, GoodPlayers),
+    (
+        length(GoodPlayers, GoodPlayersLength),
+        GoodPlayersLength =:= 0 -> 
+        set_room_state(Room, "M",Nround)
+
+    ;   length(AlivePlayers, AlivePlayersLength),
+        length(GoodPlayers, GoodPlayersLength),
+        GoodPlayersLength =:= AlivePlayersLength 
+        -> 
+            set_room_state(Room, "C", Nround)
+        ;   set_room_state(Room, "N", Nround)).
+
 
 is_role_alive_room(Room, Role) :-
     get_all_in_room(Room, Players),

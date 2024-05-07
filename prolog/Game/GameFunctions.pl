@@ -1,7 +1,7 @@
-:- include('RoleFunctions.pl').
+:- include('BotLogic.pl').
 
 
-player_action(PlayerName, Action, 'action') :-
+player_action(PlayerName, Action):-
     get_role(PlayerName, Role), (
         Role =:= 1  -> kill(PlayerName, Action);
         Role =:= 2  -> apprentice(PlayerName, Action);
@@ -13,18 +13,11 @@ player_action(PlayerName, Action, 'action') :-
         Role =:= 8  -> kill(PlayerName, Action);
         Role =:= 9  -> police(PlayerName, Action);
         Role =:= 10 -> save(PlayerName, Action);
-        Role =:= 11 -> write('Aldeao');
-        Role =:= 12 -> revenge(PlayerName, Action);
-        true
+        Role =:= 11 -> true;
+        Role =:= 12 -> revenge(PlayerName, Action)
     ).
-
-player_action(PlayerName, Action, 'vote') :-
-    vote(PlayerName, Action).
 
 start_game(Rname) :-
     Nbots is 11,
-    write(Rname), nl,
-    write(Nbots), nl,
-    createBots(Nbots, RName),
-    write('AQUI'), nl,
+    createBots(Nbots, Rname),
     assign_roles(Rname).
