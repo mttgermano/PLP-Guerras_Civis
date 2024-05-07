@@ -7,11 +7,15 @@ botActionChoice(RName, Chosen) :-
     random(0, Length, Posicao),
     nth0(Posicao, Players, Chosen).
 
-createBots(0, _)        :- format('> All Bots created  ~n').
+get_all_room(RoomName, Players) :-
+    get_all_in_room(RoomName, Players).
+
+createBots(0, _)        :- true.
 createBots(Quant, RName)    :-
     atomic_list_concat(['bot-', Quant], BotName),
-    add_player(BotName, "", true),
-    %add_user_game_data(BotName),
+    add_player(BotName, "", false),
+    change_player_room(BotName, RName),
+    add_user_game_data(BotName, Quant),
     NewQuant is Quant - 1,
     createBots(NewQuant, RName).
 
@@ -35,8 +39,7 @@ botBrain(RName, BotName) :-
             index_of_max(Results, Ind, Max),
             nth0(Ind, PlayersNames, PlayerToIncrement),
             vote(PlayerToIncrement),
-            write(BotName), nl,
-            write(PlayerToIncrement), nl,
+            write(BotName), write(' votou'), nl,
             get_role(BotName, BotRole),
             ( BotRole =:= 11 -> (
                     vote(PlayerToIncrement),
@@ -49,7 +52,7 @@ compareIsGood(BotName, Players, PlayerName, Score) :-
     is_good(PlayerName, PlayerIsGood),
     ((BotIsGood \== PlayerIsGood), member(PlayerName, Players)
     -> Score = 1000000
-    ;(BotIsGood == PlayerIsGood, member(PlayerName, Players))
+    ;((BotIsGood == PlayerIsGood, member(PlayerName, Players)) ; PlayerName == BotName)
         -> Score = -100000
         ;  Score = 0).
 
@@ -113,6 +116,9 @@ botAction(Bot, RName) :-
     ).
 callBots([], _).
 callBots([BotName|Rest], RName) :-
+    write('turno de '),
+    write(BotName),
+    nl,
     botAction(BotName, RName),
     callBots(Rest, RName).
 
