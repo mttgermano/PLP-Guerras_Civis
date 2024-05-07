@@ -1,16 +1,18 @@
 :- include('./Utils.pl').
 :- include('./../Game/GameFunctions.pl').
-:- include('./../Databases/Rooms.pl')
 
-menu_template("Game", Rname, Players, IsAlive, Role, Round, State, Menu):- 
-    spaces1(X),spaces2(Y),spaces3(Z),
-    format(string(RoomData), '│ > Room: ~w~w│\n│~w│\n│ > Round: ~w - ~w~w│', [Rname,X,Y,Round,State,Z]),
+menu_template("Game", Rname, Players, IsAlive, Role, Round, State, Menu):- spaces1(X),spaces2(Y),spaces3(Z),
+(State = "A" -> Period = "Votação" ; Period = "Ação "),
+format(string(RoomData), '│ > Sala: ~w~w│\n│~w│\n│ > Round: ~w - ~w~w│', [Rname,X,Y,Round,Period,Z]),
+
+
+
     with_output_to(string(PlayerData), print_lists(Players, IsAlive, Role)),
     Menu = [
             "┌───────────────────────────── Guerras Civis ──────────────────────────────┐",
             RoomData,
             "│                                                                          │",
-            "│ Players:  IsAlive:  Role:                                             │",
+            "│ Jogador:    Vivo:  Função:                                               │",
             PlayerData,
             "│                                                                          │",
             "│                                                                          │",
@@ -28,8 +30,8 @@ menu_template("RoomChat", MenuTemplate) :-
     get_room_messages(Rname, Messages),
     prepend_pipe_to_strings(Messages, ModifiedList),
     append(["┌───────────────────────────── Guerras Civis ──────────────────────────────┐\n|"], ModifiedList, MenuWithMessages),
-    append(MenuWithMessages, ["|\n|──────────────────────────────────────────────────────────────────────────┐"], MenuWithButtonHeader),
-    append(MenuWithButtonHeader,["|\n| [1] Voltar para o menu principal\n| [2] Atualizar Chat\n|"], MenuWithButtons),%pode virar um template so.....
+    append(MenuWithMessages, ["|──────────────────────────────────────────────────────────────────────────┐"], MenuWithButtonHeader),
+    append(MenuWithButtonHeader,["|[1] Voltar para o menu principal\n| [2] Atualizar Chat|"], MenuWithButtons),%pode virar um template so.....
     append(MenuWithButtons, ["└──────────────────────────────────────────────────────────────────────────┘"], MenuTemplate).
 
 menu_template("M",
@@ -67,6 +69,7 @@ menu_template("C",
     "│                                                                          │",
     "└──────────────────────────────────────────────────────────────────────────┘"]).
 
+
 %%adicionar calculo para formatacao dependendo do tamanho da palavra
 prepend_pipe_to_strings([], []):- !.
 prepend_pipe_to_strings([String|Rest], [ModifiedString|ModifiedRest]) :-
@@ -77,7 +80,7 @@ prepend_pipe_to_strings([String|Rest], [ModifiedString|ModifiedRest]) :-
 print_lists([], [], []):- !.
 print_lists([Player|Players], [IsAlive|IsAliveList], [Role|Roles]) :-
     translate_role(Role, R),
-    format(atom(PlayerData), "| ~w     ~w      ~w", [Player, IsAlive, R]),
+    format(atom(PlayerData), "│  ~w     ~w      ~w", [Player, IsAlive, R]),
     writeln(PlayerData),
     print_lists(Players, IsAliveList, Roles).
 
@@ -97,39 +100,39 @@ translate_role(12,  "Espírito Vingativo").
 
 start_match(Cpname, Rname):-
     start_game(Rname),
-    writeln("jogo pronto"),
     loop_match(Cpname, Rname).
 
 % Início do Jogo / Loop - Vai receber os dados do jogo, chamar o template e esperar escolha
 loop_match(Cpname, Rname):-
-    writeln("entrou em loop"),
     get_room_state(Rname, State, Nround),
     (State = "C" ; State = "M" 
         ->  menu_template(State, Menu), 
             menu_winner(Menu) 
         ;
-            game_action(Rname, Nround),
-            sleep(10),
-            botsRound(Rname),
-            sleep(10),
-            game_vote(Rname, Nround),
-            sleep(10),
-            voteBotsRound(Rname)).
+            % game_action(Rname, Nround),
+            % sleep(10),
+            % botsRound(Rname),
+            % sleep(10),
+            % game_vote(Rname, Nround),
+            % sleep(10),
+            % voteBotsRound(Rname)).
+            get_players_alive_role(Cpname, Players, Alive, Role),
+            menu_template("Game", Rname, Players, Alive, Role, Nround, State, Menu),
+            menu_game(Cpname, Players, Menu)).
 
+% game_action(Rname, Nround) :- 
+%     set_room_state(Rname, "A", Nround),
+%     get_players_alive_role(Cpname, Players, Alive, Role),
+%     menu_template("Game", Rname, Players, Alive, Role, Nround, State, Menu),
+%     menu_game(Cpname, Players, Menu),
+%     set_room_round_state(Rname, Nround).
 
-game_action(Rname, Nround) :- 
-    set_room_state(Rname, "A", Nround),
-    get_players_alive_role(Cpname, Players, Alive, Role),
-    menu_template("Game", Rname, Players, Alive, Role, Nround, State, Menu),
-    menu_game(Cpname, Players, Menu),
-    set_room_round_state(Rname, Nround).
-
-game_vote(Rname, Nround) :- 
-    set_room_state(Rname, "V", Nround),
-    get_players_alive_role(Cpname, Players, Alive, Role),
-    menu_template("Game", Rname, Players, Alive, Role, Nround, State, Menu),
-    menu_game(Cpname, Players, Menu),
-    set_room_round_state(Rname, Nround).
+% game_vote(Rname, Nround) :- 
+%     set_room_state(Rname, "V", Nround),
+%     get_players_alive_role(Cpname, Players, Alive, Role),
+%     menu_template("Game", Rname, Players, Alive, Role, Nround, State, Menu),
+%     menu_game(Cpname, Players, Menu),
+%     set_room_round_state(Rname, Nround).
 
 menu_winner(Menu):-
     cl,
@@ -145,12 +148,13 @@ menu_game(Cpname, Players, Menu):-
 switch_game_action("1", Cpname, Players, Menu):-
     write("│ Qual jogador você quer executar sua ação?    $ "),
     read_line_to_string(user_input, ActionTarget),
-    writeln("Executando Ação..."), 
-    player_action(Cpname, ActionTarget), 
-    sleep(5), 
-    atom_concat("Sistema: ação contra ", ActionTarget, Message),
+    writeln("Carregando..."), 
+    % player_action(Cpname, ActionTarget), 
+    sleep(2),
+    atom_concat("Sistema: Uma ação contra ", ActionTarget, Message),
     atom_concat(Message, " foi executada!", MessageComplete),
-    add_message_to_room(Rname, MessageComplete).
+    add_message_to_room(Rname, MessageComplete), 
+    menu_game(Cpname, Players, Menu).
 
 
 % Chat de mensagem
