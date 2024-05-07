@@ -10,26 +10,30 @@
 % user_game_data("Matheus", 3, true, 0, 0, 0, 0, false).
 % user_game_data(Player, Role, Status, KillVote, Vote, Paralize, Silence, IsDeadByCursedWord),
 
-% user_game_data("Pedro", 1, aflse, 0, 0, 0, 0, false).
+
+user_game_data("Pedro", 1, false, 0, 0, 0, 0, false).
 % user_game_data("Djan", 2, faflse, 0, 0, 0, 0, false).
-% user_game_data("Matheus", 3, false, 0, 0, 0, 0, false).
+% user_game_data("Matheus", 3, true, 0, 0, 0, 0, false).
 
 % user_game_data("Pedro1", 4, false, 0, 0, 0, 0, false).
 % user_game_data("Djan1", 5, false, 0, 0, 0, 0, false).
-% user_game_data("Matheus1", 6, false, 0, 0, 0, 0, false).
+% user_game_data("Matheus1", 6, true, 0, 0, 0, 0, false).
 
 % user_game_data("Pedro2", 7, true, 0, 0, 0, 0, false).
 % user_game_data("Djan2", 8, false, 0, 0, 0, 0, false).
-% user_game_data("Matheus2", 9, false, 0, 0, 0, 0, false).
+% user_game_data("Matheus2", 9, true, 0, 0, 0, 0, false).
 
 % user_game_data("Pedro3", 10, false, 0, 0, 0, 0, false).
 % user_game_data("Djan3", 11, false, 0, 0, 0, 0, false).
-% user_game_data("Matheus3", 12, false, 0, 0, 0, 0, false).
+% user_game_data("Matheus3", 12, true, 0, 0, 0, 0, false).
 
 
 % User Game Data Actions ----------------------------------------
 add_user_game_data(Name) :-
     assertz(user_game_data(Name, -1, true, 0, 0, 0, 0, false)).
+
+add_user_game_data(Name, Role) :-
+    assertz(user_game_data(Name, Role, true, 0, 0, 0, 0, false)).
 
 delete_user_game_data(Name) :-
     retract(user_game_data(Name, _, _, _, _, _, _, _)).

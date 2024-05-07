@@ -1,8 +1,8 @@
-:- dynamic room/6.
+:- dynamic room/7.
 :- include('UserGameData.pl').
 
 % Test
-% room(room123, "Pedro", false, "A", ['Djan Djan', 'Teste'], 'action', 0).
+room(room123, "Pedro", false, "A", ['bot-1 bot-1 bot-3 bot-4 bot-8 bot-10 bot-9', 'Teste', 'bot-1', 'bot-1'], 'A', 0).
 
 % Room Actions --------------------------------------------------
 add_room(Name, Master, CursedWord) :-
@@ -18,7 +18,7 @@ add_message_to_room(RoomName, Message) :-
     assertz(room(RoomName, Master, Up, ForbiddenWord, NewMessages, State, Nround)).
 
 room_login(Rname, Pname) :-
-    room(Rname, _, _, _, _, _),
+    room(Rname, _, _, _, _, _, _),
     change_player_room(Pname,Rname).
 
 
